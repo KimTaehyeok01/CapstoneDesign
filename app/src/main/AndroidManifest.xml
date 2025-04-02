@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- 위치 권한 설정 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +17,11 @@
         android:theme="@style/Theme.CapstoneDesign"
         tools:targetApi="31">
 
+        <!-- ✅ Google Maps API 키 등록 -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAD8nG_FFuDwUH0Vjk7sRL6scOd7zJ8FEg" />
+
         <!-- 메인 페이지 -->
         <activity
             android:name=".MainActivity"
@@ -21,8 +30,10 @@
         <!-- 로그인 액티비티 -->
         <activity android:name=".login_signup.LoginActivity" />
 
-        <!-- 회원가입 액티비티 (추가됨) -->
+        <!-- 회원가입 액티비티 -->
         <activity android:name=".login_signup.SignUpActivity" />
+        <activity android:name=".MapActivity" />
+
 
         <!-- 앱 시작 시 실행될 온보딩 화면 -->
         <activity
