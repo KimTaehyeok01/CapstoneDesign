@@ -13,14 +13,18 @@
         android:theme="@style/Theme.CapstoneDesign"
         tools:targetApi="31">
 
+        <!-- 메인 페이지 -->
         <activity
             android:name=".MainActivity"
             android:exported="true" />
 
         <!-- 로그인 액티비티 -->
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".login_signup.LoginActivity" />
 
-        <!-- 온보딩 액티비티: 앱 시작 지점 -->
+        <!-- 회원가입 액티비티 (추가됨) -->
+        <activity android:name=".login_signup.SignUpActivity" />
+
+        <!-- 앱 시작 시 실행될 온보딩 화면 -->
         <activity
             android:name=".OnboardingActivity"
             android:exported="true">
@@ -31,5 +35,4 @@
         </activity>
 
     </application>
-
 </manifest>

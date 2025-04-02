@@ -7,6 +7,8 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.capstonedesign.login_signup.LoginActivity;
+
 public class OnboardingActivity extends AppCompatActivity {
 
     @Override
