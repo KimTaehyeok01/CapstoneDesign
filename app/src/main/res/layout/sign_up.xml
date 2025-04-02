@@ -24,24 +24,27 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <!-- 이메일 아이디 입력 필드 (왼쪽 입력란) -->
+
+    <!-- @ 표시 (고정 텍스트) -->
+
     <Button
         android:id="@+id/btnBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
         android:text=""
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 이메일 아이디 입력 필드 (왼쪽 입력란) -->
     <EditText
         android:id="@+id/editEmailId"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="168dp"
         android:layout_marginEnd="8dp"
         android:background="@android:color/transparent"
         android:hint="email"
@@ -50,10 +53,10 @@
         android:textColor="@android:color/white"
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@id/editEmailDomain"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- @ 표시 (고정 텍스트) -->
     <TextView
         android:id="@+id/txtAt"
         android:layout_width="wrap_content"
@@ -161,7 +164,7 @@
         android:id="@+id/btnSignUpSubmit"
         android:layout_width="351dp"
         android:layout_height="57dp"
-        android:layout_marginBottom="104dp"
+        android:layout_marginBottom="64dp"
         android:background="@android:color/transparent"
         android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
