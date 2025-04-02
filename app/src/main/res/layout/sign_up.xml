@@ -9,18 +9,21 @@
     tools:context=".login_signup.SignUpActivity">
 
     <!-- 전체 배경 이미지 -->
+
+    <!-- 왼쪽 상단 뒤로가기 버튼 (투명 버튼, 꺾새 아이콘 위치와 일치) -->
     <ImageView
         android:id="@+id/imgBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
         android:src="@drawable/sign_up"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
-    <!-- 왼쪽 상단 뒤로가기 버튼 (투명 버튼, 꺾새 아이콘 위치와 일치) -->
     <Button
         android:id="@+id/btnBack"
         android:layout_width="48dp"
@@ -156,13 +159,13 @@
     <!-- 가입 완료 버튼 (투명 버튼, 이미지 버튼 위에 위치) -->
     <Button
         android:id="@+id/btnSignUpSubmit"
-        android:layout_width="280dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="4dp"
+        android:layout_width="351dp"
+        android:layout_height="57dp"
+        android:layout_marginBottom="104dp"
         android:background="@android:color/transparent"
         android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
