@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.capstonedesign.OnboardingActivity;
 import com.example.capstonedesign.R;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -43,7 +44,9 @@ public class SignUpActivity extends AppCompatActivity {
 
         // 뒤로가기 → 로그인 화면
         btnBack.setOnClickListener(v -> {
-            startActivity(new Intent(this, LoginActivity.class));
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right); // 애니메이션
             finish();
         });
 
@@ -107,5 +110,6 @@ public class SignUpActivity extends AppCompatActivity {
             editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         }
         editText.setSelection(editText.getText().length()); // 커서 마지막으로 이동
+
     }
 }

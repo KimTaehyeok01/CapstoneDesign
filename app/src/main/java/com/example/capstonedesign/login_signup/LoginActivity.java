@@ -67,12 +67,14 @@ public class LoginActivity extends AppCompatActivity {
             // 나중에 비밀번호 찾기 액티비티 연결
         });
 
-        // ← 뒤로가기 → 온보딩
+        // 뒤로가기 → 온보딩 화면
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(this, OnboardingActivity.class);
             startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right); // 애니메이션
             finish();
         });
+
     }
 }
 
