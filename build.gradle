@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        // ✅ Firebase 설정용 Google 서비스 플러그인 등록
+        //  Firebase 설정용 Google 서비스 플러그인 등록
         classpath 'com.google.gms:google-services:4.4.1'
     }
 }
