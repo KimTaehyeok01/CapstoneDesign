@@ -9,20 +9,25 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.capstonedesign.MapActivity; // ✅ MapActivity import 추가
 import com.example.capstonedesign.MainActivity;
 import com.example.capstonedesign.OnboardingActivity;
 import com.example.capstonedesign.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextEmail, editTextPassword;
     private Button btnLogin, btnRegister, btnFindPw, btnBack;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Firebase Auth 초기화
+        mAuth = FirebaseAuth.getInstance();
 
         // UI 연결
         editTextEmail = findViewById(R.id.editTextEmail);
@@ -39,11 +44,22 @@ public class LoginActivity extends AppCompatActivity {
 
             if (email.isEmpty() || pw.isEmpty()) {
                 Toast.makeText(this, "이메일과 비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show();
-            } else {
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
-                finish();
+                return;
             }
+
+            // Firebase 로그인 처리
+            mAuth.signInWithEmailAndPassword(email, pw)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(this, "로그인 성공!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            String error = task.getException() != null ? task.getException().getMessage() : "로그인 실패";
+                            Toast.makeText(this, "로그인 실패: " + error, Toast.LENGTH_LONG).show();
+                        }
+                    });
         });
 
         // 엔터 누르면 로그인
@@ -61,19 +77,17 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        //  비밀번호 찾기 버튼 → 아직 구현 안됨
+        // 비밀번호 찾기 (아직 미구현)
         btnFindPw.setOnClickListener(v -> {
             Toast.makeText(this, "비밀번호 찾기 기능은 아직 구현되지 않았습니다.", Toast.LENGTH_SHORT).show();
-            // 나중에 비밀번호 찾기 액티비티 연결
         });
 
-        // 뒤로가기 → 온보딩 화면
+        // 뒤로가기 → 온보딩
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(this, OnboardingActivity.class);
             startActivity(intent);
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right); // 애니메이션
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             finish();
         });
-
     }
 }

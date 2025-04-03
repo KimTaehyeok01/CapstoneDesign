@@ -12,10 +12,6 @@
 
     <!-- ← 뒤로가기 핫스팟 -->
 
-    <!-- 아이디 입력 -->
-
-    <!-- 비밀번호 입력 -->
-
     <!-- 로그인 버튼 (이미지 위에 정확히 맞춤) -->
 
     <ImageView
@@ -45,6 +41,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 아이디 입력 -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="0dp"
@@ -68,6 +65,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 비밀번호 입력 -->
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="0dp"
