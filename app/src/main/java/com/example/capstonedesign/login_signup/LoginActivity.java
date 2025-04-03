@@ -63,8 +63,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // ✅ 비밀번호 찾기 버튼 → MapActivity 이동
         btnFindPw.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MapActivity.class);
-            startActivity(intent);
+            Toast.makeText(this, "비밀번호 찾기 기능은 아직 구현되지 않았습니다.", Toast.LENGTH_SHORT).show();
+            // 나중에 비밀번호 찾기 액티비티 연결
         });
 
         // ← 뒤로가기 → 온보딩
