@@ -12,6 +12,7 @@
 
     <!-- ← 뒤로가기 핫스팟 -->
 
+    <!-- 아이디 입력 -->
     <ImageView
         android:id="@+id/imgBackground"
         android:layout_width="0dp"
@@ -25,73 +26,76 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <!-- 비밀번호 입력 -->
+
+    <!-- 로그인 버튼 (이미지 위에 정확히 맞춤) -->
+
     <Button
         android:id="@+id/btnBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="24dp"
         android:layout_marginStart="16dp"
         android:background="@android:color/transparent"
-        android:text=""
         android:clickable="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:stateListAnimator="@null"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:text=""
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 아이디 입력 -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="0dp"
         android:layout_height="40dp"
-        android:layout_marginTop="265dp"
         android:layout_marginStart="48dp"
+        android:layout_marginTop="232dp"
         android:layout_marginEnd="48dp"
         android:background="@android:color/transparent"
+        android:gravity="bottom|start"
         android:hint="이메일을 입력해 주세요"
+        android:imeOptions="actionNext"
+        android:inputType="textEmailAddress"
+        android:paddingStart="12dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="4dp"
         android:textColor="@android:color/white"
         android:textColorHint="#CCFFFFFF"
         android:textSize="14sp"
-        android:gravity="bottom|start"
-        android:paddingStart="12dp"
-        android:paddingBottom="4dp"
-        android:paddingTop="0dp"
-        android:inputType="textEmailAddress"
-        android:imeOptions="actionNext"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 비밀번호 입력 -->
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="0dp"
         android:layout_height="40dp"
-        android:layout_marginTop="24dp"
         android:layout_marginStart="48dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="48dp"
         android:background="@android:color/transparent"
+        android:gravity="bottom|start"
         android:hint="비밀번호를 입력해 주세요"
+        android:imeOptions="actionDone"
+        android:inputType="textPassword"
+        android:paddingStart="12dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="4dp"
         android:textColor="@android:color/white"
         android:textColorHint="#CCFFFFFF"
         android:textSize="14sp"
-        android:gravity="bottom|start"
-        android:paddingStart="12dp"
-        android:paddingBottom="4dp"
-        android:paddingTop="0dp"
-        android:inputType="textPassword"
-        android:imeOptions="actionDone"
-        app:layout_constraintTop_toBottomOf="@id/editTextEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/editTextEmail" />
 
-    <!-- 로그인 버튼 (이미지 위에 정확히 맞춤) -->
+    <!-- 회원가입 버튼 -->
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="283dp"
         android:layout_height="62dp"
-        android:layout_marginBottom="332dp"
+        android:layout_marginBottom="308dp"
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="false"
@@ -99,16 +103,15 @@
         android:stateListAnimator="@null"
         android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 회원가입 버튼 -->
     <Button
         android:id="@+id/btnRegister"
         android:layout_width="152dp"
         android:layout_height="34dp"
         android:layout_marginEnd="4dp"
-        android:layout_marginBottom="260dp"
+        android:layout_marginBottom="212dp"
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="false"
@@ -123,7 +126,7 @@
         android:id="@+id/btnFindPw"
         android:layout_width="195dp"
         android:layout_height="35dp"
-        android:layout_marginBottom="260dp"
+        android:layout_marginBottom="212dp"
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="false"
