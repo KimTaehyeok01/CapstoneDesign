@@ -13,6 +13,11 @@
     <!-- ← 뒤로가기 핫스팟 -->
 
     <!-- 아이디 입력 -->
+
+    <!-- 비밀번호 입력 -->
+
+    <!-- 로그인 버튼 (이미지 위에 정확히 맞춤) -->
+
     <ImageView
         android:id="@+id/imgBackground"
         android:layout_width="0dp"
@@ -25,10 +30,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
-
-    <!-- 비밀번호 입력 -->
-
-    <!-- 로그인 버튼 (이미지 위에 정확히 맞춤) -->
 
     <Button
         android:id="@+id/btnBack"
@@ -91,11 +92,12 @@
         app:layout_constraintTop_toBottomOf="@id/editTextEmail" />
 
     <!-- 회원가입 버튼 -->
+
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="283dp"
         android:layout_height="62dp"
-        android:layout_marginBottom="308dp"
+        android:layout_marginBottom="300dp"
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="false"
@@ -111,7 +113,7 @@
         android:layout_width="152dp"
         android:layout_height="34dp"
         android:layout_marginEnd="4dp"
-        android:layout_marginBottom="212dp"
+        android:layout_marginBottom="220dp"
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="false"
@@ -126,7 +128,7 @@
         android:id="@+id/btnFindPw"
         android:layout_width="195dp"
         android:layout_height="35dp"
-        android:layout_marginBottom="212dp"
+        android:layout_marginBottom="220dp"
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="false"

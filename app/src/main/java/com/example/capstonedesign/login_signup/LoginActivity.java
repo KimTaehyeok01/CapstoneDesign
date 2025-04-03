@@ -9,9 +9,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.capstonedesign.MapActivity; // ✅ MapActivity import 추가
 import com.example.capstonedesign.MainActivity;
+import com.example.capstonedesign.OnboardingActivity;
 import com.example.capstonedesign.R;
-import com.example.capstonedesign.OnboardingActivity; // ← 온보딩 액티비티 import 필요!
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -29,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
         btnFindPw = findViewById(R.id.btnFindPw);
-        btnBack = findViewById(R.id.btnBack); // ← 뒤로가기 버튼 연결
+        btnBack = findViewById(R.id.btnBack);
 
         // 로그인 버튼 클릭 시
         btnLogin.setOnClickListener(v -> {
@@ -45,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // 키보드 엔터(완료) 눌렀을 때 → 로그인 처리
+        // 엔터 누르면 로그인
         editTextPassword.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 btnLogin.performClick();
@@ -54,18 +55,19 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         });
 
-        // 회원가입 화면 이동
+        // 회원가입 이동
         btnRegister.setOnClickListener(v -> {
             Intent intent = new Intent(this, SignUpActivity.class);
             startActivity(intent);
         });
 
-        // 비밀번호 찾기 클릭 (임시)
+        // ✅ 비밀번호 찾기 버튼 → MapActivity 이동
         btnFindPw.setOnClickListener(v -> {
-            Toast.makeText(this, "비밀번호 찾기 기능은 준비 중입니다.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MapActivity.class);
+            startActivity(intent);
         });
 
-        // ← 뒤로가기 버튼 클릭 시 → 온보딩 화면으로 이동
+        // ← 뒤로가기 → 온보딩
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(this, OnboardingActivity.class);
             startActivity(intent);
