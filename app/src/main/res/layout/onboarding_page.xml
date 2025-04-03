@@ -24,14 +24,14 @@
         android:id="@+id/startHotspot"
         android:layout_width="320dp"
         android:layout_height="64dp"
-        android:layout_marginBottom="72dp"
+        android:layout_marginBottom="96dp"
         android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="true"
         android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.494" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

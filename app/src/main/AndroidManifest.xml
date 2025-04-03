@@ -20,7 +20,7 @@
         <!-- ✅ Google Maps API 키 등록 -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAD8nG_FFuDwUH0Vjk7sRL6scOd7zJ8FEg" />
+            android:value="AIzaSyDueINzzegFrO2LUfBIoj9C94mvIwJH_VI" />
 
         <!-- 메인 페이지 -->
         <activity
