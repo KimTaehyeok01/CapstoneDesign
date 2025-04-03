@@ -38,6 +38,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 아이디 입력 필드 (오른쪽 입력란) -->
     <EditText
         android:id="@+id/editEmailId"
         android:layout_width="0dp"
@@ -46,10 +47,12 @@
         android:layout_marginTop="168dp"
         android:layout_marginEnd="8dp"
         android:background="@android:color/transparent"
-        android:hint="email"
+        android:hint="아이디"
         android:inputType="textEmailAddress"
+        android:textColorHint="#CCFFFFFF"
         android:paddingStart="12dp"
         android:textColor="@android:color/white"
+
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@id/editEmailDomain"
         app:layout_constraintHorizontal_bias="0.0"
@@ -78,6 +81,7 @@
         android:inputType="textEmailAddress"
         android:paddingStart="12dp"
         android:textColor="@android:color/white"
+        android:textColorHint="#CCFFFFFF"
         android:textSize="14sp"
         app:layout_constraintTop_toTopOf="@id/editEmailId"
         app:layout_constraintBottom_toBottomOf="@id/editEmailId"
@@ -96,6 +100,7 @@
         android:inputType="textPassword"
         android:paddingStart="12dp"
         android:textColor="@android:color/white"
+        android:textColorHint="#CCFFFFFF"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/editEmailId"
         app:layout_constraintStart_toStartOf="parent"
@@ -125,6 +130,7 @@
         android:inputType="textPassword"
         android:paddingStart="12dp"
         android:textColor="@android:color/white"
+        android:textColorHint="#CCFFFFFF"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/editPassword"
         app:layout_constraintStart_toStartOf="parent"
@@ -150,9 +156,10 @@
         android:layout_marginTop="68dp"
         android:layout_marginEnd="40dp"
         android:background="@android:color/transparent"
-        android:hint="이름을 입력해주세요."
+        android:hint="이름을 입력해주세요"
         android:paddingStart="12dp"
         android:textColor="@android:color/white"
+        android:textColorHint="#CCFFFFFF"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/editConfirmPassword"
         app:layout_constraintStart_toStartOf="parent"
