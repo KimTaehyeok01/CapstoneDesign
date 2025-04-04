@@ -77,9 +77,10 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // 비밀번호 찾기 (아직 미구현)
+        // 비밀번호 찾기
         btnFindPw.setOnClickListener(v -> {
-            Toast.makeText(this, "비밀번호 찾기 기능은 아직 구현되지 않았습니다.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, FindPwActivity.class);
+            startActivity(intent);
         });
 
         // 뒤로가기 → 온보딩

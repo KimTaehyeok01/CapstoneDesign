@@ -17,7 +17,7 @@
         android:theme="@style/Theme.CapstoneDesign"
         tools:targetApi="31">
 
-        <!-- ✅ Google Maps API 키 등록 -->
+        <!-- Google Maps API 키 등록 -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDueINzzegFrO2LUfBIoj9C94mvIwJH_VI" />
@@ -32,8 +32,12 @@
 
         <!-- 회원가입 액티비티 -->
         <activity android:name=".login_signup.SignUpActivity" />
-        <activity android:name=".MapActivity" />
 
+        <!-- 비밀번호 찾기 액티비티 -->
+        <activity android:name=".login_signup.FindPwActivity" />
+
+        <!-- 지도 액티비티 -->
+        <activity android:name=".MapActivity" />
 
         <!-- 앱 시작 시 실행될 온보딩 화면 -->
         <activity
