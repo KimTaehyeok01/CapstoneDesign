@@ -110,6 +110,5 @@ public class SignUpActivity extends AppCompatActivity {
             editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         }
         editText.setSelection(editText.getText().length()); // 커서 마지막으로 이동
-return;
     }
 }
