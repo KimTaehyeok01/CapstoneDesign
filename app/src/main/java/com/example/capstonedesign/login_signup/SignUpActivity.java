@@ -91,7 +91,7 @@ public class SignUpActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "회원가입 성공!", Toast.LENGTH_SHORT).show();
-                            // ✅ 로그인 화면으로 이동
+                            // 로그인 화면으로 이동
                             startActivity(new Intent(this, LoginActivity.class));
                             finish();
                         } else {
@@ -110,6 +110,6 @@ public class SignUpActivity extends AppCompatActivity {
             editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         }
         editText.setSelection(editText.getText().length()); // 커서 마지막으로 이동
-
+return;
     }
 }

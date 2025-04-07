@@ -30,10 +30,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map);
 
-        // ✅ 위치 서비스 초기화
+        // 위치 서비스 초기화
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // ✅ 구글맵 초기화
+        // 구글맵 초기화
         MapsInitializer.initialize(getApplicationContext(), MapsInitializer.Renderer.LATEST, renderer -> {});
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -48,7 +48,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // ✅ 위치 권한 체크
+        // 위치 권한 체크
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -60,10 +60,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return;
         }
 
-        // ✅ 내 위치 아이콘 활성화
+        // 내 위치 아이콘 활성화
         mMap.setMyLocationEnabled(true);
 
-        // ✅ 현재 위치 가져오기
+        // 현재 위치 가져오기
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     if (location != null) {
