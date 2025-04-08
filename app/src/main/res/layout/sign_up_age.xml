@@ -42,7 +42,7 @@
         android:layout_width="200dp"
         android:layout_height="1dp"
         android:layout_marginTop="100dp"
-        android:src="@drawable/line5"
+        android:src="@drawable/line7"
         android:scaleType="fitXY"
         android:focusable="false"
         android:focusableInTouchMode="false"
