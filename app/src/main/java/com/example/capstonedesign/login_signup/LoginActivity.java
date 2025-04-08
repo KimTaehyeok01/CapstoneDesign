@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.capstonedesign.MainActivity;
-import com.example.capstonedesign.MapActivity;
 import com.example.capstonedesign.OnboardingActivity;
 import com.example.capstonedesign.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -82,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // 비밀번호 찾기 이동
         btnFindPw.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MapActivity.class);
+            Intent intent = new Intent(this, FindPwActivity.class);
             startActivity(intent);
         });
 

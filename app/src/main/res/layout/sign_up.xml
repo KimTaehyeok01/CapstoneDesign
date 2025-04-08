@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     tools:context=".login_signup.SignUpActivity">
 
-    <!-- 🌄 전체 배경 -->
+    <!-- 전체 배경 -->
     <ImageView
         android:id="@+id/imgBackground"
         android:layout_width="0dp"
@@ -20,11 +20,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 🔙 뒤로가기 버튼 -->
+    <!-- 뒤로가기 버튼 -->
 
-    <!-- 🧾 상단 타이틀 -->
+    <!-- 상단 타이틀 -->
 
-    <!-- ✉ 아이디 입력 -->
+    <!-- 아이디 입력 -->
 
     <ImageButton
         android:id="@+id/btnBack"
@@ -73,7 +73,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/editEmailDomain" />
 
-    <!-- 📧 도메인 -->
+    <!-- 도메인 -->
     <EditText
         android:id="@+id/editEmailDomain"
         android:layout_width="100dp"
@@ -103,7 +103,7 @@
         app:layout_constraintStart_toEndOf="@id/editEmailId"
         app:layout_constraintEnd_toStartOf="@id/editEmailDomain" />
 
-    <!-- ✏️ 아이디 아래 선 -->
+    <!--  아이디 아래 선 -->
     <ImageView
         android:id="@+id/line2"
         android:layout_width="0dp"
@@ -128,7 +128,7 @@
         app:layout_constraintTop_toBottomOf="@id/editEmailDomain"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 🔐 비밀번호 입력 -->
+    <!-- 비밀번호 입력 -->
     <EditText
         android:id="@+id/editPassword"
         android:layout_width="0dp"

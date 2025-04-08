@@ -45,7 +45,7 @@ public class SignUpActivity extends AppCompatActivity {
             finish();
         });
 
-        // ✅ 회원가입 버튼 클릭
+        // 회원가입 버튼 클릭
         btnSignUpSubmit.setOnClickListener(v -> {
             String emailId = editEmailId.getText().toString().trim();
             String emailDomain = editEmailDomain.getText().toString().trim();
