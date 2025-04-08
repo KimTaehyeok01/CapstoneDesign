@@ -3,24 +3,21 @@ package com.example.capstonedesign.login_signup;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.capstonedesign.OnboardingActivity;
 import com.example.capstonedesign.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText editEmailId, editEmailDomain, editPassword, editConfirmPassword, editName;
-    private Button btnBack, btnSignUpSubmit, btnTogglePassword, btnToggleConfirmPassword;
+    private ImageButton btnBack, btnSignUpSubmit; //
 
     private FirebaseAuth mAuth;
-    private boolean isPasswordVisible = false;
-    private boolean isConfirmPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +36,8 @@ public class SignUpActivity extends AppCompatActivity {
 
         btnBack = findViewById(R.id.btnBack);
         btnSignUpSubmit = findViewById(R.id.btnSignUpSubmit);
-        btnTogglePassword = findViewById(R.id.btnTogglePassword);
-        btnToggleConfirmPassword = findViewById(R.id.btnToggleConfirmPassword);
 
-        // 뒤로가기 → 로그인 화면
+        // 🔙 뒤로가기 → 로그인 화면
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
@@ -50,18 +45,7 @@ public class SignUpActivity extends AppCompatActivity {
             finish();
         });
 
-        // 비밀번호 보기 토글
-        btnTogglePassword.setOnClickListener(v -> {
-            isPasswordVisible = !isPasswordVisible;
-            togglePasswordVisibility(editPassword, isPasswordVisible);
-        });
-
-        btnToggleConfirmPassword.setOnClickListener(v -> {
-            isConfirmPasswordVisible = !isConfirmPasswordVisible;
-            togglePasswordVisibility(editConfirmPassword, isConfirmPasswordVisible);
-        });
-
-        // 회원가입 버튼 클릭
+        // ✅ 회원가입 버튼 클릭
         btnSignUpSubmit.setOnClickListener(v -> {
             String emailId = editEmailId.getText().toString().trim();
             String emailDomain = editEmailDomain.getText().toString().trim();
@@ -71,6 +55,7 @@ public class SignUpActivity extends AppCompatActivity {
             String confirmPassword = editConfirmPassword.getText().toString().trim();
             String name = editName.getText().toString().trim();
 
+            // 입력값 검증
             if (emailId.isEmpty() || emailDomain.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || name.isEmpty()) {
                 Toast.makeText(this, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show();
                 return;
@@ -91,7 +76,6 @@ public class SignUpActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "회원가입 성공!", Toast.LENGTH_SHORT).show();
-                            // 로그인 화면으로 이동
                             startActivity(new Intent(this, LoginActivity.class));
                             finish();
                         } else {
@@ -100,15 +84,5 @@ public class SignUpActivity extends AppCompatActivity {
                         }
                     });
         });
-    }
-
-    // 비밀번호 토글 함수
-    private void togglePasswordVisibility(EditText editText, boolean isVisible) {
-        if (isVisible) {
-            editText.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        } else {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        }
-        editText.setSelection(editText.getText().length()); // 커서 마지막으로 이동
     }
 }

@@ -16,7 +16,7 @@ public class OnboardingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.onboarding_page);
 
-        View startHotspot = findViewById(R.id.startHotspot);
+        View startHotspot = findViewById(R.id.button1);
         startHotspot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

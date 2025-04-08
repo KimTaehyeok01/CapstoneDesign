@@ -3,30 +3,30 @@ package com.example.capstonedesign.login_signup;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.capstonedesign.OnboardingActivity;
 import com.example.capstonedesign.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class FindPwActivity extends AppCompatActivity {
 
     private EditText editEmail;
-    private Button btnSendEmail, btnBack;
+    private ImageButton btnSendEmail, btnBack; //
 
     private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.find_pw);
+        setContentView(R.layout.find_pw); // 레이아웃 이름 맞는지 확인
 
         mAuth = FirebaseAuth.getInstance();
 
+        // UI 연결
         editEmail = findViewById(R.id.editEmail);
         btnSendEmail = findViewById(R.id.btnSendEmail);
         btnBack = findViewById(R.id.btnBack);
@@ -58,7 +58,6 @@ public class FindPwActivity extends AppCompatActivity {
                         }
                     });
         });
-
 
         // 뒤로가기 → 로그인
         btnBack.setOnClickListener(v -> {

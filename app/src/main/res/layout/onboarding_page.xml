@@ -19,19 +19,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 투명한 버튼 (시작하기 핫스팟) -->
-    <Button
-        android:id="@+id/startHotspot"
+    <!-- 이미지 버튼으로 교체한 시작 버튼 -->
+    <ImageButton
+        android:id="@+id/button1"
         android:layout_width="320dp"
         android:layout_height="64dp"
         android:layout_marginBottom="68dp"
         android:background="@android:color/transparent"
+        android:src="@drawable/button1"
+        android:contentDescription="시작하기"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
         android:clickable="true"
         android:focusable="true"
-        android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
