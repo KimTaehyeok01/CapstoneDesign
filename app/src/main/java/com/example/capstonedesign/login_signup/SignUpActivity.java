@@ -37,7 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         btnSignUpSubmit = findViewById(R.id.btnSignUpSubmit);
 
-        // 🔙 뒤로가기 → 로그인 화면
+        //  뒤로가기 → 로그인 화면
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
@@ -76,7 +76,8 @@ public class SignUpActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "회원가입 성공!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(this, LoginActivity.class));
+                            Intent intent = new Intent(this, AgeInputActivity.class);
+                            startActivity(intent);
                             finish();
                         } else {
                             String error = task.getException() != null ? task.getException().getMessage() : "알 수 없는 오류";
