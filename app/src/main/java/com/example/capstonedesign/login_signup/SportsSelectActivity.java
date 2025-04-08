@@ -108,5 +108,4 @@ public class SportsSelectActivity extends AppCompatActivity {
                     });
         });
     }
-    return;
 }
