@@ -1,5 +1,6 @@
 package com.example.capstonedesign.login_signup;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,22 +21,29 @@ public class AgeInputActivity extends AppCompatActivity {
     private EditText editAge;
     private ImageButton backButton, nextButton;
 
-    private String userName;  // 전달받은 이름 저장용
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up_age);
 
-        // 👇 이전 화면(SignUpActivity)에서 전달된 이름 받기
         userName = getIntent().getStringExtra("userName");
 
         editAge = findViewById(R.id.edit_age);
         backButton = findViewById(R.id.back_button);
         nextButton = findViewById(R.id.next_button);
 
-        backButton.setOnClickListener(v -> finish());
+        // 뒤로가기 버튼 → 회원가입(SignUpActivity)로 이동
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SignUpActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+            finish();
+        });
 
+        // 다음 버튼 → 나이 저장 후 레저 선택으로 이동
         nextButton.setOnClickListener(v -> {
             String ageStr = editAge.getText().toString().trim();
 
@@ -52,7 +60,6 @@ public class AgeInputActivity extends AppCompatActivity {
                 return;
             }
 
-            // 현재 로그인된 사용자 확인
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) {
                 Toast.makeText(this, "로그인 정보가 없습니다.", Toast.LENGTH_SHORT).show();
@@ -62,18 +69,20 @@ public class AgeInputActivity extends AppCompatActivity {
             String uid = user.getUid();
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            // 저장할 데이터 구성
             Map<String, Object> userData = new HashMap<>();
             userData.put("age", age);
-            userData.put("name", userName); // 이름도 함께 저장
+            userData.put("name", userName); // null 주의
 
-            // Firestore에 저장
             db.collection("users").document(uid)
                     .set(userData)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(this, "회원정보 저장 완료!", Toast.LENGTH_SHORT).show();
-                        // TODO: 다음 화면으로 이동하거나 메인 화면으로 전환
-                        finish(); // 일단 현재 액티비티 종료
+
+                        Intent intent = new Intent(this, SportsSelectActivity.class);
+                        intent.putExtra("userName", userName);
+                        intent.putExtra("userAge", age);
+                        startActivity(intent);
+                        finish();
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(this, "저장 실패: " + e.getMessage(), Toast.LENGTH_LONG).show();
