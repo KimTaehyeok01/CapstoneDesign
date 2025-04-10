@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Capstone_Design</string>
+    <string name="friday_time">금13:00 ~ 23:00</string>
+    <string name="saturday_time">토13:00 ~ 19:00</string>
+    <string name="sunday_time">일13:00 ~ 19:00</string>
+    <string name="monday_time">월13:00 ~ 23:00</string>
+    <string name="tuesday_time">화13:00 ~ 23:00</string>
+    <string name="wednesday_time">수13:00 ~ 23:00</string>
+    <string name="thursday_time">목13:00 ~ 23:00</string>
 </resources>

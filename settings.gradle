@@ -19,5 +19,9 @@ dependencyResolutionManagement {
     }
 }
 
+<<<<<<< HEAD
 rootProject.name = "Capstone_Design"
+=======
+rootProject.name = "CapstoneDesign"
+>>>>>>> cause
 include ':app'

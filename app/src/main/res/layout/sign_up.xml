@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_signup"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".login_signup.SignUpActivity">
+
+    <!-- 전체 배경 이미지 -->
+
+    <!-- 왼쪽 상단 뒤로가기 버튼 (투명 버튼, 꺾새 아이콘 위치와 일치) -->
+    <ImageView
+        android:id="@+id/imgBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/sign_up"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <!-- 이메일 아이디 입력 필드 (왼쪽 입력란) -->
+
+    <!-- @ 표시 (고정 텍스트) -->
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent"
+        android:text=""
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 아이디 입력 필드 (오른쪽 입력란) -->
+    <EditText
+        android:id="@+id/editEmailId"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="168dp"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/transparent"
+        android:hint="아이디"
+        android:inputType="textEmailAddress"
+        android:textColorHint="#CCFFFFFF"
+        android:paddingStart="12dp"
+        android:textColor="@android:color/white"
+
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/editEmailDomain"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtAt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        app:layout_constraintTop_toTopOf="@id/editEmailId"
+        app:layout_constraintBottom_toBottomOf="@id/editEmailId"
+        app:layout_constraintStart_toEndOf="@id/editEmailId"
+        app:layout_constraintEnd_toStartOf="@id/editEmailDomain" />
+
+    <!-- 이메일 도메인 입력 필드 (오른쪽 입력란) -->
+    <EditText
+        android:id="@+id/editEmailDomain"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="56dp"
+        android:background="@android:color/transparent"
+        android:hint="email"
+        android:inputType="textEmailAddress"
+        android:paddingStart="12dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="#CCFFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintTop_toTopOf="@id/editEmailId"
+        app:layout_constraintBottom_toBottomOf="@id/editEmailId"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 비밀번호 입력 필드 -->
+    <EditText
+        android:id="@+id/editPassword"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="56dp"
+        android:background="@android:color/transparent"
+        android:hint="비밀번호"
+        android:inputType="textPassword"
+        android:paddingStart="12dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="#CCFFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/editEmailId"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 비밀번호 보기 토글 버튼 (투명) -->
+    <Button
+        android:id="@+id/btnTogglePassword"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="16dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/editEmailId"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 비밀번호 확인 입력 필드 -->
+    <EditText
+        android:id="@+id/editConfirmPassword"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="56dp"
+        android:background="@android:color/transparent"
+        android:hint="비밀번호 확인"
+        android:inputType="textPassword"
+        android:paddingStart="12dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="#CCFFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/editPassword"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 비밀번호 확인 보기 토글 버튼 (투명) -->
+    <Button
+        android:id="@+id/btnToggleConfirmPassword"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginEnd="16dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toBottomOf="@id/editPassword"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 이름 입력 필드 -->
+    <EditText
+        android:id="@+id/editName"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="68dp"
+        android:layout_marginEnd="40dp"
+        android:background="@android:color/transparent"
+        android:hint="이름을 입력해주세요"
+        android:paddingStart="12dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="#CCFFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/editConfirmPassword"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 가입 완료 버튼 (투명 버튼, 이미지 버튼 위에 위치) -->
+    <Button
+        android:id="@+id/btnSignUpSubmit"
+        android:layout_width="351dp"
+        android:layout_height="57dp"
+        android:layout_marginBottom="64dp"
+        android:background="@android:color/transparent"
+        android:text=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
