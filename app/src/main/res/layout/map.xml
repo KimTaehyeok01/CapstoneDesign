@@ -1,15 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MapActivity">
 
-    <!-- Google Map Fragment -->
+    <!-- Google Map Fragment: 지도 영역 -->
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <!-- 상단 검색창 (여기서는 간단히 EditText로 구현)
+         실제로는 Drawable(아이콘), 레이아웃 등을 사용해 꾸밀 수 있음 -->
+    <EditText
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/white"
+        android:drawablePadding="8dp"
+        android:hint="장소, 주소로 검색"
+        android:padding="8dp"
+        android:textColor="@android:color/black"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        tools:ignore="HardcodedText" />
 
 </RelativeLayout>

@@ -3,8 +3,9 @@ package com.example.capstonedesign.login_signup;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +18,8 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextEmail, editTextPassword;
-    private Button btnLogin, btnRegister, btnFindPw, btnBack;
+    private ImageButton btnLogin, btnBack;
+    private TextView btnRegister, btnFindPw;
 
     private FirebaseAuth mAuth;
 
@@ -77,13 +79,13 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // 비밀번호 찾기
+        // 비밀번호 찾기 이동
         btnFindPw.setOnClickListener(v -> {
             Intent intent = new Intent(this, FindPwActivity.class);
             startActivity(intent);
         });
 
-        // 뒤로가기 → 온보딩
+        // 뒤로가기 → 온보딩 이동
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(this, OnboardingActivity.class);
             startActivity(intent);

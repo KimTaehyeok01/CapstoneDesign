@@ -1,16 +1,18 @@
-package com.example.yourapp.model;
+package com.example.capstonedesign.model;
 
-public class ClimbingPlace {
+public class FavoritePlace {
     private String name;
     private String address;
     private String region;
     private String priceInfo;
+    private int imageResId;
 
-    public ClimbingPlace(String name, String address, String region, String priceInfo) {
+    public FavoritePlace(String name, String address, String region, String priceInfo, int imageResId) {
         this.name = name;
         this.address = address;
         this.region = region;
         this.priceInfo = priceInfo;
+        this.imageResId = imageResId;
     }
 
     public String getName() {
@@ -27,5 +29,9 @@ public class ClimbingPlace {
 
     public String getPriceInfo() {
         return priceInfo;
+    }
+
+    public int getImageResId() {
+        return imageResId;
     }
 }

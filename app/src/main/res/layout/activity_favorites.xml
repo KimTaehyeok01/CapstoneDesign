@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFBEF"
-    android:padding="16dp">
+    android:background="#FFFDF7">
 
-    <!-- 뒤로가기 + 제목 -->
+    <!-- 상단바: 뒤로가기 + 제목 -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:padding="16dp"
         android:gravity="center_vertical"
-        android:layout_marginBottom="10dp">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
             android:id="@+id/backButton"
@@ -28,19 +30,24 @@
             android:layout_height="wrap_content"
             android:text="찜 목록"
             android:textSize="18sp"
-            android:layout_marginStart="12dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginStart="12dp" />
     </LinearLayout>
 
     <!-- 검색창 -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/searchBar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@drawable/search_edittext_bg"
-        android:padding="1dp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center_vertical">
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp">
 
         <EditText
             android:id="@+id/searchEditText"
@@ -49,27 +56,30 @@
             android:layout_height="48dp"
             android:hint="활동하고 싶은 레저를 검색해보세요"
             android:drawableStart="@android:drawable/ic_menu_search"
-            android:padding="10dp"
             android:background="@android:color/transparent"
-            android:textSize="14sp" />
+            android:padding="10dp"
+            android:textSize="14sp"/>
 
         <ImageView
             android:id="@+id/clearButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:contentDescription="Clear"
-            android:padding="4dp"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="8dp"
+            android:contentDescription="Clear"/>
     </LinearLayout>
 
-    <!-- 필터 버튼들 -->
+    <!-- 필터 버튼 -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/filterBar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="12dp"
-        android:gravity="center_vertical">
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/searchBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <Button
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -92,12 +102,29 @@
             android:text="거리순"/>
     </LinearLayout>
 
-    <!-- RecyclerView로 찜 목록 나열 -->
+    <!-- 찜 목록 RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="12dp"
-        android:contentDescription="찜한 레저 목록" />
-</LinearLayout>
+        android:contentDescription="찜한 레저 목록"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintTop_toBottomOf="@id/filterBar"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 하단 네비게이션 -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="unlabeled"
+        app:itemIconTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

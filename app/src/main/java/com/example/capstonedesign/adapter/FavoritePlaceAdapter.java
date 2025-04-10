@@ -10,35 +10,34 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.capstonedesign.R;
-import com.example.yourapp.model.ClimbingPlace;
+import com.example.capstonedesign.model.FavoritePlace;
 
 import java.util.List;
 
-public class ClimbingPlaceAdapter extends RecyclerView.Adapter<ClimbingPlaceAdapter.ViewHolder> {
+public class FavoritePlaceAdapter extends RecyclerView.Adapter<FavoritePlaceAdapter.PlaceViewHolder> {
 
-    private List<ClimbingPlace> placeList;
+    private List<FavoritePlace> placeList;
 
-    public ClimbingPlaceAdapter(List<ClimbingPlace> placeList) {
+    public FavoritePlaceAdapter(List<FavoritePlace> placeList) {
         this.placeList = placeList;
     }
 
     @NonNull
     @Override
-    public ClimbingPlaceAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PlaceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_climbing_place, parent, false);
-        return new ViewHolder(view);
+        return new PlaceViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ClimbingPlaceAdapter.ViewHolder holder, int position) {
-        ClimbingPlace place = placeList.get(position);
+    public void onBindViewHolder(@NonNull PlaceViewHolder holder, int position) {
+        FavoritePlace place = placeList.get(position);
         holder.placeName.setText(place.getName());
         holder.placeAddress.setText(place.getAddress());
         holder.placeRegion.setText(place.getRegion());
         holder.placePrice.setText(place.getPriceInfo());
-
-        // 아이콘 이미지 설정은 필요시 추가 (지금은 기본 drawable 사용 중)
+        holder.placeImage.setImageResource(place.getImageResId());
     }
 
     @Override
@@ -46,17 +45,17 @@ public class ClimbingPlaceAdapter extends RecyclerView.Adapter<ClimbingPlaceAdap
         return placeList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class PlaceViewHolder extends RecyclerView.ViewHolder {
+        ImageView placeImage;
         TextView placeName, placeAddress, placeRegion, placePrice;
-        ImageView heartIcon;
 
-        public ViewHolder(@NonNull View itemView) {
+        public PlaceViewHolder(@NonNull View itemView) {
             super(itemView);
+            placeImage = itemView.findViewById(R.id.placeImage);
             placeName = itemView.findViewById(R.id.placeName);
             placeAddress = itemView.findViewById(R.id.placeAddress);
-            placeRegion = itemView.findViewById(R.id.placeRegion); // XML에 추가 필요
-            placePrice = itemView.findViewById(R.id.placePrice);   // XML에 추가 필요
-            heartIcon = itemView.findViewById(R.id.heartIcon);
+            placeRegion = itemView.findViewById(R.id.placeRegion);
+            placePrice = itemView.findViewById(R.id.placePrice);
         }
     }
 }

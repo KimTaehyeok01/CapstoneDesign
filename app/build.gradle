@@ -1,16 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-<<<<<<< HEAD
-}
-
-android {
-    namespace 'com.example.capstone_design'
-    compileSdk 35
-
-    defaultConfig {
-        applicationId "com.example.capstone_design"
-        minSdk 26  //원래 35
-=======
     id 'com.google.gms.google-services' //  Firebase 초기화
 }
 
@@ -21,7 +10,6 @@ android {
     defaultConfig {
         applicationId "com.example.capstonedesign"
         minSdk 26 // 원래는 35
->>>>>>> cause
         targetSdk 35
         versionCode 1
         versionName "1.0"
@@ -35,10 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-<<<<<<< HEAD
-=======
 
->>>>>>> cause
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -46,30 +31,30 @@ android {
 }
 
 dependencies {
-<<<<<<< HEAD
-
-=======
     //  Firebase SDK (최신 BOM 기준)
     implementation platform('com.google.firebase:firebase-bom:33.10.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.navigation:navigation-ui:2.7.0'
+
+    // Firestore 추가
+    implementation 'com.google.firebase:firebase-firestore'
 
     //  Google Maps & Location
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
 
+
     //  Jetpack 기본 라이브러리
->>>>>>> cause
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
-<<<<<<< HEAD
-=======
 
     //  테스트 라이브러리
->>>>>>> cause
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
 }
