@@ -39,6 +39,12 @@
         <!-- 레포츠 선택 액티비티 -->
         <activity android:name=".login_signup.SportsSelectActivity" />
 
+        <!-- 검색 창 액티비티 -->
+        <activity android:name=".SearchActivity" />
+
+        <!-- 설정 액티비티 -->
+        <activity android:name=".SettingsActivity" />
+
         <!-- 나이 입력 액티비티 -->
         <activity
             android:name=".login_signup.AgeInputActivity"

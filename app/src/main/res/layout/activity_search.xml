@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_search"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 배경 이미지 -->
+    <ImageView
+        android:id="@+id/imgBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/search_page"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 상단: 뒤로가기 버튼와 '검색' 텍스트 -->
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/search_ic_back_arrow"
+        android:background="@android:color/transparent"
+        android:contentDescription="뒤로가기"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="검색"
+        android:textSize="22sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toTopOf="@id/back_button"
+        app:layout_constraintBottom_toBottomOf="@id/back_button"
+        app:layout_constraintStart_toEndOf="@id/back_button"
+        android:layout_marginStart="8dp" />
+
+    <!-- 검색바 컨테이너 (배경은 ic_search_bar 사용) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/searchContainer"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/ic_search_bar"
+        app:layout_constraintTop_toBottomOf="@id/back_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- 돋보기 아이콘 (왼쪽) -->
+        <ImageButton
+            android:id="@+id/btnSearchGlass"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_search_glass"
+            android:background="@android:color/transparent"
+            android:contentDescription="검색 아이콘"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="8dp" />
+
+        <!-- 검색어 입력 EditText (가운데) -->
+        <EditText
+            android:id="@+id/editSearch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="검색어 입력"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:paddingStart="18dp"
+            android:paddingEnd="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/btnSearchGlass"
+            app:layout_constraintEnd_toStartOf="@id/btnCancel"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <!-- X 아이콘 (오른쪽) -->
+        <ImageButton
+            android:id="@+id/btnCancel"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_cancle"
+            android:background="@android:color/transparent"
+            android:contentDescription="검색 취소 아이콘"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="8dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ic_marker 아이콘과 '현재 내 주변에서 검색' 텍스트 -->
+    <ImageView
+        android:id="@+id/imgMarker"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_marker"
+        android:contentDescription="현재 주변 검색"
+        app:layout_constraintTop_toBottomOf="@id/searchContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/tvNearbySearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="현재 내 주변에서 검색"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toTopOf="@id/imgMarker"
+        app:layout_constraintBottom_toBottomOf="@id/imgMarker"
+        app:layout_constraintStart_toEndOf="@id/imgMarker"
+        android:layout_marginStart="8dp" />
+
+    <!-- 구분선 (원래 코드 그대로 유지) -->
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#CCCCCC"
+        app:layout_constraintTop_toBottomOf="@id/imgMarker"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <!-- '최근검색' 텍스트 -->
+    <TextView
+        android:id="@+id/tvRecentSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="최근검색"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
