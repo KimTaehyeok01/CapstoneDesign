@@ -7,18 +7,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.graphics.Insets;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageButton navHome, navSetting, navSearch;
+    private ImageButton navSearch, navHome, navSetting, navMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);  // activity_main.xml을 사용
+        setContentView(R.layout.activity_main);  // activity_main.xml 사용
 
         // 시스템 인셋 적용 (노치 등)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 하단 네비게이션 버튼 참조
         navSearch = findViewById(R.id.nav_search);
+        navMarker = findViewById(R.id.nav_marker);
         navHome = findViewById(R.id.nav_home);
         navSetting = findViewById(R.id.nav_setting);
 
@@ -50,6 +51,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+            }
+        });
+
+        // nav_marker 버튼 클릭 시 MapActivity로 전환
+        navMarker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             }
