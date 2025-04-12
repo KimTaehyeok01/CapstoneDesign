@@ -15,7 +15,7 @@ public class WithdrawActivity extends AppCompatActivity {
         setContentView(R.layout.activity_withdraw);
 
         // 취소 버튼 (btnCancelDelete) 이벤트 처리:
-        // 이 버튼을 누르면 탈퇴 화면을 닫습니다.
+        // 이 버튼을 누르면 탈퇴 화면을 닫음.
         Button btnCancelDelete = findViewById(R.id.btnCancelDelete);
         btnCancelDelete.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -26,7 +26,7 @@ public class WithdrawActivity extends AppCompatActivity {
         });
 
         // 탈퇴하기 버튼 (btnDeleteConfirm) 이벤트 처리:
-        // 여기에 실제 회원 탈퇴 로직을 구현할 수 있습니다.
+        // 회원 탈퇴 로직을 구현가능.
         Button btnDeleteConfirm = findViewById(R.id.btnDeleteConfirm);
         btnDeleteConfirm.setOnClickListener(new View.OnClickListener(){
             @Override

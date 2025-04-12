@@ -46,7 +46,6 @@ public class InformationActivity extends AppCompatActivity {
     }
 
     private void showWithdrawLayout() {
-        // 이미 오버레이 뷰가 추가되어 있지 않다면 inflate하여 추가
         if (bottomOverlayContainer.getChildCount() == 0) {
             View withdrawView = LayoutInflater.from(this)
                     .inflate(R.layout.activity_withdraw, bottomOverlayContainer, false);

@@ -13,7 +13,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // activity_account_info.xml 레이아웃을 사용합니다.
+        // activity_account_info.xml 레이아웃을 사용
         setContentView(R.layout.activity_account_info);
 
         // 뒤로가기 버튼(btnAccountBack) 이벤트 처리
