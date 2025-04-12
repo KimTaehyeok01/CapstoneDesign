@@ -11,6 +11,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.capstonedesign.settings_information.SettingsActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     private ImageButton navSearch, navHome, navSetting, navMarker;

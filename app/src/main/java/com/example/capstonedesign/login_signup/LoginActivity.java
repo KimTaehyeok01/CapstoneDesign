@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.capstonedesign.MainActivity;
-import com.example.capstonedesign.OnboardingActivity;
 import com.example.capstonedesign.R;
 import com.google.firebase.auth.FirebaseAuth;
 

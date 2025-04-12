@@ -43,7 +43,7 @@
         <activity android:name=".SearchActivity" />
 
         <!-- 설정 액티비티 -->
-        <activity android:name=".SettingsActivity" />
+        <activity android:name=".settings_information.SettingsActivity" />
 
         <!-- 나이 입력 액티비티 -->
         <activity
@@ -54,14 +54,17 @@
         <activity android:name=".MapActivity" />
 
         <!-- 내정보(설정) 액티비티 -->
-        <activity android:name=".InformationActivity" />
+        <activity android:name=".settings_information.InformationActivity" />
 
         <!-- 계정정보(설정) 액티비티 -->
-        <activity android:name=".AccountInfoActivity" />
+        <activity android:name=".settings_information.AccountInfoActivity" />
+
+        <!-- 계정정보(탈퇴하기) 액티비티 -->
+        <activity android:name=".settings_information.WithdrawActivity" />
 
         <!-- 앱 시작 시 실행될 온보딩 화면 -->
         <activity
-            android:name=".OnboardingActivity"
+            android:name=".login_signup.OnboardingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
