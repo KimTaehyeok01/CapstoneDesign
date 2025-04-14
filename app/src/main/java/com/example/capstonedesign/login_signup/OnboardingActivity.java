@@ -1,4 +1,4 @@
-package com.example.capstonedesign;
+package com.example.capstonedesign.login_signup;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.capstonedesign.login_signup.LoginActivity;
+import com.example.capstonedesign.R;
 
 public class OnboardingActivity extends AppCompatActivity {
 

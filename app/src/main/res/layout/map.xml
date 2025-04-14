@@ -13,23 +13,68 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- 상단 검색창 (여기서는 간단히 EditText로 구현)
-         실제로는 Drawable(아이콘), 레이아웃 등을 사용해 꾸밀 수 있음 -->
-    <EditText
-        android:id="@+id/search_bar"
+    <!-- 검색창 컨테이너: ic_map_searchbar 배경 사용 -->
+    <RelativeLayout
+        android:id="@+id/searchContainer"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_margin="8dp"
-        android:background="@android:color/white"
-        android:drawablePadding="8dp"
-        android:hint="장소, 주소로 검색"
-        android:padding="8dp"
-        android:textColor="@android:color/black"
-        android:imeOptions="actionSearch"
-        android:inputType="text"
+        android:layout_height="54dp"
+        android:layout_margin="26dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        tools:ignore="HardcodedText" />
+        android:background="@drawable/ic_map_searchbar">
 
+        <!-- 실제 검색어 입력 EditText -->
+        <EditText
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="48dp"
+            android:background="@android:color/transparent"
+            android:hint="장소, 주소로 입력하세요"
+            android:padding="8dp"
+            android:textColor="@android:color/black"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            tools:ignore="HardcodedText" />
+
+        <!-- 오른쪽 끝의 돋보기 아이콘 -->
+        <ImageButton
+            android:id="@+id/btnMapSearchGlass"
+            android:layout_width="40dp"
+            android:layout_height="42dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_search_glass"
+            android:contentDescription="검색 버튼" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/btnMyLocationContainer"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_below="@id/searchContainer"
+        android:layout_alignEnd="@id/searchContainer"
+        android:layout_marginTop="2dp"
+        android:background="@android:color/transparent">
+
+        <!-- 하단 배경 이미지 (ic_marker_won) -->
+        <ImageView
+            android:id="@+id/bgMarkerWon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_marker_won"
+            android:contentDescription="내 위치 배경" />
+
+        <!-- 위에 겹치는 아이콘 (ic_marker) - 중앙 정렬 -->
+        <ImageView
+            android:id="@+id/fgMarker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_marker"
+            android:contentDescription="내 위치 아이콘" />
+    </FrameLayout>
 </RelativeLayout>

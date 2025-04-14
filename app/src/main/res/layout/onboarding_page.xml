@@ -5,7 +5,7 @@
     android:id="@+id/layout_onboarding"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OnboardingActivity">
+    tools:context=".login_signup.OnboardingActivity">
 
     <!-- 배경 이미지 -->
     <ImageView
