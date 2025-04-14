@@ -6,8 +6,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.inputmethod.EditorInfo;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -38,10 +39,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // 검색창
     private EditText searchBar;
-
     // Firestore 인스턴스
     private FirebaseFirestore db;
-
     // 내 위치 버튼 컨테이너 (애니메이션 적용)
     private FrameLayout btnMyLocationContainer;
 
@@ -52,7 +51,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // Firestore 인스턴스 초기화
         db = FirebaseFirestore.getInstance();
-
         // 위치 서비스 초기화
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -66,7 +64,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mapFragment.getMapAsync(this);
         }
 
-        // 검색창 연결
+        // 검색창 연결 및 검색 이벤트 처리
         searchBar = findViewById(R.id.search_bar);
         searchBar.setOnEditorActionListener((textView, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
@@ -82,7 +80,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return false;
         });
 
-        // 돋보기 아이콘 클릭 시 검색 기능 실행
         ImageButton btnMapSearchGlass = findViewById(R.id.btnMapSearchGlass);
         btnMapSearchGlass.setOnClickListener(view -> {
             String query = searchBar.getText().toString().trim();
@@ -91,10 +88,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        // 내 위치 버튼 컨테이너 설정 및 클릭 이벤트 (애니메이션 처리)
+        // 내 위치 버튼 컨테이너 연결 및 애니메이션 효과 추가 (눌리는 느낌)
         btnMyLocationContainer = findViewById(R.id.btnMyLocationContainer);
         btnMyLocationContainer.setOnClickListener(view -> {
-            // 내 위치로 카메라 이동 (애니메이션 효과 추가)
+            // 눌리는 애니메이션: 약간 축소된 후 복귀
+            ViewPropertyAnimator animator = view.animate();
+            animator.scaleX(0.9f).scaleY(0.9f).setDuration(100).withEndAction(() -> {
+                view.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
+            }).start();
+
+            // 내 위치로 카메라 이동 (애니메이션 효과)
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED ||
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -103,7 +106,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     if (location != null) {
                         LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
                         mMap.clear();
-                        // 애니메이트 카메라: 1000ms 동안 부드럽게 이동
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 17), 1000, null);
                         mMap.addMarker(new MarkerOptions().position(myLocation).title("내 위치"));
                     } else {
@@ -112,14 +114,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 });
             } else {
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_PERMISSION_REQUEST_CODE);
             }
         });
     }
 
-    /**
-     * Firestore에서 'sports_locations' 컬렉션을 접두어 검색하여 마커를 지도에 표시하는 메서드
-     */
+    // Firestore에서 'sports_locations' 장소를 검색하여 마커를 지도에 표시하는 메서드
     private void searchLeisureSports(String searchQuery) {
         db.collection("sports_locations")
                 .orderBy("name")
@@ -136,7 +137,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             if (lat != null && lng != null && placeName != null) {
                                 LatLng placeLatLng = new LatLng(lat, lng);
                                 mMap.addMarker(new MarkerOptions().position(placeLatLng).title(placeName));
-                                // 첫 검색 결과 기준 카메라 이동 (애니메이션 추가)
                                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(placeLatLng, 15), 1000, null);
                             } else {
                                 Log.d("Firestore", "누락된 필드: " + doc.getId());
@@ -173,7 +173,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 17), 1000, null);
                 mMap.addMarker(new MarkerOptions().position(myLocation).title("내 위치"));
             } else {
-                // 위치 정보를 가져올 수 없으면 기본 좌표 (서울시청)로 이동
                 LatLng defaultLocation = new LatLng(37.5665, 126.9780);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
             }
