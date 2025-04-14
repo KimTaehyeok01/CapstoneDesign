@@ -43,11 +43,11 @@
         app:layout_constraintStart_toEndOf="@id/back_button"
         android:layout_marginStart="8dp" />
 
-    <!-- 검색바 컨테이너 (배경은 ic_search_bar 사용) -->
+    <!-- 검색바 컨테이너 ic_search_bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/searchContainer"
         android:layout_width="0dp"
-        android:layout_height="48dp"
+        android:layout_height="46dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
@@ -59,8 +59,8 @@
         <!-- 돋보기 아이콘 (왼쪽) -->
         <ImageButton
             android:id="@+id/btnSearchGlass"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="38dp"
+            android:layout_height="42dp"
             android:src="@drawable/ic_search_glass"
             android:background="@android:color/transparent"
             android:contentDescription="검색 아이콘"
@@ -126,7 +126,6 @@
         app:layout_constraintStart_toEndOf="@id/imgMarker"
         android:layout_marginStart="8dp" />
 
-    <!-- 구분선 (원래 코드 그대로 유지) -->
     <View
         android:id="@+id/divider"
         android:layout_width="0dp"
