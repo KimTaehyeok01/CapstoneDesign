@@ -69,24 +69,6 @@
             android:textColor="@android:color/black"
             android:layout_marginBottom="16dp" />
 
-        <!-- 이메일 변경 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="이메일 변경"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp" />
-
-        <EditText
-            android:id="@+id/editEmail"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/ic_id_pw"
-            android:padding="8dp"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="16dp" />
-
         <!-- 나이 변경 -->
         <TextView
             android:layout_width="wrap_content"
@@ -149,7 +131,9 @@
                 android:src="@drawable/ic_modify"
                 android:scaleType="fitXY"
                 android:background="@android:color/transparent"
-                android:contentDescription="수정 버튼" />
+                android:contentDescription="수정 버튼"
+                android:clickable="false"
+                android:focusable="false" />
 
             <TextView
                 android:id="@+id/tvModify"
