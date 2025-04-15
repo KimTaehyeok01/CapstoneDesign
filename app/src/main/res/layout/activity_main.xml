@@ -50,8 +50,8 @@
                     android:gravity="center"
                     android:textColor="#000000" />
 
-                <!-- 현재 날씨(클릭 가능) -->
                 <TextView
+                    android:id="@+id/tv_weather"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="현재 날씨 ☀️"
