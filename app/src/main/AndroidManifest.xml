@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- 위치 권한 설정 -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -52,6 +53,9 @@
 
         <!-- 지도 화면 액티비티 -->
         <activity android:name=".MapActivity" />
+
+        <!-- 검색바 목록 화면 액티비티 -->
+        <activity android:name=".SearchResultAdapter" />
 
         <!-- 내정보(설정) 액티비티 -->
         <activity android:name=".settings_information.InformationActivity" />
