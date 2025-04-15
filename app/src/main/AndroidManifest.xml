@@ -54,8 +54,8 @@
         <!-- 지도 화면 액티비티 -->
         <activity android:name=".MapActivity" />
 
-        <!-- 검색바 목록 화면 액티비티 -->
-        <activity android:name=".SearchResultAdapter" />
+        <!-- 상세페이지 화면 액티비티 -->
+        <activity android:name=".PlaceDetailActivity" />
 
         <!-- 내정보(설정) 액티비티 -->
         <activity android:name=".settings_information.InformationActivity" />

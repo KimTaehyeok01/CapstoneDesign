@@ -36,32 +36,29 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        // 뒤로가기 버튼
         ImageButton backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(view -> {
             finish();
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
 
-        // 뷰 초기화
         editSearch = findViewById(R.id.editSearch);
         btnSearchGlass = findViewById(R.id.btnSearchGlass);
         btnCancel = findViewById(R.id.btnCancel);
         tvNearbySearch = findViewById(R.id.tvNearbySearch);
 
-        // Firestore 초기화
         firestore = FirebaseFirestore.getInstance();
 
-        // RecyclerView + Adapter 설정
         recyclerSearchResults = findViewById(R.id.recyclerSearchResults);
         adapter = new SearchResultAdapter(searchResults, item -> {
-            // 아이템 클릭 시 처리
-            Toast.makeText(this, "선택한 장소: " + item, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(SearchActivity.this, PlaceDetailActivity.class);
+            intent.putExtra("place_name", item);
+            startActivity(intent);
         });
+
         recyclerSearchResults.setLayoutManager(new LinearLayoutManager(this));
         recyclerSearchResults.setAdapter(adapter);
 
-        // 키보드에서 검색 실행
         editSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
@@ -71,13 +68,9 @@ public class SearchActivity extends AppCompatActivity {
             return false;
         });
 
-        // 돋보기 버튼 클릭 시
         btnSearchGlass.setOnClickListener(view -> performSearch());
-
-        // 취소 버튼 클릭 시 입력창 초기화
         btnCancel.setOnClickListener(view -> editSearch.setText(""));
 
-        // "현재 내 주변에서 검색" 텍스트 클릭 시 MapActivity로 이동
         tvNearbySearch.setOnClickListener(view -> {
             Intent intent = new Intent(SearchActivity.this, MapActivity.class);
             startActivity(intent);
@@ -92,7 +85,7 @@ public class SearchActivity extends AppCompatActivity {
             return;
         }
 
-        CollectionReference placesRef = firestore.collection("sports_locations"); // 실제 컬렉션 이름 사용
+        CollectionReference placesRef = firestore.collection("sports_locations");
         placesRef.whereGreaterThanOrEqualTo("name", query)
                 .whereLessThanOrEqualTo("name", query + '\uf8ff')
                 .get()
