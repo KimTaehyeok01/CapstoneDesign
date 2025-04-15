@@ -7,7 +7,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.capstonedesign.R;
 import com.example.capstonedesign.login_signup.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AccountInfoActivity extends AppCompatActivity {
@@ -30,18 +30,21 @@ public class AccountInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_info);
 
-        // 🔹 Firebase 초기화
+        // Firebase 초기화
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // 🔹 View 연결
+        // View 연결
         editName = findViewById(R.id.editName);
         editAge = findViewById(R.id.editAge);
         btnModifyContainer = findViewById(R.id.btnModifyContainer);
         ImageButton btnAccountBack = findViewById(R.id.btnAccountBack);
-        LinearLayout btnLogout = findViewById(R.id.btnLogout);
 
-        // 🔹 공통 버튼 애니메이션
+        // 개별 로그아웃 아이템 연결
+        TextView textLogout = findViewById(R.id.textLogout); // 텍스트만 눌릴 때
+        ImageView arrowLogout = findViewById(R.id.arrowLogout); // 화살표 눌릴 때
+
+        // 공통 버튼 애니메이션
         View.OnTouchListener scaleTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -58,26 +61,31 @@ public class AccountInfoActivity extends AppCompatActivity {
                         v.setAlpha(1f);
                         break;
                 }
-                return false; // false여야 onClick도 작동함
+                return false;
             }
         };
 
-        // 🔹 뒤로가기 버튼
+        // 뒤로가기 버튼
         btnAccountBack.setOnClickListener(v -> {
             finish();
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
 
-        // 🔹 로그아웃 버튼
-        btnLogout.setOnTouchListener(scaleTouchListener);
-        btnLogout.setOnClickListener(v -> {
+        // 로그아웃 리스너 (텍스트 or 화살표 누를 때만 작동)
+        View.OnClickListener logoutClickListener = v -> {
+            mAuth.signOut();
             Intent intent = new Intent(AccountInfoActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             finish();
-        });
+        };
 
-        // 🔹 수정 버튼 애니메이션 + 이벤트
+        textLogout.setOnTouchListener(scaleTouchListener);
+        arrowLogout.setOnTouchListener(scaleTouchListener);
+        textLogout.setOnClickListener(logoutClickListener);
+        arrowLogout.setOnClickListener(logoutClickListener);
+
+        // 수정 버튼 클릭
         btnModifyContainer.setOnTouchListener(scaleTouchListener);
         btnModifyContainer.setOnClickListener(v -> {
             String inputName = editName.getText().toString().trim();
@@ -99,8 +107,15 @@ public class AccountInfoActivity extends AppCompatActivity {
                     .addOnSuccessListener(document -> {
                         if (document.exists()) {
                             String currentName = document.getString("name");
-                            String currentAge = document.getString("age");
 
+                            String currentAge = "";
+                            if (document.get("age") instanceof Number) {
+                                currentAge = String.valueOf(document.get("age"));
+                            } else if (document.get("age") instanceof String) {
+                                currentAge = document.getString("age");
+                            }
+
+                            // 이름 또는 나이 중 하나라도 같으면 수정 불가
                             if (inputName.equals(currentName) || inputAge.equals(currentAge)) {
                                 Toast.makeText(AccountInfoActivity.this,
                                         "입력한 이름이나 나이가 기존 정보와 동일합니다.", Toast.LENGTH_SHORT).show();

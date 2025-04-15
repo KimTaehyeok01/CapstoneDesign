@@ -7,41 +7,55 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.capstonedesign.R;
+import com.example.capstonedesign.login_signup.LoginActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class InformationActivity extends AppCompatActivity {
 
-    private FrameLayout bottomOverlayContainer; // 하단 오버레이 영역
+    private FrameLayout bottomOverlayContainer;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_information);  // 위 XML 사용
+        setContentView(R.layout.activity_information);
 
-        // 뒤로가기 버튼 처리
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
+        // 뒤로가기 버튼
         ImageButton btnInfoBack = findViewById(R.id.btnInfoBack);
         btnInfoBack.setOnClickListener(v -> {
             finish();
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
 
-        // 계정정보 버튼 처리 (예: 별도 액티비티 전환 등 필요 시 구현)
+        // 계정 정보 버튼
         LinearLayout btnAccountInfo = findViewById(R.id.btn_account_info);
         btnAccountInfo.setOnClickListener(v -> {
-            // 예시: AccountInfoActivity로 전환
             Intent intent = new Intent(InformationActivity.this, AccountInfoActivity.class);
             startActivity(intent);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
 
-        // 탈퇴하기 버튼 처리: 하단 오버레이에 탈퇴 화면 표시
-        LinearLayout btnWithdraw = findViewById(R.id.btn_withdraw);
-        btnWithdraw.setOnClickListener(v -> {
-            showWithdrawLayout();
+        // 비밀번호 변경 버튼 (여기에 추가)
+        LinearLayout btnPasswordChange = findViewById(R.id.btn_password_change);
+        btnPasswordChange.setOnClickListener(v -> {
+            Intent intent = new Intent(InformationActivity.this, PasswordChangeActivity.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
 
-        // 하단 오버레이 컨테이너 참조 (activity_information.xml에 추가한 FrameLayout)
+        // 탈퇴하기 버튼
+        LinearLayout btnWithdraw = findViewById(R.id.btn_withdraw);
+        btnWithdraw.setOnClickListener(v -> showWithdrawLayout());
+
         bottomOverlayContainer = findViewById(R.id.bottomOverlayContainer);
     }
 
@@ -50,23 +64,55 @@ public class InformationActivity extends AppCompatActivity {
             View withdrawView = LayoutInflater.from(this)
                     .inflate(R.layout.activity_withdraw, bottomOverlayContainer, false);
 
-            // 취소 버튼 처리
             withdrawView.findViewById(R.id.btnCancelDelete).setOnClickListener(v -> {
                 bottomOverlayContainer.removeAllViews();
                 bottomOverlayContainer.setVisibility(View.GONE);
             });
 
-            // 탈퇴하기 버튼 처리
             withdrawView.findViewById(R.id.btnDeleteConfirm).setOnClickListener(v -> {
-                // 실제 탈퇴 로직 구현 (예: Firebase 회원 탈퇴)
-                // 필요 시 Toast나 로그 등을 출력
-                bottomOverlayContainer.removeAllViews();
-                bottomOverlayContainer.setVisibility(View.GONE);
+                performWithdraw();
             });
 
             bottomOverlayContainer.addView(withdrawView);
         }
-        // 오버레이 영역 보이도록 설정
         bottomOverlayContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void performWithdraw() {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user == null) {
+            Toast.makeText(this, "로그인된 사용자가 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String uid = user.getUid();
+
+        // Firestore 데이터 삭제
+        db.collection("users").document(uid).delete()
+                .addOnSuccessListener(unused -> {
+                    // Auth 계정 삭제
+                    user.delete()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(this, "회원 탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+
+                                    // 로그인 화면으로 이동
+                                    Intent intent = new Intent(this, LoginActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    finish();
+
+                                } else {
+                                    Toast.makeText(this, "계정 삭제 실패: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "데이터 삭제 실패: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+
+        bottomOverlayContainer.removeAllViews();
+        bottomOverlayContainer.setVisibility(View.GONE);
     }
 }

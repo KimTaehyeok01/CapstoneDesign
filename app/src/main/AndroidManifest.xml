@@ -62,6 +62,9 @@
         <!-- 계정정보(탈퇴하기) 액티비티 -->
         <activity android:name=".settings_information.WithdrawActivity" />
 
+        <!-- 계정정보(비밀번호 변경) 액티비티 -->
+        <activity android:name=".settings_information.PasswordChangeActivity" />
+
         <!-- 앱 시작 시 실행될 온보딩 화면 -->
         <activity
             android:name=".login_signup.OnboardingActivity"

@@ -87,7 +87,7 @@
             android:textColor="@android:color/black"
             android:layout_marginBottom="16dp" />
 
-        <!-- 로그아웃 버튼 (텍스트 + 오른쪽 꺽새) - 우측 정렬 -->
+        <!-- 로그아웃 버튼 영역 -->
         <LinearLayout
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
@@ -95,23 +95,31 @@
             android:orientation="horizontal"
             android:gravity="center_vertical|end"
             android:paddingVertical="12dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:clickable="false"
+            android:focusable="false">
 
+            <!-- 클릭 가능한 텍스트 -->
             <TextView
+                android:id="@+id/textLogout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="로그아웃"
                 android:textSize="16sp"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:clickable="true"
+                android:focusable="true" />
 
+            <!-- 클릭 가능한 화살표 -->
             <ImageView
+                android:id="@+id/arrowLogout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:src="@drawable/ic_information_right_arrow"
-                android:contentDescription="오른쪽 화살표" />
+                android:contentDescription="오른쪽 화살표"
+                android:clickable="true"
+                android:focusable="true" />
         </LinearLayout>
 
 
