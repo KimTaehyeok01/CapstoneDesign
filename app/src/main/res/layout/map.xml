@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".MapActivity">
 
-    <!-- Google Map Fragment: 지도 영역 -->
+    <!-- Google Map Fragment -->
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- 검색창 컨테이너: ic_map_searchbar 배경 사용 -->
+    <!-- 검색창 -->
     <RelativeLayout
         android:id="@+id/searchContainer"
         android:layout_width="match_parent"
@@ -24,7 +24,6 @@
         android:layout_alignParentEnd="true"
         android:background="@drawable/ic_map_searchbar">
 
-        <!-- 실제 검색어 입력 EditText -->
         <EditText
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
@@ -35,10 +34,8 @@
             android:padding="8dp"
             android:textColor="@android:color/black"
             android:imeOptions="actionSearch"
-            android:inputType="text"
-            tools:ignore="HardcodedText" />
+            android:inputType="text" />
 
-        <!-- 오른쪽 끝의 돋보기 아이콘 -->
         <ImageButton
             android:id="@+id/btnMapSearchGlass"
             android:layout_width="40dp"
@@ -51,6 +48,7 @@
             android:contentDescription="검색 버튼" />
     </RelativeLayout>
 
+    <!-- 내 위치 버튼 -->
     <FrameLayout
         android:id="@+id/btnMyLocationContainer"
         android:layout_width="56dp"
@@ -60,7 +58,6 @@
         android:layout_marginTop="2dp"
         android:background="@android:color/transparent">
 
-        <!-- 하단 배경 이미지 (ic_marker_won) -->
         <ImageView
             android:id="@+id/bgMarkerWon"
             android:layout_width="match_parent"
@@ -68,7 +65,6 @@
             android:src="@drawable/ic_marker_won"
             android:contentDescription="내 위치 배경" />
 
-        <!-- 위에 겹치는 아이콘 (ic_marker) - 중앙 정렬 -->
         <ImageView
             android:id="@+id/fgMarker"
             android:layout_width="wrap_content"
@@ -77,4 +73,76 @@
             android:src="@drawable/ic_marker"
             android:contentDescription="내 위치 아이콘" />
     </FrameLayout>
+
+    <!-- 🟨 마커 클릭 시 하단 장소 정보 표시 영역 (map_ds) -->
+    <RelativeLayout
+        android:id="@+id/placeInfoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/map_ds"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <!-- ▶ 상단 헤더: 아이콘 + 이름 + 찜 버튼을 한 줄에 정렬 -->
+        <LinearLayout
+            android:id="@+id/placeHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_alignParentTop="true">
+
+            <!-- 아이콘 -->
+            <ImageView
+                android:id="@+id/imageIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_place"
+                android:contentDescription="마커 아이콘" />
+
+            <!-- 장소명 -->
+            <TextView
+                android:id="@+id/placeNameTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="월드수상레저"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+
+            <!-- 찜 버튼 -->
+            <ImageButton
+                android:id="@+id/btnFavorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/baseline_favorite_border_24"
+                android:contentDescription="찜 버튼" />
+        </LinearLayout>
+
+        <!-- 주소 -->
+        <TextView
+            android:id="@+id/placeAddressTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/placeHeader"
+            android:layout_marginTop="8dp"
+            android:text="경기도 가평군 가평읍 (지번) 가평읍 ***"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <!-- 전화번호 -->
+        <TextView
+            android:id="@+id/placePhoneTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/placeAddressTextView"
+            android:layout_marginTop="4dp"
+            android:text="010-1234-1234"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+    </RelativeLayout>
 </RelativeLayout>

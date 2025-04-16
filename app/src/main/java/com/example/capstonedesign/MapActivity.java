@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,8 +27,9 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-// Firestore 관련 import
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -37,40 +39,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FusedLocationProviderClient fusedLocationClient;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-    // 검색창
     private EditText searchBar;
-    // Firestore 인스턴스
     private FirebaseFirestore db;
-    // 내 위치 버튼 컨테이너 (애니메이션 적용)
     private FrameLayout btnMyLocationContainer;
+
+    private View placeInfoContainer;
+    private TextView placeNameTextView, placeAddressTextView, placePhoneTextView;
+    private ImageButton btnFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.map); // res/layout/map.xml 사용
+        setContentView(R.layout.map);
 
-        // Firestore 인스턴스 초기화
         db = FirebaseFirestore.getInstance();
-        // 위치 서비스 초기화
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // 구글 맵 초기화 (최신 렌더러 사용)
         MapsInitializer.initialize(getApplicationContext(), MapsInitializer.Renderer.LATEST, renderer -> {});
 
-        // MapFragment 참조 및 지도 초기화
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
 
-        // 검색창 연결 및 검색 이벤트 처리
         searchBar = findViewById(R.id.search_bar);
         searchBar.setOnEditorActionListener((textView, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     actionId == EditorInfo.IME_ACTION_DONE ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
-
                 String query = searchBar.getText().toString().trim();
                 if (!query.isEmpty()) {
                     searchLeisureSports(query.toLowerCase());
@@ -88,20 +84,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        // 내 위치 버튼 컨테이너 연결 및 애니메이션 효과 추가 (눌리는 느낌)
         btnMyLocationContainer = findViewById(R.id.btnMyLocationContainer);
         btnMyLocationContainer.setOnClickListener(view -> {
-            // 눌리는 애니메이션: 약간 축소된 후 복귀
             ViewPropertyAnimator animator = view.animate();
             animator.scaleX(0.9f).scaleY(0.9f).setDuration(100).withEndAction(() -> {
                 view.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
             }).start();
 
-            // 내 위치로 카메라 이동 (애니메이션 효과)
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED ||
-                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
                     if (location != null) {
                         LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
@@ -118,9 +109,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         LOCATION_PERMISSION_REQUEST_CODE);
             }
         });
+
+        // 하단 뷰 연결
+        placeInfoContainer = findViewById(R.id.placeInfoContainer);
+        placeNameTextView = findViewById(R.id.placeNameTextView);
+        placeAddressTextView = findViewById(R.id.placeAddressTextView);
+        placePhoneTextView = findViewById(R.id.placePhoneTextView);
+        btnFavorite = findViewById(R.id.btnFavorite);
     }
 
-    // Firestore에서 'sports_locations' 장소를 검색하여 마커를 지도에 표시하는 메서드
     private void searchLeisureSports(String searchQuery) {
         db.collection("sports_locations")
                 .orderBy("name")
@@ -177,15 +174,44 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
             }
         });
+
+        // 마커 클릭 리스너 설정
+        mMap.setOnMarkerClickListener(marker -> {
+            String clickedPlaceName = marker.getTitle();
+
+            db.collection("sports_locations")
+                    .whereEqualTo("name", clickedPlaceName)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            var doc = queryDocumentSnapshots.getDocuments().get(0);
+                            String name = doc.getString("name");
+
+                            Object addressObj = doc.get("address");
+                            String address = addressObj != null ? addressObj.toString() : null;
+
+                            Object phoneObj = doc.get("phone");
+                            String phone = phoneObj != null ? phoneObj.toString() : null;
+
+                            placeNameTextView.setText(name != null ? name : "이름 없음");
+                            placeAddressTextView.setText(address != null ? address : "주소 정보 없음");
+                            placePhoneTextView.setText(phone != null ? phone : "전화번호 없음");
+
+                            placeInfoContainer.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+            return false;
+        });
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
-                                           @NonNull int[] grantResults){
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == LOCATION_PERMISSION_REQUEST_CODE){
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 recreate();
             }
         }
