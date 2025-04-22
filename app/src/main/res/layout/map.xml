@@ -74,7 +74,7 @@
             android:contentDescription="내 위치 아이콘" />
     </FrameLayout>
 
-    <!-- 🟨 마커 클릭 시 하단 장소 정보 표시 영역 (map_ds) -->
+    <!-- 마커 클릭 시 장소 정보 표시 영역 -->
     <RelativeLayout
         android:id="@+id/placeInfoContainer"
         android:layout_width="match_parent"
@@ -84,7 +84,7 @@
         android:padding="16dp"
         android:visibility="gone">
 
-        <!-- ▶ 상단 헤더: 아이콘 + 이름 + 찜 버튼을 한 줄에 정렬 -->
+        <!-- 상단 헤더 -->
         <LinearLayout
             android:id="@+id/placeHeader"
             android:layout_width="match_parent"
@@ -101,17 +101,35 @@
                 android:src="@drawable/ic_place"
                 android:contentDescription="마커 아이콘" />
 
-            <!-- 장소명 -->
-            <TextView
-                android:id="@+id/placeNameTextView"
+            <!-- 장소명 + 내리기 버튼 그룹 -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:text="월드수상레저"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#000000" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginStart="8dp">
+
+                <!-- 장소명 -->
+                <TextView
+                    android:id="@+id/placeNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="월드수상레저"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000" />
+
+                <!-- 내리기 버튼 -->
+                <ImageButton
+                    android:id="@+id/btnHidePlaceInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_below"
+                    android:contentDescription="내리기 버튼" />
+            </LinearLayout>
 
             <!-- 찜 버튼 -->
             <ImageButton

@@ -27,11 +27,15 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -41,11 +45,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private EditText searchBar;
     private FirebaseFirestore db;
+    private FirebaseUser currentUser;
+
     private FrameLayout btnMyLocationContainer;
 
     private View placeInfoContainer;
     private TextView placeNameTextView, placeAddressTextView, placePhoneTextView;
-    private ImageButton btnFavorite;
+    private ImageButton btnFavorite, btnHidePlaceInfo;
+
+    private boolean isFavorite = false;
+    private String currentPlaceName = "";
+    private String currentPlaceAddress = "";
+    private String currentPlacePhone = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +64,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.map);
 
         db = FirebaseFirestore.getInstance();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         MapsInitializer.initialize(getApplicationContext(), MapsInitializer.Renderer.LATEST, renderer -> {});
@@ -110,12 +122,49 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        // 하단 뷰 연결
+        // 하단 장소 정보 뷰 연결
         placeInfoContainer = findViewById(R.id.placeInfoContainer);
         placeNameTextView = findViewById(R.id.placeNameTextView);
         placeAddressTextView = findViewById(R.id.placeAddressTextView);
         placePhoneTextView = findViewById(R.id.placePhoneTextView);
         btnFavorite = findViewById(R.id.btnFavorite);
+        btnHidePlaceInfo = findViewById(R.id.btnHidePlaceInfo);
+
+        btnHidePlaceInfo.setOnClickListener(v -> placeInfoContainer.setVisibility(View.GONE));
+
+        btnFavorite.setOnClickListener(v -> {
+            if (currentUser == null) {
+                Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String userId = currentUser.getUid();
+            DocumentReference favRef = db.collection("users")
+                    .document(userId)
+                    .collection("favorites")
+                    .document(currentPlaceName);
+
+            if (!isFavorite) {
+                // 찜 추가
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", currentPlaceName);
+                data.put("address", currentPlaceAddress);
+                data.put("phone", currentPlacePhone);
+
+                favRef.set(data).addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "찜 추가됨", Toast.LENGTH_SHORT).show();
+                    btnFavorite.setImageResource(R.drawable.baseline_favorite_24);
+                    isFavorite = true;
+                });
+            } else {
+                // 찜 해제
+                favRef.delete().addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
+                    btnFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
+                    isFavorite = false;
+                });
+            }
+        });
     }
 
     private void searchLeisureSports(String searchQuery) {
@@ -135,8 +184,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 LatLng placeLatLng = new LatLng(lat, lng);
                                 mMap.addMarker(new MarkerOptions().position(placeLatLng).title(placeName));
                                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(placeLatLng, 15), 1000, null);
-                            } else {
-                                Log.d("Firestore", "누락된 필드: " + doc.getId());
                             }
                         }
                     } else {
@@ -155,7 +202,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
-
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
@@ -175,7 +221,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        // 마커 클릭 리스너 설정
         mMap.setOnMarkerClickListener(marker -> {
             String clickedPlaceName = marker.getTitle();
 
@@ -185,19 +230,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             var doc = queryDocumentSnapshots.getDocuments().get(0);
-                            String name = doc.getString("name");
+                            currentPlaceName = doc.getString("name");
+                            currentPlaceAddress = doc.getString("address");
+                            currentPlacePhone = doc.getString("phone");
 
-                            Object addressObj = doc.get("address");
-                            String address = addressObj != null ? addressObj.toString() : null;
-
-                            Object phoneObj = doc.get("phone");
-                            String phone = phoneObj != null ? phoneObj.toString() : null;
-
-                            placeNameTextView.setText(name != null ? name : "이름 없음");
-                            placeAddressTextView.setText(address != null ? address : "주소 정보 없음");
-                            placePhoneTextView.setText(phone != null ? phone : "전화번호 없음");
+                            placeNameTextView.setText(currentPlaceName != null ? currentPlaceName : "이름 없음");
+                            placeAddressTextView.setText(currentPlaceAddress != null ? currentPlaceAddress : "주소 정보 없음");
+                            placePhoneTextView.setText(currentPlacePhone != null ? currentPlacePhone : "전화번호 없음");
 
                             placeInfoContainer.setVisibility(View.VISIBLE);
+
+                            // Firestore에서 찜 여부 확인해서 하트 채우기
+                            if (currentUser != null) {
+                                String userId = currentUser.getUid();
+                                db.collection("users")
+                                        .document(userId)
+                                        .collection("favorites")
+                                        .document(currentPlaceName)
+                                        .get()
+                                        .addOnSuccessListener(snapshot -> {
+                                            if (snapshot.exists()) {
+                                                isFavorite = true;
+                                                btnFavorite.setImageResource(R.drawable.baseline_favorite_24);
+                                            } else {
+                                                isFavorite = false;
+                                                btnFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
+                                            }
+                                        });
+                            }
                         }
                     });
 
