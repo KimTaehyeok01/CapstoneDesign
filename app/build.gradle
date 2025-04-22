@@ -38,6 +38,7 @@ dependencies {
 
     // Firestore 추가
     implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-storage'
 
     // Glide 설치 및 이미지 추가
     implementation 'com.github.bumptech.glide:glide:4.16.0'
