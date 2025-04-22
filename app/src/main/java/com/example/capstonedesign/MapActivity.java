@@ -1,6 +1,7 @@
 package com.example.capstonedesign;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -98,6 +99,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         btnMyLocationContainer = findViewById(R.id.btnMyLocationContainer);
         btnMyLocationContainer.setOnClickListener(view -> {
+            // ✅ 위치 설정 꺼져있으면 기능 차단
+            SharedPreferences prefs = getSharedPreferences("PushSettingsPrefs", MODE_PRIVATE);
+            boolean isLocationOn = prefs.getBoolean("location_on", true);
+            if (!isLocationOn) {
+                Toast.makeText(this, "위치 서비스가 꺼져 있어 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             ViewPropertyAnimator animator = view.animate();
             animator.scaleX(0.9f).scaleY(0.9f).setDuration(100).withEndAction(() -> {
                 view.animate().scaleX(1f).scaleY(1f).setDuration(100).start();
@@ -122,7 +131,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        // 하단 장소 정보 뷰 연결
         placeInfoContainer = findViewById(R.id.placeInfoContainer);
         placeNameTextView = findViewById(R.id.placeNameTextView);
         placeAddressTextView = findViewById(R.id.placeAddressTextView);
@@ -145,7 +153,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .document(currentPlaceName);
 
             if (!isFavorite) {
-                // 찜 추가
                 Map<String, Object> data = new HashMap<>();
                 data.put("name", currentPlaceName);
                 data.put("address", currentPlaceAddress);
@@ -157,7 +164,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     isFavorite = true;
                 });
             } else {
-                // 찜 해제
                 favRef.delete().addOnSuccessListener(unused -> {
                     Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
                     btnFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
@@ -208,6 +214,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return;
         }
 
+        // 지도 초기 로딩 시 위치 설정 확인
+        SharedPreferences prefs = getSharedPreferences("PushSettingsPrefs", MODE_PRIVATE);
+        boolean isLocationOn = prefs.getBoolean("location_on", true);
+        if (!isLocationOn) {
+            LatLng defaultLocation = new LatLng(37.5665, 126.9780);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
+            Toast.makeText(this, "위치 서비스가 꺼져 있어 기본 위치로 이동합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         mMap.setMyLocationEnabled(true);
 
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
@@ -240,7 +256,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                             placeInfoContainer.setVisibility(View.VISIBLE);
 
-                            // Firestore에서 찜 여부 확인해서 하트 채우기
                             if (currentUser != null) {
                                 String userId = currentUser.getUid();
                                 db.collection("users")

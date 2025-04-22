@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
 
     <application
         android:allowBackup="true"
@@ -68,6 +70,17 @@
 
         <!-- 계정정보(비밀번호 변경) 액티비티 -->
         <activity android:name=".settings_information.PasswordChangeActivity" />
+
+        <!-- 계정정보(푸시알림설정) 액티비티 -->
+        <activity android:name=".settings_information.PushSettingActivity" />
+
+        <service
+            android:name=".settings_information.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <!-- 앱 시작 시 실행될 온보딩 화면 -->
         <activity
