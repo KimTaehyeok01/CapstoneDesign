@@ -31,7 +31,7 @@ public class PushSettingActivity extends AppCompatActivity {
         isLocationOn = prefs.getBoolean(KEY_LOCATION_ON, true);
         isNoticeOn = prefs.getBoolean(KEY_NOTICE_ON, true);
 
-        // ⬅ 뒤로가기 버튼
+        // 뒤로가기 버튼
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> {
             finish();
