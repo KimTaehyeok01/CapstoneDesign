@@ -99,7 +99,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         btnMyLocationContainer = findViewById(R.id.btnMyLocationContainer);
         btnMyLocationContainer.setOnClickListener(view -> {
-            // ✅ 위치 설정 꺼져있으면 기능 차단
+            // 위치 설정 꺼져있으면 기능 차단
             SharedPreferences prefs = getSharedPreferences("PushSettingsPrefs", MODE_PRIVATE);
             boolean isLocationOn = prefs.getBoolean("location_on", true);
             if (!isLocationOn) {
