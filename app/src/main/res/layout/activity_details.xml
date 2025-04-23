@@ -84,7 +84,8 @@
                     android:layout_height="24dp"
                     android:layout_alignParentEnd="true"
                     android:src="@drawable/baseline_favorite_border_24"
-                    android:contentDescription="찜 아이콘" />
+                    android:contentDescription="찜 아이콘"
+                    android:onClick="onFavoriteClicked" />
             </RelativeLayout>
 
             <!-- 주소 -->
