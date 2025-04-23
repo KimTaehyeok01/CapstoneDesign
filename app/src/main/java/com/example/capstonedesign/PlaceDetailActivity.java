@@ -11,11 +11,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PlaceDetailActivity extends AppCompatActivity {
 
@@ -23,6 +28,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private ImageView imageViewPlace;
     private TextView textViewTitle, textViewAddress, textViewPrice, textViewPhone, textViewMore, toolbarTitle;
     private LinearLayout textViewHours;
+
+    private ImageView imageViewFavorite;
+    private boolean isFavorite = false;
+    private FirebaseUser currentUser;
+    private String placeName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,15 +48,52 @@ public class PlaceDetailActivity extends AppCompatActivity {
         textViewPrice = findViewById(R.id.textViewPrice);
         textViewPhone = findViewById(R.id.textViewPhone);
         textViewMore = findViewById(R.id.textViewMore);
+        imageViewFavorite = findViewById(R.id.imageViewFavorite);
 
         firestore = FirebaseFirestore.getInstance();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         // 전달받은 장소 이름
-        String placeName = getIntent().getStringExtra("place_name");
+        placeName = getIntent().getStringExtra("place_name");
         if (placeName == null) {
             finish(); // 예외처리
             return;
         }
+
+        // 찜 버튼 클릭 이벤트
+        imageViewFavorite.setOnClickListener(v -> {
+            if (currentUser == null) {
+                Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String userId = currentUser.getUid();
+            DocumentReference favRef = firestore.collection("users")
+                    .document(userId)
+                    .collection("favorites")
+                    .document(placeName);
+
+            if (!isFavorite) {
+                // 찜 추가
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", placeName);
+                data.put("address", textViewAddress.getText().toString());
+                data.put("phone", textViewPhone.getText().toString());
+
+                favRef.set(data).addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "찜 추가됨", Toast.LENGTH_SHORT).show();
+                    imageViewFavorite.setImageResource(R.drawable.baseline_favorite_24);
+                    isFavorite = true;
+                });
+            } else {
+                // 찜 해제
+                favRef.delete().addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
+                    imageViewFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
+                    isFavorite = false;
+                });
+            }
+        });
 
         // Firestore에서 장소 정보 불러오기
         firestore.collection("sports_locations")
@@ -109,6 +156,25 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                 } else {
                                     Glide.with(this).load(imageUrl).into(imageViewPlace);
                                 }
+                            }
+
+                            // Firestore에서 찜 여부 확인 후 상태 적용
+                            if (currentUser != null) {
+                                String userId = currentUser.getUid();
+                                firestore.collection("users")
+                                        .document(userId)
+                                        .collection("favorites")
+                                        .document(placeName)
+                                        .get()
+                                        .addOnSuccessListener(doc -> {
+                                            if (doc.exists()) {
+                                                isFavorite = true;
+                                                imageViewFavorite.setImageResource(R.drawable.baseline_favorite_24);
+                                            } else {
+                                                isFavorite = false;
+                                                imageViewFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
+                                            }
+                                        });
                             }
                         }
                     } else {
