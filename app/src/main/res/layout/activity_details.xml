@@ -134,32 +134,39 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="금13:00~23:00" />
+                        android:text="금 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="토13:00~19:00" />
+                        android:text="토 13:00~19:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="일13:00~23:00" />
+                        android:text="일 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="월13:00~23:00" />
+                        android:text="월 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="화13:00~23:00" />
+                        android:text="화 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="수13:00~23:00" />
+                        android:text="수 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="13:00~23:00" />
+                        android:text="목 13:00~23:00" />
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- 가격 -->
@@ -192,10 +199,13 @@
                 android:layout_marginTop="12dp">
 
                 <ImageView
+                    android:id="@+id/imageViewCall"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_call"
-                    android:contentDescription="전화 아이콘" />
+                    android:contentDescription="전화 아이콘"
+                    android:clickable="true"
+                    android:focusable="true" />
 
                 <TextView
                     android:id="@+id/textViewPhone"
@@ -203,7 +213,9 @@
                     android:layout_height="wrap_content"
                     android:text="033-1234-5678"
                     android:layout_marginStart="8dp"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:clickable="true"
+                    android:focusable="true" />
             </LinearLayout>
 
             <!-- 더보기 -->

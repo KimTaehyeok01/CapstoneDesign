@@ -1,6 +1,9 @@
 package com.example.capstonedesign;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,9 +35,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private LinearLayout textViewHours;
 
     private ImageView imageViewFavorite;
+    private ImageView imageViewCall;
     private boolean isFavorite = false;
     private FirebaseUser currentUser;
     private String placeName = "";
+
+    private static final int REQUEST_CALL_PHONE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         textViewPhone = findViewById(R.id.textViewPhone);
         textViewMore = findViewById(R.id.textViewMore);
         imageViewFavorite = findViewById(R.id.imageViewFavorite);
+        imageViewCall = findViewById(R.id.imageViewCall);
 
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -56,11 +65,32 @@ public class PlaceDetailActivity extends AppCompatActivity {
         // 전달받은 장소 이름
         placeName = getIntent().getStringExtra("place_name");
         if (placeName == null) {
-            finish(); // 예외처리
+            finish();
             return;
         }
 
-        // 찜 버튼 클릭 이벤트
+        // 전화 기능 클릭 리스너 (아이콘 + 텍스트)
+        View.OnClickListener callClickListener = v -> {
+            String phoneNumber = textViewPhone.getText().toString().trim();
+            if (!phoneNumber.isEmpty() && !phoneNumber.equals("전화번호 없음")) {
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:" + phoneNumber));
+
+                // 권한 확인
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PHONE);
+                } else {
+                    startActivity(callIntent);
+                }
+            } else {
+                Toast.makeText(this, "전화번호가 없습니다.", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        imageViewCall.setOnClickListener(callClickListener);
+        textViewPhone.setOnClickListener(callClickListener);
+
+        // 찜 버튼 클릭
         imageViewFavorite.setOnClickListener(v -> {
             if (currentUser == null) {
                 Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
@@ -74,7 +104,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     .document(placeName);
 
             if (!isFavorite) {
-                // 찜 추가
                 Map<String, Object> data = new HashMap<>();
                 data.put("name", placeName);
                 data.put("address", textViewAddress.getText().toString());
@@ -86,7 +115,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     isFavorite = true;
                 });
             } else {
-                // 찜 해제
                 favRef.delete().addOnSuccessListener(unused -> {
                     Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
                     imageViewFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
@@ -95,7 +123,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Firestore에서 장소 정보 불러오기
+        // 장소 정보 가져오기
         firestore.collection("sports_locations")
                 .whereEqualTo("name", placeName)
                 .get()
@@ -107,32 +135,22 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             String hours = documentSnapshot.getString("hours");
                             String price = documentSnapshot.getString("price");
                             String phone = documentSnapshot.getString("phone");
-                            String more = documentSnapshot.getString("summary"); // Firestore의 'summary' 필드
+                            String more = documentSnapshot.getString("summary");
                             String imageUrl = documentSnapshot.getString("image");
 
-                            // 이름
                             if (name != null) {
                                 textViewTitle.setText(name);
                                 toolbarTitle.setText(name);
                             }
-
-                            // 주소
                             if (address != null) textViewAddress.setText(address);
-
-                            // 가격
                             if (price != null) textViewPrice.setText(price);
-
-                            // 전화번호
                             if (phone != null && !phone.isEmpty()) {
                                 textViewPhone.setText(phone);
                             } else {
                                 textViewPhone.setText("전화번호 없음");
                             }
-
-                            // 상세 설명
                             if (more != null) textViewMore.setText(more);
 
-                            // 운영 시간
                             if (hours != null) {
                                 textViewHours.removeAllViews();
                                 for (String line : hours.split("\n")) {
@@ -144,7 +162,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                 }
                             }
 
-                            // 이미지 URL 처리 (gs:// → download URL 변환)
                             if (imageUrl != null && !imageUrl.isEmpty()) {
                                 if (imageUrl.startsWith("gs://")) {
                                     StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
@@ -158,7 +175,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                 }
                             }
 
-                            // Firestore에서 찜 여부 확인 후 상태 적용
                             if (currentUser != null) {
                                 String userId = currentUser.getUid();
                                 firestore.collection("users")
@@ -188,15 +204,28 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 });
     }
 
-    // 뒤로가기 버튼 클릭 시
+    // 뒤로가기
     public void onBackClicked(View view) {
-        finish(); // 현재 화면 종료
+        finish();
     }
 
-    // 홈 버튼 클릭 시
+    // 홈으로
     public void onHomeClicked(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
+    }
+
+    // 전화 권한 요청 결과 처리
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_CALL_PHONE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                textViewPhone.performClick(); // 권한 승인되면 전화 실행
+            } else {
+                Toast.makeText(this, "전화 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
