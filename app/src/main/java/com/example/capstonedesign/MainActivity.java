@@ -21,7 +21,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.capstonedesign.settings_information.SettingsActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONObject;
 
@@ -37,8 +36,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton navSearch, navHome, navSetting, navMarker;
     private TextView tvWeather;
 
+    private TextView tvTodayRecommend;
+
     private FusedLocationProviderClient fusedLocationClient;
-    private String apiKey = "f5a32755e587860fe98d96a6a54af17f"; // 너의 OpenWeatherMap API 키
+    private String apiKey = "f5a32755e587860fe98d96a6a54af17f";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,14 @@ public class MainActivity extends AppCompatActivity {
 
         navSetting.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        });
+
+        // 오늘의 추천 클릭 시 화면 이동
+        tvTodayRecommend = findViewById(R.id.tv_today_recommend);
+        tvTodayRecommend.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, TodayRecommendActivity.class);
             startActivity(intent);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
@@ -159,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {

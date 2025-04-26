@@ -78,6 +78,9 @@
         <!-- 계정정보(푸시알림설정) 액티비티 -->
         <activity android:name=".settings_information.PushSettingActivity" />
 
+        <!-- 오늘의 추천 화면 액티비티 -->
+        <activity android:name=".TodayRecommendActivity" />
+
         <service
             android:name=".settings_information.MyFirebaseMessagingService"
             android:exported="false">
