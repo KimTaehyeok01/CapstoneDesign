@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -74,6 +75,13 @@ public class AccountInfoActivity extends AppCompatActivity {
         // 로그아웃 리스너 (텍스트 or 화살표 누를 때만 작동)
         View.OnClickListener logoutClickListener = v -> {
             mAuth.signOut();
+
+            // 자동로그인 설정 삭제
+            SharedPreferences preferences = getSharedPreferences("autoLogin", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.remove("autoLoginEnabled");
+            editor.apply();
+
             Intent intent = new Intent(AccountInfoActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

@@ -8,7 +8,6 @@
     android:layout_height="match_parent"
     tools:context=".login_signup.LoginActivity">
 
-    <!-- 배경 이미지 -->
     <ImageView
         android:id="@+id/imgBackground"
         android:layout_width="0dp"
@@ -20,7 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 로그인 타이틀 텍스트 -->
     <TextView
         android:id="@+id/textTitleLogin"
         android:layout_width="wrap_content"
@@ -30,12 +28,11 @@
         android:textColor="@android:color/white"
         android:textSize="28sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5" />
 
-    <!-- 뒤로가기 버튼 -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="48dp"
@@ -43,15 +40,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="48dp"
         android:background="@android:color/transparent"
-        android:clickable="true"
-        android:contentDescription="뒤로가기"
-        android:focusable="true"
-        android:scaleType="fitCenter"
         android:src="@drawable/ic_left_arrow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:contentDescription="뒤로가기"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 이메일 입력 -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="0dp"
@@ -72,7 +65,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 이메일 아래 선 -->
     <ImageView
         android:id="@+id/lineEmail"
         android:layout_width="0dp"
@@ -86,7 +78,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 비밀번호 입력 -->
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="0dp"
@@ -107,7 +98,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 비밀번호 아래 선 -->
     <ImageView
         android:id="@+id/linePassword"
         android:layout_width="0dp"
@@ -121,7 +111,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 로그인 버튼 + 텍스트 -->
     <FrameLayout
         android:id="@+id/loginButtonContainer"
         android:layout_width="283dp"
@@ -153,12 +142,42 @@
             android:textStyle="bold" />
     </FrameLayout>
 
-    <!-- 회원가입 & 비밀번호 찾기 텍스트 -->
+    <LinearLayout
+        android:id="@+id/layoutAutoLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/loginButtonContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <CheckBox
+            android:id="@+id/checkboxAutoLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@android:color/white"
+            android:focusable="true"
+            android:clickable="true" />
+
+        <TextView
+            android:id="@+id/textAutoLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="자동 로그인"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginStart="4dp"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/layoutSignOptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="228dp"
+        android:layout_marginBottom="208dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -185,4 +204,5 @@
             android:clickable="true"
             android:focusable="true" />
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
