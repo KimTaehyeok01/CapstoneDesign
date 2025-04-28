@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -31,21 +29,16 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TodayRecommendActivity extends AppCompatActivity {
+public class NearbyRecommendActivity extends AppCompatActivity {
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1002;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1003; // 권한 요청 코드
     private FusedLocationProviderClient fusedLocationClient;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
@@ -59,9 +52,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
     private TextView tvRecTitle1, tvRecAddress1, tvRecRegion1, tvRecPrice1;
     private TextView tvRecTitle2, tvRecAddress2, tvRecRegion2, tvRecPrice2;
 
-    private boolean isFav1 = false;
-    private boolean isFav2 = false;
-
+    private Location currentLocation;
     private QueryDocumentSnapshot doc1;
     private QueryDocumentSnapshot doc2;
 
@@ -70,8 +61,9 @@ public class TodayRecommendActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_today_recommend);
+        setContentView(R.layout.activity_nearby_recommend);
 
+        // View 연결
         btnBackRecommend = findViewById(R.id.btnBackRecommend);
         tvWeatherRecommend = findViewById(R.id.tvWeatherRecommend);
         editSearchRecommend = findViewById(R.id.editSearchRecommend);
@@ -100,7 +92,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
         btnBackRecommend.setOnClickListener(v -> finish());
 
         requestLocationPermission();
-        fetchRecommendations();
 
         btnFav1.setOnClickListener(v -> toggleFavorite(doc1, btnFav1));
         btnFav2.setOnClickListener(v -> toggleFavorite(doc2, btnFav2));
@@ -128,7 +119,9 @@ public class TodayRecommendActivity extends AppCompatActivity {
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     if (location != null) {
+                        currentLocation = location;
                         fetchWeather(location.getLatitude(), location.getLongitude());
+                        fetchNearbyRecommendations();
                     } else {
                         tvWeatherRecommend.setText("위치를 찾을 수 없습니다.");
                     }
@@ -143,22 +136,20 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
         new Thread(() -> {
             try {
-                URL requestUrl = new URL(url);
-                HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+                java.net.URL requestUrl = new java.net.URL(url);
+                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) requestUrl.openConnection();
                 connection.setRequestMethod("GET");
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();
                 String line;
-
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
                 }
-
                 reader.close();
                 connection.disconnect();
 
-                JSONObject json = new JSONObject(response.toString());
+                org.json.JSONObject json = new org.json.JSONObject(response.toString());
                 String description = json.getJSONArray("weather").getJSONObject(0).getString("description");
                 double temp = json.getJSONObject("main").getDouble("temp");
 
@@ -170,7 +161,9 @@ public class TodayRecommendActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void fetchRecommendations() {
+    private void fetchNearbyRecommendations() {
+        if (currentLocation == null) return;
+
         CollectionReference locationsRef = db.collection("sports_locations");
 
         locationsRef.get().addOnCompleteListener(task -> {
@@ -180,8 +173,16 @@ public class TodayRecommendActivity extends AppCompatActivity {
                     documents.add(doc);
                 }
 
+                // 거리순 정렬
+                Collections.sort(documents, Comparator.comparingDouble(doc -> {
+                    double lat = doc.getDouble("latitude");
+                    double lon = doc.getDouble("longitude");
+                    float[] result = new float[1];
+                    Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), lat, lon, result);
+                    return result[0];
+                }));
+
                 if (documents.size() >= 2) {
-                    Collections.shuffle(documents);
                     doc1 = documents.get(0);
                     doc2 = documents.get(1);
 
@@ -200,8 +201,8 @@ public class TodayRecommendActivity extends AppCompatActivity {
         String name = doc.getString("name");
         String addr = doc.getString("address");
         String topic = doc.getString("topic");
-        String imageUrl = doc.getString("image");
         String details = doc.getString("details");
+        String imageUrl = doc.getString("image");
 
         title.setText(name != null ? name : "장소명 없음");
         address.setText(addr != null ? addr : "주소 없음");
@@ -246,13 +247,11 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
         favRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                // 이미 찜 -> 해제
                 favRef.delete().addOnSuccessListener(unused -> {
                     Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
                     favButton.setImageResource(R.drawable.baseline_favorite_border_24);
                 });
             } else {
-                // 찜 추가
                 Map<String, Object> data = new HashMap<>();
                 data.put("name", name);
                 data.put("address", address);

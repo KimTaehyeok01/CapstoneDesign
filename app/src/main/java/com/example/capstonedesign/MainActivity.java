@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private String apiKey = "f5a32755e587860fe98d96a6a54af17f";
 
+    private TextView tvNearbyRecommend;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +103,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
-    }
+
+        // 주변 추천 클릭 시 화면 이동
+        tvNearbyRecommend = findViewById(R.id.tv_nearby_recommend);
+        tvNearbyRecommend.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, NearbyRecommendActivity.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        });
+}
 
     private void requestLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
