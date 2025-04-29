@@ -17,75 +17,70 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AgeInputActivity extends AppCompatActivity {
+public class InputHeightActivity extends AppCompatActivity {
 
-    private EditText editAge;
+    private EditText editHeight;
     private ImageButton backButton, nextButton;
 
     private String userName;
     private String selectedGender;
-    private int height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sign_up_age);
+        setContentView(R.layout.activity_input_height);
 
         // 이전 화면에서 전달된 값 가져오기
         userName = getIntent().getStringExtra("userName");
         selectedGender = getIntent().getStringExtra("selectedGender");
-        height = getIntent().getIntExtra("height", -1);
 
         // 뷰 초기화
-        editAge = findViewById(R.id.edit_age);
+        editHeight = findViewById(R.id.edit_age);
         backButton = findViewById(R.id.back_button);
         nextButton = findViewById(R.id.next_button);
 
-        // 뒤로가기 버튼 클릭 시 키 입력 화면으로 이동
+        // 뒤로가기 버튼 클릭 시 성별 선택 화면으로 이동
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(this, InputHeightActivity.class);
+            Intent intent = new Intent(this, GenderSelectActivity.class);
             intent.putExtra("userName", userName);
-            intent.putExtra("selectedGender", selectedGender);
-            intent.putExtra("height", height);
             startActivity(intent);
             finish();
         });
 
         // 다음 버튼 클릭 시
         nextButton.setOnClickListener(v -> {
-            String ageStr = editAge.getText().toString().trim();
+            String heightInput = editHeight.getText().toString().trim();
 
-            if (ageStr.isEmpty()) {
-                Toast.makeText(this, "나이를 입력해주세요.", Toast.LENGTH_SHORT).show();
+            if (heightInput.isEmpty()) {
+                Toast.makeText(this, "신장을 입력해주세요.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             try {
-                int age = Integer.parseInt(ageStr);
+                int height = Integer.parseInt(heightInput);
 
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user == null) {
-                    Toast.makeText(this, "로그인 정보가 없습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "로그인 정보 없음", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 String uid = user.getUid();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                // 나이 데이터 생성
+                // 신장 데이터 생성
                 Map<String, Object> update = new HashMap<>();
-                update.put("age", age);
+                update.put("height", height);
 
-                // Firestore에 나이 정보 저장
+                // Firestore에 신장 정보 저장
                 db.collection("users").document(uid)
                         .set(update, SetOptions.merge())
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "나이 저장 완료!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(this, SportsSelectActivity.class);
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(this, "신장 저장 완료!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(this, AgeInputActivity.class);
                             intent.putExtra("userName", userName);
                             intent.putExtra("selectedGender", selectedGender);
                             intent.putExtra("height", height);
-                            intent.putExtra("userAge", age);
                             startActivity(intent);
                             finish();
                         })

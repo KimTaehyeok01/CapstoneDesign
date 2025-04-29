@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 배경 이미지 -->
     <ImageView
         android:id="@+id/backgroundImage"
         android:layout_width="0dp"
@@ -17,7 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 뒤로가기 버튼 -->
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="48dp"
@@ -33,25 +31,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 상단 라인 -->
     <ImageView
         android:id="@+id/line7"
         android:layout_width="200dp"
         android:layout_height="1dp"
         android:layout_marginTop="24dp"
-        android:src="@drawable/line7"
+        android:src="@drawable/line5"
         android:scaleType="fitXY"
         app:layout_constraintTop_toBottomOf="@id/back_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 제목 -->
     <TextView
         android:id="@+id/title_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="어떤 레저를 좋아하세요?"
+        android:layout_marginTop="12dp"
+        android:text="어떤 계절을 좋아하세요?"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -59,66 +55,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 그룹 아이콘 (2개 위, 1개 아래) -->
     <GridLayout
-        android:id="@+id/grid_sports"
+        android:id="@+id/season_grid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:columnCount="2"
         android:rowCount="2"
         android:alignmentMode="alignMargins"
-        android:useDefaultMargins="true"
+        android:padding="8dp"
         app:layout_constraintTop_toBottomOf="@id/title_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- 육상 -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:layout_margin="8dp">
 
             <ImageButton
-                android:id="@+id/group1"
+                android:id="@+id/season1"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:background="@android:color/transparent"
-                android:src="@drawable/group1"
+                android:src="@drawable/season1"
                 android:scaleType="centerCrop"
-                android:contentDescription="육상" />
+                android:contentDescription="봄" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="육상스포츠"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                android:gravity="center" />
-        </LinearLayout>
-
-        <!-- 해상 -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <ImageButton
-                android:id="@+id/group2"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:background="@android:color/transparent"
-                android:src="@drawable/group2"
-                android:scaleType="centerCrop"
-                android:contentDescription="해상" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="해상스포츠"
+                android:text="봄"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"
@@ -130,43 +99,93 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_columnSpan="2"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_margin="8dp">
 
             <ImageButton
-                android:id="@+id/group3"
+                android:id="@+id/season2"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:background="@android:color/transparent"
-                android:src="@drawable/group3"
+                android:src="@drawable/season2"
                 android:scaleType="centerCrop"
-                android:contentDescription="항공" />
+                android:contentDescription="여름" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="항공스포츠"
+                android:text="여름"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"
                 android:gravity="center" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_margin="8dp">
+
+            <ImageButton
+                android:id="@+id/season3"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/season3"
+                android:scaleType="centerCrop"
+                android:contentDescription="가을" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="가을"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_margin="8dp">
+
+            <ImageButton
+                android:id="@+id/season4"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/season4"
+                android:scaleType="centerCrop"
+                android:contentDescription="겨울" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="겨울"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center" />
+        </LinearLayout>
+
     </GridLayout>
 
-    <!-- 저장 버튼 -->
     <TextView
         android:id="@+id/text_min_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="72dp"
         android:text="최소 1개 이상 선택해주세요"
         android:textColor="@android:color/white"
-        android:textSize="16sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.929"
+        app:layout_constraintHorizontal_bias="0.91"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/grid_sports" />
+        app:layout_constraintTop_toBottomOf="@id/season_grid" />
 
     <FrameLayout
         android:id="@+id/save_button_container"

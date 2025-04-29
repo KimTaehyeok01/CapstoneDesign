@@ -46,6 +46,15 @@
         <!-- 레포츠 선택 액티비티 -->
         <activity android:name=".login_signup.SportsSelectActivity" />
 
+        <!-- 성별 선택 액티비티 -->
+        <activity android:name=".login_signup.GenderSelectActivity" />
+
+        <!-- 신장 입력 액티비티 -->
+        <activity android:name=".login_signup.InputHeightActivity" />
+
+        <!-- 계절 선택 액티비티 -->
+        <activity android:name=".login_signup.SeasonSelectActivity" />
+
         <!-- 검색 창 액티비티 -->
         <activity android:name=".SearchActivity" />
 
