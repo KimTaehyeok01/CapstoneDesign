@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
-    private ImageButton navSearch, navHome, navSetting, navMarker;
+    private ImageButton navSearch, navHome, navSetting, navMarker, navHeart;
     private TextView tvWeather;
 
     private TextView tvTodayRecommend;
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         navSearch = findViewById(R.id.nav_search);
         navMarker = findViewById(R.id.nav_marker);
         navHome = findViewById(R.id.nav_home);
+        navHeart = findViewById(R.id.nav_heart);
         navSetting = findViewById(R.id.nav_setting);
 
         navSearch.setOnClickListener(v -> {
@@ -89,6 +90,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, MainActivity.class));
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
+
+        navHeart.setOnClickListener(v -> {
+            Intent intent = new Intent(this, FavoriteListActivity.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        });
+
 
         navSetting.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
