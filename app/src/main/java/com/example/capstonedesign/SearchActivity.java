@@ -34,7 +34,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search); //검색 페이지
+        setContentView(R.layout.activity_search);
 
         ImageButton backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(view -> {
