@@ -86,14 +86,13 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         CollectionReference placesRef = firestore.collection("sports_locations");
-        placesRef.whereGreaterThanOrEqualTo("name", query)
-                .whereLessThanOrEqualTo("name", query + '\uf8ff')
-                .get()
+        placesRef.get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     searchResults.clear();
+                    String lowerQuery = query.toLowerCase();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         String name = doc.getString("name");
-                        if (name != null) {
+                        if (name != null && name.toLowerCase().contains(lowerQuery)) {
                             searchResults.add(name);
                         }
                     }
