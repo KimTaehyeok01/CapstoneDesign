@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.capstonedesign.settings_information.InformationActivity;
 import com.example.capstonedesign.settings_information.PushSettingActivity;
+import com.example.capstonedesign.settings_information.InterestChangeActivity;
 import com.example.capstonedesign.R;
 
 // 자동 버전 표시에 필요한 클래스
@@ -42,6 +43,17 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SettingsActivity.this, InformationActivity.class);
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+            }
+        });
+
+        // 관심사 변경 버튼 클릭 시 InterestChangeActivity로 전환
+        LinearLayout btnChangeInterest = findViewById(R.id.btn_change_interest);
+        btnChangeInterest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingsActivity.this, InterestChangeActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             }

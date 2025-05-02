@@ -87,6 +87,9 @@
         <!-- 계정정보(비밀번호 변경) 액티비티 -->
         <activity android:name=".settings_information.PasswordChangeActivity" />
 
+        <!-- 계정정보(관심사 변경) 액티비티 -->
+        <activity android:name=".settings_information.InterestChangeActivity" />
+
         <!-- 계정정보(푸시알림설정) 액티비티 -->
         <activity android:name=".settings_information.PushSettingActivity" />
 
