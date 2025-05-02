@@ -14,39 +14,76 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.capstonedesign.settings_information.SettingsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.List;
 import java.util.Map;
 
 public class FavoriteListActivity extends AppCompatActivity {
 
     private static final String TAG = "FavoriteListActivity";
 
-    private LinearLayout itemContainer;  // 찜한 장소 카드들을 담을 컨테이너
-    private FirebaseFirestore db;        // Firestore 데이터베이스
-    private FirebaseUser currentUser;    // 현재 로그인한 사용자
+    private LinearLayout itemContainer;
+    private FirebaseFirestore db;
+    private FirebaseUser currentUser;
+
+    // 하단 네비게이션 버튼
+    private ImageButton navSearch, navMarker, navHome, navHeart, navSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite_list);
 
-        // 레이아웃에서 뷰 연결
         itemContainer = findViewById(R.id.item_container);
         ImageButton backButton = findViewById(R.id.back_button);
-
-        // 뒤로가기 버튼 클릭 시 현재 액티비티 종료
         backButton.setOnClickListener(v -> finish());
 
-        // Firebase 연결
+        // 네비게이션 바 버튼 바인딩
+        navSearch  = findViewById(R.id.nav_search);
+        navMarker  = findViewById(R.id.nav_marker);
+        navHome    = findViewById(R.id.nav_home);
+        navHeart   = findViewById(R.id.nav_heart);
+        navSetting = findViewById(R.id.nav_setting);
+
+        navSearch.setOnClickListener(v -> {
+            startActivity(new Intent(FavoriteListActivity.this, SearchActivity.class));
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        });
+        navMarker.setOnClickListener(v -> {
+            startActivity(new Intent(FavoriteListActivity.this, MapActivity.class));
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        });
+        navHome.setOnClickListener(v -> {
+            Intent i = new Intent(FavoriteListActivity.this, MainActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        });
+        navHeart.setOnClickListener(v -> {
+            // 이미 즐겨찾기 화면이므로 새로고침
+            Intent i = new Intent(FavoriteListActivity.this, FavoriteListActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        });
+        navSetting.setOnClickListener(v -> {
+            startActivity(new Intent(FavoriteListActivity.this, SettingsActivity.class));
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        });
+
+        // Firebase 초기화
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        // 현재 로그인한 사용자가 있으면 찜 목록 불러오기
         if (currentUser != null) {
             loadFavoriteItems();
         } else {
@@ -54,91 +91,107 @@ public class FavoriteListActivity extends AppCompatActivity {
         }
     }
 
-    // 찜한 장소들 불러오는 함수
     private void loadFavoriteItems() {
-        String userId = currentUser.getUid();  // 현재 유저 ID
+        String userId = currentUser.getUid();
 
+        // 1) users/{userId}/favorites 컬렉션 조회
         db.collection("users")
                 .document(userId)
                 .collection("favorites")
                 .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    itemContainer.removeAllViews();  // 기존 카드뷰들 모두 제거
-
-                    for (var doc : querySnapshot.getDocuments()) {
-                        Map<String, Object> data = doc.getData();
-                        if (data == null) continue;
-
-                        String name = safe(data.get("name"), "장소명 없음");
-                        String address = safe(data.get("address"), "주소 없음");
-                        String region = safe(data.get("region"), "지역 없음");
-                        String price = safe(data.get("price"), "가격 정보 없음");
-                        String imageUrl = safe(data.get("image"), "");
-
-                        // 카드 뷰 생성
-                        View card = LayoutInflater.from(this).inflate(R.layout.item_favorite_card, itemContainer, false);
-
-                        ImageView img = card.findViewById(R.id.img_place);
-                        TextView tvName = card.findViewById(R.id.tv_place_name);
-                        TextView tvAddress = card.findViewById(R.id.tv_place_address);
-                        TextView tvRegion = card.findViewById(R.id.tv_place_region);
-                        TextView tvPrice = card.findViewById(R.id.tv_place_price);
-                        ImageView btnFavorite = card.findViewById(R.id.img_favorite);
-
-                        // 데이터 세팅
-                        tvName.setText(name);
-                        tvAddress.setText(address);
-                        tvRegion.setText(region);
-                        tvPrice.setText(price);
-
-                        // 이미지 표시
-                        if (!imageUrl.isEmpty()) {
-                            if (imageUrl.startsWith("gs://")) {
-                                // Firebase Storage 경로 처리
-                                StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
-                                storageRef.getDownloadUrl().addOnSuccessListener(uri ->
-                                        Glide.with(this).load(uri.toString()).into(img)
-                                ).addOnFailureListener(e -> {
-                                    Log.e(TAG, "이미지 로드 실패", e);
-                                    img.setImageResource(R.drawable.ic_climb); // 기본 이미지
-                                });
-                            } else {
-                                // 일반 URL
-                                Glide.with(this).load(imageUrl).into(img);
-                            }
-                        } else {
-                            img.setImageResource(R.drawable.ic_climb);  // 이미지 없을 때 기본 이미지
-                        }
-
-                        // 찜 해제 버튼
-                        btnFavorite.setOnClickListener(v -> {
-                            db.collection("users")
-                                    .document(userId)
-                                    .collection("favorites")
-                                    .document(name)
-                                    .delete()
-                                    .addOnSuccessListener(unused -> {
-                                        Toast.makeText(this, "찜 목록에서 제거되었습니다.", Toast.LENGTH_SHORT).show();
-                                        itemContainer.removeView(card);  // 카드뷰 제거
-                                    })
-                                    .addOnFailureListener(e ->
-                                            Toast.makeText(this, "삭제 실패", Toast.LENGTH_SHORT).show()
-                                    );
-                        });
-
-                        // 카드 클릭 시 상세페이지 이동
-                        card.setOnClickListener(v -> {
-                            Intent intent = new Intent(this, PlaceDetailActivity.class);
-                            intent.putExtra("place_name", name);
-                            startActivity(intent);
-                        });
-
-                        // 카드 추가
-                        itemContainer.addView(card);
+                .addOnSuccessListener(favSnap -> {
+                    itemContainer.removeAllViews();
+                    List<DocumentSnapshot> favDocs = favSnap.getDocuments();
+                    if (favDocs.isEmpty()) {
+                        Toast.makeText(this, "찜한 장소가 없습니다.", Toast.LENGTH_SHORT).show();
+                        return;
                     }
 
-                    if (querySnapshot.isEmpty()) {
-                        Toast.makeText(this, "찜한 장소가 없습니다.", Toast.LENGTH_SHORT).show();
+                    for (DocumentSnapshot favDoc : favDocs) {
+                        String name    = safe(favDoc.get("name"),    "장소명 없음");
+                        String address = safe(favDoc.get("address"), "주소 없음");
+
+                        // 2) sports_locations 에서 상세정보 조회
+                        CollectionReference locRef = db.collection("sports_locations");
+                        locRef.whereEqualTo("name", name)
+                                .limit(1)
+                                .get()
+                                .addOnSuccessListener(locSnap -> {
+                                    String region   = "지역 없음";
+                                    String price    = "가격 정보 없음";
+                                    String imageUrl = "";
+
+                                    if (!locSnap.isEmpty()) {
+                                        // DocumentSnapshot 그대로 사용
+                                        DocumentSnapshot locDoc = locSnap.getDocuments().get(0);
+                                        region   = safe(locDoc.get("topic"),   region);
+                                        price    = safe(locDoc.get("details"), price);
+                                        imageUrl = safe(locDoc.get("image"),   "");
+                                    }
+
+                                    // 3) 카드뷰 생성 및 바인딩
+                                    View card = LayoutInflater.from(this)
+                                            .inflate(R.layout.item_favorite_card, itemContainer, false);
+
+                                    ImageView img      = card.findViewById(R.id.img_place);
+                                    TextView  tvName   = card.findViewById(R.id.tv_place_name);
+                                    TextView  tvAddr   = card.findViewById(R.id.tv_place_address);
+                                    TextView  tvRegion = card.findViewById(R.id.tv_place_region);
+                                    TextView  tvPrice  = card.findViewById(R.id.tv_place_price);
+                                    ImageView btnFav   = card.findViewById(R.id.img_favorite);
+
+                                    tvName.setText(name);
+                                    tvAddr.setText(address);
+                                    tvRegion.setText(region);
+                                    tvPrice.setText(price);
+
+                                    // 이미지 로드
+                                    if (!imageUrl.isEmpty()) {
+                                        if (imageUrl.startsWith("gs://")) {
+                                            StorageReference storageRef = FirebaseStorage
+                                                    .getInstance()
+                                                    .getReferenceFromUrl(imageUrl);
+                                            storageRef.getDownloadUrl()
+                                                    .addOnSuccessListener(uri ->
+                                                            Glide.with(this).load(uri.toString()).into(img)
+                                                    )
+                                                    .addOnFailureListener(e -> {
+                                                        Log.e(TAG, "이미지 로드 실패", e);
+                                                        img.setImageResource(R.drawable.ic_climb);
+                                                    });
+                                        } else {
+                                            Glide.with(this).load(imageUrl).into(img);
+                                        }
+                                    } else {
+                                        img.setImageResource(R.drawable.ic_climb);
+                                    }
+
+                                    // 즐겨찾기 해제
+                                    btnFav.setOnClickListener(v -> {
+                                        db.collection("users")
+                                                .document(userId)
+                                                .collection("favorites")
+                                                .document(name)
+                                                .delete()
+                                                .addOnSuccessListener(u -> {
+                                                    Toast.makeText(this, "찜 목록에서 제거되었습니다.", Toast.LENGTH_SHORT).show();
+                                                    itemContainer.removeView(card);
+                                                })
+                                                .addOnFailureListener(e ->
+                                                        Toast.makeText(this, "삭제 실패", Toast.LENGTH_SHORT).show()
+                                                );
+                                    });
+
+                                    // 상세 페이지 이동
+                                    card.setOnClickListener(v -> {
+                                        Intent i = new Intent(this, PlaceDetailActivity.class);
+                                        i.putExtra("place_name", name);
+                                        startActivity(i);
+                                    });
+
+                                    itemContainer.addView(card);
+                                })
+                                .addOnFailureListener(e -> Log.e(TAG, "장소 상세 조회 실패", e));
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -147,8 +200,7 @@ public class FavoriteListActivity extends AppCompatActivity {
                 });
     }
 
-    // 값이 null일 경우 기본값 리턴하는 함수
-    private String safe(Object value, String fallback) {
-        return value != null ? value.toString() : fallback;
+    private String safe(Object val, String def) {
+        return val != null ? val.toString() : def;
     }
 }
