@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -17,6 +18,8 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
+    private static final String TAG = "FCM_TOKEN";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -32,7 +35,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // 알림 메시지 있을 경우
         if (remoteMessage.getNotification() != null) {
             String title = remoteMessage.getNotification().getTitle();
-            String body = remoteMessage.getNotification().getBody();
+            String body  = remoteMessage.getNotification().getBody();
             sendNotification(title, body);
         }
     }
@@ -53,7 +56,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_notification) // 알림 아이콘 (drawable에 반드시 있어야 함)
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle(title)
                         .setContentText(messageBody)
                         .setAutoCancel(true)
@@ -79,6 +82,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String token) {
         super.onNewToken(token);
-        // 여기에 서버 전송 코드 넣을 수 있음
+        // FCM 토큰이 갱신될 때마다 로그에 출력
+        Log.d(TAG, token);
+        // TODO: 서버로 토큰 전송 로직이 필요하면 여기에 작성
     }
 }

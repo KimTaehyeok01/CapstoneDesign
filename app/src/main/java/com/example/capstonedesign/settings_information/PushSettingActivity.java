@@ -52,7 +52,7 @@ public class PushSettingActivity extends AppCompatActivity {
             updateToggleState(btnLocationToggle, isLocationOn);
         });
 
-        // 공지사항 토글
+        // 알림 토글
         btnNoticeToggle.setOnClickListener(v -> {
             isNoticeOn = !isNoticeOn;
             updateToggleState(btnNoticeToggle, isNoticeOn);
