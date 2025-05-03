@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    id 'com.google.gms.google-services' //  Firebase 초기화
+    id 'com.google.gms.google-services' // Firebase 초기화
 }
 
 android {
@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    //  Firebase SDK (최신 BOM 기준)
+    // Firebase SDK (최신 BOM 기준)
     implementation platform('com.google.firebase:firebase-bom:33.10.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
@@ -48,19 +48,22 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
+    // FCM 푸시 메시징
     implementation 'com.google.firebase:firebase-messaging'
+    // In-App Messaging Display (이 한 줄만 추가했습니다)
+    implementation 'com.google.firebase:firebase-inappmessaging-display'
 
-    //  Google Maps & Location
+    // Google Maps & Location
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
 
-    //  Jetpack 기본 라이브러리
+    // Jetpack 기본 라이브러리
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
 
-    //  테스트 라이브러리
+    // 테스트 라이브러리
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

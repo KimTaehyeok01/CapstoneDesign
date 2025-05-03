@@ -24,6 +24,11 @@
         android:theme="@style/Theme.CapstoneDesign"
         tools:targetApi="31">
 
+        <!-- In-App Messaging 자동 데이터 수집 활성화 -->
+        <meta-data
+            android:name="firebase_inapp_messaging_automatic_data_collection_enabled"
+            android:value="true" />
+
         <!-- Google Maps API 키 등록 -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
