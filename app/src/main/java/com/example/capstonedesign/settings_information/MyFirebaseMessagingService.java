@@ -83,7 +83,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onNewToken(String token) {
         super.onNewToken(token);
         // FCM 토큰이 갱신될 때마다 로그에 출력
-        Log.d(TAG, token); //  토큰: eK6xd5kTQK6LT0E6Ce4hae:APA91bE_mldQMmXZRWAu4RaJg8dk9seDIer1e81JKoz70tsBj4tzEUHgSqNT9tmzzqawI4URDjBh08EzjyJl9_gVhxaRjXqsUbKehHepUXBEaRsJ62KTM1Y
+        Log.d(TAG, token);  //  토큰: eK6xd5kTQK6LT0E6Ce4hae:APA91bE_mldQMmXZRWAu4RaJg8dk9seDIer1e81JKoz70tsBj4tzEUHgSqNT9tmzzqawI4URDjBh08EzjyJl9_gVhxaRjXqsUbKehHepUXBEaRsJ62KTM1Y
         // TODO: 서버로 토큰 전송 로직이 필요하면 여기에 작성
     }
 }
