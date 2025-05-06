@@ -5,17 +5,19 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Pair;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -26,19 +28,22 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class NearbyRecommendActivity extends AppCompatActivity {
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1003;
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1003; // 권한 요청 코드
     private FusedLocationProviderClient fusedLocationClient;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
@@ -46,72 +51,47 @@ public class NearbyRecommendActivity extends AppCompatActivity {
     private ImageButton btnBackRecommend;
     private TextView tvWeatherRecommend;
     private EditText editSearchRecommend;
+    private LinearLayout itemContainer;
 
-    private CardView cardRec1, cardRec2;
-    private ImageView imgRec1, imgRec2, btnFav1, btnFav2;
-    private TextView tvRecTitle1, tvRecAddress1, tvRecRegion1, tvRecPrice1;
-    private TextView tvRecTitle2, tvRecAddress2, tvRecRegion2, tvRecPrice2;
-
-    private Location currentLocation;
-    private QueryDocumentSnapshot doc1;
-    private QueryDocumentSnapshot doc2;
-
-    private final String weatherApiKey = "f5a32755e587860fe98d96a6a54af17f"; // OpenWeatherMap API 키
+    // 날씨 API 키
+    private final String weatherApiKey = "f5a32755e587860fe98d96a6a54af17f";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nearby_recommend);
 
-        // View 연결
-        btnBackRecommend = findViewById(R.id.btnBackRecommend);
-        tvWeatherRecommend = findViewById(R.id.tvWeatherRecommend);
+        // View 바인딩
+        btnBackRecommend    = findViewById(R.id.btnBackRecommend);
+        tvWeatherRecommend  = findViewById(R.id.tvWeatherRecommend);
         editSearchRecommend = findViewById(R.id.editSearchRecommend);
+        itemContainer       = findViewById(R.id.item_container);
 
-        cardRec1 = findViewById(R.id.cardRec1);
-        cardRec2 = findViewById(R.id.cardRec2);
-        imgRec1 = findViewById(R.id.imgRec1);
-        imgRec2 = findViewById(R.id.imgRec2);
-        btnFav1 = findViewById(R.id.btnFav1);
-        btnFav2 = findViewById(R.id.btnFav2);
-
-        tvRecTitle1 = findViewById(R.id.tvRecTitle1);
-        tvRecAddress1 = findViewById(R.id.tvRecAddress1);
-        tvRecRegion1 = findViewById(R.id.tvRecRegion1);
-        tvRecPrice1 = findViewById(R.id.tvRecPrice1);
-
-        tvRecTitle2 = findViewById(R.id.tvRecTitle2);
-        tvRecAddress2 = findViewById(R.id.tvRecAddress2);
-        tvRecRegion2 = findViewById(R.id.tvRecRegion2);
-        tvRecPrice2 = findViewById(R.id.tvRecPrice2);
-
-        db = FirebaseFirestore.getInstance();
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        db                  = FirebaseFirestore.getInstance();
+        currentUser         = FirebaseAuth.getInstance().getCurrentUser();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         btnBackRecommend.setOnClickListener(v -> finish());
 
         requestLocationPermission();
-
-        btnFav1.setOnClickListener(v -> toggleFavorite(doc1, btnFav1));
-        btnFav2.setOnClickListener(v -> toggleFavorite(doc2, btnFav2));
-
-        cardRec1.setOnClickListener(v -> openDetail(doc1));
-        cardRec2.setOnClickListener(v -> openDetail(doc2));
     }
 
+    // 위치 권한 요청
     private void requestLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
+                    LOCATION_PERMISSION_REQUEST_CODE
+            );
         } else {
-            getLastLocation();
+            fetchLocationAndData();
         }
     }
 
-    private void getLastLocation() {
+    // 권한 승인 후 위치와 데이터 가져오기
+    private void fetchLocationAndData() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -119,143 +99,183 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     if (location != null) {
-                        currentLocation = location;
-                        fetchWeather(location.getLatitude(), location.getLongitude());
-                        fetchNearbyRecommendations();
+                        double lat = location.getLatitude();
+                        double lon = location.getLongitude();
+                        fetchWeather(lat, lon);
+                        fetchNearbyRecommendations(location);
                     } else {
                         tvWeatherRecommend.setText("위치를 찾을 수 없습니다.");
                     }
                 });
     }
 
+    // 날씨 정보 가져오기
     private void fetchWeather(double latitude, double longitude) {
-        String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude +
-                "&lon=" + longitude +
-                "&appid=" + weatherApiKey +
-                "&lang=kr&units=metric";
+        String urlStr = "https://api.openweathermap.org/data/2.5/weather?lat="
+                + latitude
+                + "&lon=" + longitude
+                + "&appid=" + weatherApiKey
+                + "&lang=kr&units=metric";
 
         new Thread(() -> {
             try {
-                java.net.URL requestUrl = new java.net.URL(url);
-                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) requestUrl.openConnection();
-                connection.setRequestMethod("GET");
+                URL url = new URL(urlStr);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
 
-                java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(conn.getInputStream())
+                );
+                StringBuilder sb = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    response.append(line);
+                    sb.append(line);
                 }
                 reader.close();
-                connection.disconnect();
+                conn.disconnect();
 
-                org.json.JSONObject json = new org.json.JSONObject(response.toString());
-                String description = json.getJSONArray("weather").getJSONObject(0).getString("description");
+                JSONObject json = new JSONObject(sb.toString());
+                String description = json.getJSONArray("weather")
+                        .getJSONObject(0)
+                        .getString("description");
                 double temp = json.getJSONObject("main").getDouble("temp");
 
-                runOnUiThread(() -> tvWeatherRecommend.setText("현재 날씨: " + description + " (" + temp + "°C)"));
+                runOnUiThread(() ->
+                        tvWeatherRecommend.setText(
+                                "현재 날씨: " + description + " (" + temp + "°C)"
+                        )
+                );
             } catch (Exception e) {
                 e.printStackTrace();
-                runOnUiThread(() -> tvWeatherRecommend.setText("날씨 불러오기 실패"));
+                runOnUiThread(() ->
+                        tvWeatherRecommend.setText("날씨 불러오기 실패")
+                );
             }
         }).start();
     }
 
-    private void fetchNearbyRecommendations() {
-        if (currentLocation == null) return;
-
+    // 주변 장소 50km 이내 최대 5개 가져오기
+    private void fetchNearbyRecommendations(Location currentLocation) {
         CollectionReference locationsRef = db.collection("sports_locations");
-
         locationsRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<QueryDocumentSnapshot> documents = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    documents.add(doc);
-                }
-
-                // 거리순 정렬
-                Collections.sort(documents, Comparator.comparingDouble(doc -> {
-                    double lat = doc.getDouble("latitude");
-                    double lon = doc.getDouble("longitude");
-                    float[] result = new float[1];
-                    Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), lat, lon, result);
-                    return result[0];
-                }));
-
-                if (documents.size() >= 2) {
-                    doc1 = documents.get(0);
-                    doc2 = documents.get(1);
-
-                    updateCardView(doc1, imgRec1, tvRecTitle1, tvRecAddress1, tvRecRegion1, tvRecPrice1);
-                    updateCardView(doc2, imgRec2, tvRecTitle2, tvRecAddress2, tvRecRegion2, tvRecPrice2);
-                } else {
-                    Toast.makeText(this, "추천할 장소가 부족합니다.", Toast.LENGTH_SHORT).show();
-                }
-            } else {
+            if (!task.isSuccessful()) {
                 Toast.makeText(this, "장소를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<Pair<QueryDocumentSnapshot, Float>> docDistances = new ArrayList<>();
+            for (QueryDocumentSnapshot doc : task.getResult()) {
+                Double latObj = doc.getDouble("latitude");
+                Double lonObj = doc.getDouble("longitude");
+                if (latObj == null || lonObj == null) continue;
+                float[] result = new float[1];
+                Location.distanceBetween(
+                        currentLocation.getLatitude(),
+                        currentLocation.getLongitude(),
+                        latObj, lonObj,
+                        result
+                );
+                float dist = result[0];
+                if (dist <= 50000) {
+                    docDistances.add(Pair.create(doc, dist));
+                }
+            }
+
+            Collections.sort(docDistances, Comparator.comparingDouble(p -> p.second));
+            int limit = Math.min(docDistances.size(), 5);
+
+            itemContainer.removeAllViews();
+            for (int i = 0; i < limit; i++) {
+                addRecommendationCard(docDistances.get(i).first);
             }
         });
     }
 
-    private void updateCardView(QueryDocumentSnapshot doc, ImageView img, TextView title, TextView address, TextView region, TextView price) {
-        String name = doc.getString("name");
-        String addr = doc.getString("address");
-        String topic = doc.getString("topic");
-        String details = doc.getString("details");
+    // 카드뷰 인플레이트 및 데이터 바인딩
+    private void addRecommendationCard(QueryDocumentSnapshot doc) {
+        View card = LayoutInflater.from(this)
+                .inflate(R.layout.item_nearby_card, itemContainer, false);
+
+        ImageView imgPlace    = card.findViewById(R.id.img_place);
+        TextView tvName       = card.findViewById(R.id.tv_place_name);
+        TextView tvAddress    = card.findViewById(R.id.tv_place_address);
+        TextView tvRegion     = card.findViewById(R.id.tv_place_region);
+        TextView tvPrice      = card.findViewById(R.id.tv_place_price);
+        ImageView imgFavorite = card.findViewById(R.id.img_favorite);
+
+        String name     = doc.getString("name");
+        String address  = doc.getString("address");
+        String region   = doc.getString("topic");
+        String details  = doc.getString("details");
         String imageUrl = doc.getString("image");
 
-        title.setText(name != null ? name : "장소명 없음");
-        address.setText(addr != null ? addr : "주소 없음");
-        region.setText(topic != null ? topic : "지역 없음");
-        price.setText(details != null ? "정보 제공 중" : "가격 정보 없음");
+        tvName   .setText(name    != null ? name    : "장소명 없음");
+        tvAddress.setText(address != null ? address : "주소 없음");
+        tvRegion .setText(region  != null ? region  : "지역 없음");
+        tvPrice  .setText(details != null ? details : "가격 정보 없음");
 
         if (imageUrl != null && !imageUrl.isEmpty()) {
-            if (imageUrl.startsWith("gs://")) {
-                // gs:// Storage 경로 처리
-                StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
-                storageRef.getDownloadUrl().addOnSuccessListener(uri ->
-                        Glide.with(this).load(uri.toString()).into(img)
-                ).addOnFailureListener(e ->
-                        Toast.makeText(this, "이미지 로드 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
-            } else {
-                Glide.with(this).load(imageUrl).into(img);
-            }
+            Glide.with(this).load(imageUrl).into(imgPlace);
         } else {
-            img.setImageResource(R.drawable.ic_climb); // 데이터베이스에 사진이 없을 경우 대체 이미지
+            imgPlace.setImageResource(R.drawable.ic_climb);
         }
+
+        // 찜아이콘 클릭 시 즐겨찾기 상태 반영
+        if (currentUser != null && name != null) {
+            String userId = currentUser.getUid();
+            DocumentReference favRef = db
+                    .collection("users")
+                    .document(userId)
+                    .collection("favorites")
+                    .document(name);
+            favRef.get().addOnSuccessListener(snap -> {
+                if (snap.exists()) {
+                    imgFavorite.setImageResource(R.drawable.baseline_favorite_24);
+                } else {
+                    imgFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
+                }
+            });
+        } else {
+            imgFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
+        }
+
+        // 클릭하면 토글
+        imgFavorite.setOnClickListener(v -> toggleFavorite(doc, imgFavorite));
+        // 카드 클릭 시 상세화면
+        card.setOnClickListener(v -> openDetail(doc));
+
+        itemContainer.addView(card);
     }
 
+    // 찜 토글
     private void toggleFavorite(QueryDocumentSnapshot doc, ImageView favButton) {
         if (currentUser == null) {
             Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (doc == null) {
-            Toast.makeText(this, "장소 정보가 없습니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         String userId = currentUser.getUid();
-        String name = doc.getString("name");
-        String address = doc.getString("address");
+        String name   = doc.getString("name");
+        String addr   = doc.getString("address");
+        if (name == null) return;
 
-        DocumentReference favRef = db.collection("users")
+        DocumentReference favRef = db
+                .collection("users")
                 .document(userId)
                 .collection("favorites")
                 .document(name);
 
-        favRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
+        favRef.get().addOnSuccessListener(snap -> {
+            if (snap.exists()) {
+                // 해제
                 favRef.delete().addOnSuccessListener(unused -> {
                     Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
                     favButton.setImageResource(R.drawable.baseline_favorite_border_24);
                 });
             } else {
-                Map<String, Object> data = new HashMap<>();
+                // 추가
+                Map<String,Object> data = new java.util.HashMap<>();
                 data.put("name", name);
-                data.put("address", address);
-
+                data.put("address", addr);
                 favRef.set(data).addOnSuccessListener(unused -> {
                     Toast.makeText(this, "찜 추가됨", Toast.LENGTH_SHORT).show();
                     favButton.setImageResource(R.drawable.baseline_favorite_24);
@@ -264,28 +284,27 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         });
     }
 
+    // 상세 페이지 이동
     private void openDetail(QueryDocumentSnapshot doc) {
-        if (doc == null) return;
-
         String placeName = doc.getString("name");
         if (placeName == null) return;
-
         Intent intent = new Intent(this, PlaceDetailActivity.class);
         intent.putExtra("place_name", placeName);
         startActivity(intent);
     }
 
+    // 권한 결과 처리
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
-            } else {
-                Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-            }
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE
+                && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            fetchLocationAndData();
+        } else {
+            Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
         }
     }
 }

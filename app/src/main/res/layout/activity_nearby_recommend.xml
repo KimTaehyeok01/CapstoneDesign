@@ -44,6 +44,7 @@
             android:layout_height="wrap_content"
             android:text="현재 날씨 ☀️"
             android:textSize="12sp"/>
+
     </LinearLayout>
 
     <!-- 2. 검색 바 -->
@@ -76,6 +77,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
+            android:id="@+id/content_layout"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,213 +90,15 @@
                 android:layout_height="wrap_content"
                 android:text="주변 활동 추천!"
                 android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
 
-            <!-- 1번째 추천 카드 -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardRec1"
+            <!-- 카드 인플레이트용 컨테이너 -->
+            <LinearLayout
+                android:id="@+id/item_container"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackground"
-                android:onClick="onRec1Clicked">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/imgRec1"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_climb"
-                        android:contentDescription="첫 번째 추천 이미지"/>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp">
-
-                        <TextView
-                            android:id="@+id/tvRecTitle1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="역삼 클라이밍랩"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:id="@+id/tvRecAddress1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="서울 강남구 테헤란로30길 49"
-                            android:textSize="13sp"
-                            android:layout_marginTop="4dp"/>
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp">
-
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:src="@drawable/baseline_edit_location_24"
-                                android:contentDescription="위치 아이콘"/>
-
-                            <TextView
-                                android:id="@+id/tvRecRegion1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="서울 강남"
-                                android:textSize="13sp"
-                                android:layout_marginStart="4dp"/>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp">
-
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:src="@drawable/baseline_attach_money_24"
-                                android:contentDescription="가격 아이콘"/>
-
-                            <TextView
-                                android:id="@+id/tvRecPrice1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="무료이용 가능"
-                                android:textSize="13sp"
-                                android:layout_marginStart="4dp"/>
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/btnFav1"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/baseline_favorite_border_24"
-                        android:contentDescription="첫 번째 찜 버튼"
-                        android:clickable="true"
-                        android:focusable="true"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- 2번째 추천 카드 -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardRec2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackground"
-                android:onClick="onRec2Clicked">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="12dp">
-
-                    <ImageView
-                        android:id="@+id/imgRec2"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_climb2"
-                        android:contentDescription="두 번째 추천 이미지"/>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp">
-
-                        <TextView
-                            android:id="@+id/tvRecTitle2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="홍대 클라이밍짐"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:id="@+id/tvRecAddress2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="서울 강남구 논현로76길 27"
-                            android:textSize="13sp"
-                            android:layout_marginTop="4dp"/>
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp">
-
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:src="@drawable/baseline_edit_location_24"
-                                android:contentDescription="위치 아이콘"/>
-
-                            <TextView
-                                android:id="@+id/tvRecRegion2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="서울 강남"
-                                android:textSize="13sp"
-                                android:layout_marginStart="4dp"/>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp">
-
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:src="@drawable/baseline_attach_money_24"
-                                android:contentDescription="가격 아이콘"/>
-
-                            <TextView
-                                android:id="@+id/tvRecPrice2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="132,466 원"
-                                android:textSize="13sp"
-                                android:layout_marginStart="4dp"/>
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/btnFav2"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/baseline_favorite_border_24"
-                        android:contentDescription="두 번째 찜 버튼"
-                        android:clickable="true"
-                        android:focusable="true"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
     </ScrollView>

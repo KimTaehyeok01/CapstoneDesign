@@ -24,6 +24,7 @@
         android:layout_height="24dp"
         android:src="@drawable/search_ic_back_arrow"
         android:background="@android:color/transparent"
+        android:onClick="onBackClicked"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -92,6 +93,7 @@
             android:src="@drawable/ic_cancle"
             android:background="@android:color/transparent"
             android:contentDescription="검색 취소 아이콘"
+            android:onClick="onCancelSearchClicked"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -145,7 +147,7 @@
             android:backgroundTint="#F0F0F0"/>
     </LinearLayout>
 
-    <!-- 🔽 스크롤 가능한 찜 목록 🔽 -->
+    <!-- 스크롤 가능한 찜 목록 -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_view"
         android:layout_width="0dp"
@@ -182,7 +184,8 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:src="@drawable/ic_main_search"
-            android:contentDescription="검색" />
+            android:contentDescription="검색"
+            android:onClick="onNavSearchClicked"/>
 
         <ImageButton
             android:id="@+id/nav_marker"
@@ -191,7 +194,8 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:src="@drawable/ic_main_marker"
-            android:contentDescription="마커" />
+            android:contentDescription="마커"
+            android:onClick="onNavMarkerClicked"/>
 
         <ImageButton
             android:id="@+id/nav_home"
@@ -200,7 +204,8 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:src="@drawable/ic_main_home"
-            android:contentDescription="홈" />
+            android:contentDescription="홈"
+            android:onClick="onNavHomeClicked"/>
 
         <ImageButton
             android:id="@+id/nav_heart"
@@ -209,7 +214,8 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:src="@drawable/ic_main_heart"
-            android:contentDescription="즐겨찾기" />
+            android:contentDescription="즐겨찾기"
+            android:onClick="onNavHeartClicked"/>
 
         <ImageButton
             android:id="@+id/nav_setting"
@@ -218,6 +224,8 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:src="@drawable/ic_main_setting"
-            android:contentDescription="설정" />
+            android:contentDescription="설정"
+            android:onClick="onNavSettingClicked"/>
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
