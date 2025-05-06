@@ -1,8 +1,10 @@
 package com.example.capstonedesign.login_signup;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.inputmethod.EditorInfo;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -19,8 +21,11 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextEmail, editTextPassword;
     private ImageButton btnLogin, btnBack;
     private TextView btnRegister, btnFindPw;
+    private CheckBox checkboxAutoLogin;
 
     private FirebaseAuth mAuth;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +35,10 @@ public class LoginActivity extends AppCompatActivity {
         // Firebase Auth 초기화
         mAuth = FirebaseAuth.getInstance();
 
+        // SharedPreferences 초기화 (자동 로그인용)
+        preferences = getSharedPreferences("autoLogin", MODE_PRIVATE);
+        editor = preferences.edit();
+
         // UI 연결
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextPassword = findViewById(R.id.editTextPassword);
@@ -37,6 +46,13 @@ public class LoginActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
         btnFindPw = findViewById(R.id.btnFindPw);
         btnBack = findViewById(R.id.btnBack);
+        checkboxAutoLogin = findViewById(R.id.checkboxAutoLogin);
+
+        // 앱 시작할 때 자동 로그인 체크
+        if (preferences.getBoolean("autoLoginEnabled", false)) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
 
         // 로그인 버튼 클릭 시
         btnLogin.setOnClickListener(v -> {
@@ -53,6 +69,14 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(this, "로그인 성공!", Toast.LENGTH_SHORT).show();
+                            // 자동 로그인 체크되어 있으면 저장
+                            if (checkboxAutoLogin.isChecked()) {
+                                editor.putBoolean("autoLoginEnabled", true);
+                                editor.apply();
+                            } else {
+                                editor.remove("autoLoginEnabled");
+                                editor.apply();
+                            }
                             Intent intent = new Intent(this, MainActivity.class);
                             startActivity(intent);
                             finish();

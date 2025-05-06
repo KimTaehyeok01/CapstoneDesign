@@ -200,7 +200,7 @@
             android:textColor="#888888"
             android:layout_marginBottom="8dp" />
 
-        <!-- 앱 버전 텍스트 -->
+        <!-- 앱 버전 텍스트 (클릭 가능) -->
         <TextView
             android:id="@+id/text_app_version"
             android:layout_width="match_parent"
@@ -208,7 +208,20 @@
             android:text="앱 버전"
             android:textSize="16sp"
             android:textColor="@android:color/black"
-            android:paddingVertical="12dp" />
+            android:paddingVertical="12dp"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <!-- 실제 버전 정보 -->
+        <TextView
+            android:id="@+id/text_version_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="v1.0.0"
+            android:textSize="16sp"
+            android:textColor="#444444"
+            android:visibility="gone"
+            android:paddingTop="4dp" />
 
     </LinearLayout>
 </ScrollView>

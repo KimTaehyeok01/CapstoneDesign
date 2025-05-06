@@ -25,7 +25,8 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
                 android:src="@drawable/search_ic_back_arrow"
-                android:contentDescription="뒤로가기" />
+                android:contentDescription="뒤로가기"
+                android:onClick="onBackClicked" />
 
             <TextView
                 android:id="@+id/toolbarTitle"
@@ -44,7 +45,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_main_home"
-                android:contentDescription="홈으로" />
+                android:contentDescription="홈으로"
+                android:onClick="onHomeClicked" />
         </RelativeLayout>
 
         <!-- 상세 내용 -->
@@ -82,7 +84,8 @@
                     android:layout_height="24dp"
                     android:layout_alignParentEnd="true"
                     android:src="@drawable/baseline_favorite_border_24"
-                    android:contentDescription="찜 아이콘" />
+                    android:contentDescription="찜 아이콘"
+                    android:onClick="onFavoriteClicked" />
             </RelativeLayout>
 
             <!-- 주소 -->
@@ -110,6 +113,7 @@
 
             <!-- 운영시간 -->
             <LinearLayout
+                android:id="@+id/textViewHours"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -130,32 +134,39 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="금13:00~23:00" />
+                        android:text="금 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="토13:00~19:00" />
+                        android:text="토 13:00~19:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="일13:00~23:00" />
+                        android:text="일 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="월13:00~23:00" />
+                        android:text="월 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="화13:00~23:00" />
+                        android:text="화 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="수13:00~23:00" />
+                        android:text="수 13:00~23:00" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="13:00~23:00" />
+                        android:text="목 13:00~23:00" />
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- 가격 -->
@@ -172,6 +183,7 @@
                     android:contentDescription="돈 아이콘" />
 
                 <TextView
+                    android:id="@+id/textViewPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="무료이용 가능 ~ 123,456,789 원"
@@ -187,17 +199,23 @@
                 android:layout_marginTop="12dp">
 
                 <ImageView
+                    android:id="@+id/imageViewCall"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_call"
-                    android:contentDescription="전화 아이콘" />
+                    android:contentDescription="전화 아이콘"
+                    android:clickable="true"
+                    android:focusable="true" />
 
                 <TextView
+                    android:id="@+id/textViewPhone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="033-1234-5678"
                     android:layout_marginStart="8dp"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:clickable="true"
+                    android:focusable="true" />
             </LinearLayout>
 
             <!-- 더보기 -->

@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:background="#FFFDF7">
 
-    <!-- 스크롤 가능한 콘텐츠 -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
@@ -24,7 +23,6 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- 상단 앱 바 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -32,7 +30,6 @@
                 android:gravity="center_vertical"
                 android:paddingBottom="8dp">
 
-                <!-- 메뉴 아이콘(클릭 가능) -->
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
@@ -40,7 +37,6 @@
                     android:clickable="true"
                     android:foreground="?attr/selectableItemBackground" />
 
-                <!-- 어플 이름 -->
                 <TextView
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -50,8 +46,8 @@
                     android:gravity="center"
                     android:textColor="#000000" />
 
-                <!-- 현재 날씨(클릭 가능) -->
                 <TextView
+                    android:id="@+id/tv_weather"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="현재 날씨 ☀️"
@@ -60,7 +56,6 @@
                     android:foreground="?attr/selectableItemBackground"/>
             </LinearLayout>
 
-            <!-- 검색창 -->
             <EditText
                 android:id="@+id/main_search_bar"
                 android:layout_width="match_parent"
@@ -70,7 +65,6 @@
                 android:hint="활동하고 싶은 레저를 검색해보세요"
                 android:padding="8dp" />
 
-            <!-- 아이콘 메뉴 (2행 4열) -->
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,7 +73,7 @@
                 android:padding="8dp"
                 android:layout_marginBottom="16dp">
 
-                <!-- 클라이밍 -->
+
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -102,7 +96,6 @@
                         android:textColor="#000000" />
                 </LinearLayout>
 
-                <!-- 카누 -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -125,7 +118,6 @@
                         android:textColor="#000000" />
                 </LinearLayout>
 
-                <!-- 서핑 -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -148,7 +140,6 @@
                         android:textColor="#000000" />
                 </LinearLayout>
 
-                <!-- 양궁 -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -171,7 +162,6 @@
                         android:textColor="#000000" />
                 </LinearLayout>
 
-                <!-- 스키 -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -194,7 +184,6 @@
                         android:textColor="#000000" />
                 </LinearLayout>
 
-                <!-- 아이스 스케이트 -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -217,7 +206,6 @@
                         android:textColor="#000000" />
                 </LinearLayout>
 
-                <!-- 행글라이딩 -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -240,7 +228,6 @@
                         android:textColor="#000000" />
                 </LinearLayout>
 
-                <!-- 패러글라이딩 -->
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="0dp"
@@ -264,16 +251,18 @@
                 </LinearLayout>
             </GridLayout>
 
-            <!-- 오늘의 추천! -->
+
             <TextView
+                android:id="@+id/tv_today_recommend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="오늘의 추천!"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground" />
 
-            <!-- 추천 아이템 (부평클라이밍센터 / 강화루지) -->
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -281,6 +270,7 @@
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
+                    android:id="@+id/layout_today_item1"
                     android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -288,12 +278,15 @@
                     android:layout_marginEnd="8dp"
                     android:clickable="true"
                     android:foreground="?attr/selectableItemBackground">
+
                     <ImageView
+                        android:id="@+id/img_today_item1"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/ic_climb"/>
+                        android:src="@drawable/ic_climb" />
                     <TextView
+                        android:id="@+id/tv_today_item1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="부평클라이밍센터"
@@ -305,6 +298,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/layout_today_item2"
                     android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -313,12 +307,15 @@
                     android:gravity="center_horizontal"
                     android:clickable="true"
                     android:foreground="?attr/selectableItemBackground">
+
                     <ImageView
+                        android:id="@+id/img_today_item2"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_luzi" />
                     <TextView
+                        android:id="@+id/tv_today_item2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="강화루지"
@@ -329,14 +326,16 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 주변 활동 추천! -->
             <TextView
+                android:id="@+id/tv_nearby_recommend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="주변 활동 추천!"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground" />
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -345,6 +344,7 @@
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
+                    android:id="@+id/layout_nearby_item1"
                     android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -352,12 +352,15 @@
                     android:layout_marginEnd="8dp"
                     android:clickable="true"
                     android:foreground="?attr/selectableItemBackground">
+
                     <ImageView
+                        android:id="@+id/img_nearby_item1"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/ic_climb"/>
+                        android:src="@drawable/ic_climb" />
                     <TextView
+                        android:id="@+id/tv_nearby_item1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="부평클라이밍센터"
@@ -369,6 +372,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/layout_nearby_item2"
                     android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -377,12 +381,15 @@
                     android:gravity="center_horizontal"
                     android:clickable="true"
                     android:foreground="?attr/selectableItemBackground">
+
                     <ImageView
+                        android:id="@+id/img_nearby_item2"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/ic_luzi" />
                     <TextView
+                        android:id="@+id/tv_nearby_item2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="강화루지"
@@ -395,7 +402,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- 하단 네비게이션 -->
     <LinearLayout
         android:id="@+id/bottom_navigation"
         android:layout_width="0dp"
