@@ -28,7 +28,21 @@ exports.recommendPlacesByGPT = onCall(
         ? user.interests.join(", ")
         : "관심사 없음";
 
-      const prompt = `신장 ${height}cm, 계절은 ${season}, 관심사는 ${interestCategory}, 관심계절은 ${interestSeasons} 인 사용자를 위한 레저 장소 5곳을 추천해줘. `;
+      const prompt = `신장 ${height}cm, 계절은 ${season}, 관심사는 ${interestCategory}, 관심계절은 ${interestSeasons} 인 사용자를 위한 레저 장소 5곳을 추천해줘.
+      다음 형식의 JSON 배열로 응답해줘:
+
+      [
+        {
+          "name": "장소 이름",
+          "address": "주소",
+          "region": "지역 (예: 강릉, 부산)",
+          "price": "이용요금 상세 정보"
+        },
+        ...
+      ]
+
+      ※ JSON 형식을 엄격히 지켜줘. 설명 없이 JSON 배열만 응답해줘.
+      `;
 
       const response = await axios.post(
         "https://api.openai.com/v1/chat/completions",

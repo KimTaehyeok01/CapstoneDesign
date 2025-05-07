@@ -99,6 +99,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+            <!-- 🔽 추가된 버튼 -->
+            <Button
+                android:id="@+id/recommendButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="추천받기"
+                android:layout_marginTop="16dp"/>
+
+            <!-- 🔽 추가된 결과 출력 TextView -->
+            <TextView
+                android:id="@+id/resultTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="추천 결과가 여기에 표시됩니다."
+                android:textSize="14sp"
+                android:textColor="#000000"
+                android:layout_marginTop="12dp"/>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
