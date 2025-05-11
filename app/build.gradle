@@ -67,4 +67,8 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
+    implementation 'com.google.firebase:firebase-functions:20.3.0'
+    implementation 'com.google.firebase:firebase-auth:22.3.0' // userId 가져올 경우 필요
+
 }
