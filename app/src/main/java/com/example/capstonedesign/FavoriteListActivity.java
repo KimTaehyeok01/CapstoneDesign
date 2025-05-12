@@ -69,7 +69,6 @@ public class FavoriteListActivity extends AppCompatActivity {
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
         navHeart.setOnClickListener(v -> {
-            // 이미 즐겨찾기 화면이므로 새로고침
             Intent i = new Intent(FavoriteListActivity.this, FavoriteListActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);

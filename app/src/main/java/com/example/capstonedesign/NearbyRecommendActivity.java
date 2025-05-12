@@ -266,13 +266,13 @@ public class NearbyRecommendActivity extends AppCompatActivity {
 
         favRef.get().addOnSuccessListener(snap -> {
             if (snap.exists()) {
-                // 해제
+                // 찜 해제
                 favRef.delete().addOnSuccessListener(unused -> {
                     Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
                     favButton.setImageResource(R.drawable.baseline_favorite_border_24);
                 });
             } else {
-                // 추가
+                // 찜 추가
                 Map<String,Object> data = new java.util.HashMap<>();
                 data.put("name", name);
                 data.put("address", addr);

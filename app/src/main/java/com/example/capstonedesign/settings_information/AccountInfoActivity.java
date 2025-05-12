@@ -1,5 +1,6 @@
 package com.example.capstonedesign.settings_information;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -26,6 +27,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     private EditText editName, editAge;
     private FrameLayout btnModifyContainer;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

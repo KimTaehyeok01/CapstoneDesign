@@ -66,7 +66,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        // Android 8.0 이상은 채널 등록 필요
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     channelId,
@@ -84,6 +83,5 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         super.onNewToken(token);
         // FCM 토큰이 갱신될 때마다 로그에 출력
         Log.d(TAG, token);  //  토큰: eK6xd5kTQK6LT0E6Ce4hae:APA91bE_mldQMmXZRWAu4RaJg8dk9seDIer1e81JKoz70tsBj4tzEUHgSqNT9tmzzqawI4URDjBh08EzjyJl9_gVhxaRjXqsUbKehHepUXBEaRsJ62KTM1Y
-        // TODO: 서버로 토큰 전송 로직이 필요하면 여기에 작성
     }
 }

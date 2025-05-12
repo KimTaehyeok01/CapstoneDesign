@@ -44,7 +44,7 @@ public class InformationActivity extends AppCompatActivity {
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
 
-        // 비밀번호 변경 버튼 (여기에 추가)
+        // 비밀번호 변경 버튼
         LinearLayout btnPasswordChange = findViewById(R.id.btn_password_change);
         btnPasswordChange.setOnClickListener(v -> {
             Intent intent = new Intent(InformationActivity.this, PasswordChangeActivity.class);

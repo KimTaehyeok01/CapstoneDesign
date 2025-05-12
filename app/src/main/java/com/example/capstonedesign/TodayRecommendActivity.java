@@ -233,7 +233,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         itemContainer.addView(card);
     }
 
-    // 6) 찜(즐겨찾기) 토글
+    // 6) 찜 화면(즐겨찾기) 토글
     private void toggleFavorite(QueryDocumentSnapshot doc, ImageView favButton) {
         if (currentUser == null) {
             Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
