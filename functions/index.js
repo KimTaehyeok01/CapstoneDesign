@@ -5,7 +5,7 @@ const axios = require("axios");
 admin.initializeApp();
 const db = admin.firestore();
 
-// ✅ Gen 2 + Node.js 22 함수 선언
+// Gen 2 + Node.js 22 함수 선언
 exports.recommendPlacesByGPT = onCall(
   {
     region: "asia-northeast3",
