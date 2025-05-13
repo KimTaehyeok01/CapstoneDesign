@@ -4,8 +4,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_interest_change"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:layout_height="match_parent">
+
+    <!-- 배경 이미지 -->
+    <ImageView
+        android:id="@+id/imgBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/search_page"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- 뒤로가기 -->
     <ImageButton
@@ -119,11 +130,6 @@
     </LinearLayout>
 
     <!-- 계절 안내문 -->
-
-    <!-- 중간 구분선 -->
-
-    <!-- “레저스포츠” 레이블 -->
-
     <TextView
         android:id="@+id/tvSeasonInstruction"
         android:layout_width="wrap_content"
@@ -136,6 +142,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/llSeasonButtons" />
 
+    <!-- 중간 구분선 -->
     <ImageView
         android:id="@+id/lineMid"
         android:layout_width="0dp"
@@ -143,10 +150,10 @@
         android:layout_marginTop="28dp"
         android:src="@drawable/ic_interest_line"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSeasonInstruction" />
 
+    <!-- “레저스포츠” 레이블 -->
     <TextView
         android:id="@+id/tvSportsLabel"
         android:layout_width="wrap_content"
@@ -208,9 +215,6 @@
     </LinearLayout>
 
     <!-- 스포츠 안내문 -->
-
-    <!-- 확인 버튼 (건들지 않음) -->
-
     <TextView
         android:id="@+id/tvSportsInstruction"
         android:layout_width="wrap_content"
@@ -223,6 +227,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/llSportsButtons" />
 
+    <!-- 확인 버튼 (원본 그대로) -->
     <FrameLayout
         android:id="@+id/btnConfirmContainer"
         android:layout_width="283dp"
