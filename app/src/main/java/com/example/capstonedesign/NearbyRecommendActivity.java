@@ -6,10 +6,10 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Pair;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.view.LayoutInflater;        // 원본 코드
+import android.view.View;                 // 원본 코드
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageButton;         // ★ 추가: 새로고침 버튼을 위해 import
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,6 +49,7 @@ public class NearbyRecommendActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
 
     private ImageButton btnBackRecommend;
+    private ImageButton btnRefreshRecommend;   // ★ 추가: 새로고침 버튼 참조
     private TextView tvWeatherRecommend;
     private EditText editSearchRecommend;
     private LinearLayout itemContainer;
@@ -63,6 +64,7 @@ public class NearbyRecommendActivity extends AppCompatActivity {
 
         // View 바인딩
         btnBackRecommend    = findViewById(R.id.btnBackRecommend);
+        btnRefreshRecommend = findViewById(R.id.btnRefreshRecommend);
         tvWeatherRecommend  = findViewById(R.id.tvWeatherRecommend);
         editSearchRecommend = findViewById(R.id.editSearchRecommend);
         itemContainer       = findViewById(R.id.item_container);
@@ -71,7 +73,23 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         currentUser         = FirebaseAuth.getInstance().getCurrentUser();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        // 뒤로가기 버튼
         btnBackRecommend.setOnClickListener(v -> finish());
+
+        // 새로고침 클릭 시 위치 & 주변 추천 재조회, 페이드 애니메이션
+        btnRefreshRecommend.setOnClickListener(v -> {
+            itemContainer.animate()
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction(() -> {
+                        fetchLocationAndData();    // 위치와 데이터 재로드
+                        itemContainer.setAlpha(0f);
+                        itemContainer.animate()
+                                .alpha(1f)
+                                .setDuration(200)
+                                .start();
+                    });
+        });
 
         requestLocationPermission();
     }
@@ -182,7 +200,7 @@ public class NearbyRecommendActivity extends AppCompatActivity {
             }
 
             Collections.sort(docDistances, Comparator.comparingDouble(p -> p.second));
-            int limit = Math.min(docDistances.size(), 5);
+            int limit = Math.min(docDistances.size(), 7);
 
             itemContainer.removeAllViews();
             for (int i = 0; i < limit; i++) {

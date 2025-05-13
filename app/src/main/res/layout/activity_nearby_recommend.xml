@@ -44,7 +44,6 @@
             android:layout_height="wrap_content"
             android:text="현재 날씨 ☀️"
             android:textSize="12sp"/>
-
     </LinearLayout>
 
     <!-- 2. 검색 바 -->
@@ -83,15 +82,32 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- 오늘의 추천 헤더 -->
-            <TextView
-                android:id="@+id/tvRecommendHeader"
-                android:layout_width="wrap_content"
+            <!-- 오늘의 추천 헤더 (텍스트 + 새로고침 버튼) -->
+            <LinearLayout
+                android:id="@+id/header_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="주변 활동 추천!"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/tvRecommendHeader"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="주변 활동 추천!"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <ImageButton
+                    android:id="@+id/btnRefreshRecommend"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_refresh"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="새로 고침"/>
+            </LinearLayout>
 
             <!-- 카드 인플레이트용 컨테이너 -->
             <LinearLayout
