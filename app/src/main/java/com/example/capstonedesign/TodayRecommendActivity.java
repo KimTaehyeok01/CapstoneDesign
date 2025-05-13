@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,7 +49,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
     private ImageButton btnBackRecommend;
     private ImageButton btnRefreshRecommend;
     private TextView tvWeatherRecommend;
-    private EditText editSearchRecommend;
     private LinearLayout itemContainer;
 
     private final String weatherApiKey = "f5a32755e587860fe98d96a6a54af17f";
@@ -64,7 +62,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
         btnBackRecommend    = findViewById(R.id.btnBackRecommend);
         btnRefreshRecommend = findViewById(R.id.btnRefreshRecommend);
         tvWeatherRecommend  = findViewById(R.id.tvWeatherRecommend);
-        editSearchRecommend = findViewById(R.id.editSearchRecommend);
         itemContainer       = findViewById(R.id.item_container);
 
         // Firebase & Location 초기화

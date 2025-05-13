@@ -46,31 +46,13 @@
             android:textSize="12sp"/>
     </LinearLayout>
 
-    <!-- 2. 검색 바 -->
-    <EditText
-        android:id="@+id/editSearchRecommend"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/search_edittext_bg"
-        android:drawableStart="@android:drawable/ic_menu_search"
-        android:hint="활동하고 싶은 레저를 검색해보세요"
-        android:padding="8dp"
-        android:imeOptions="actionSearch"
-        android:inputType="text"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- 3. 본문 스크롤 -->
+    <!-- 2. 본문 스크롤 (검색바 제거) -->
     <ScrollView
         android:id="@+id/scrollViewRecommend"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/editSearchRecommend"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
