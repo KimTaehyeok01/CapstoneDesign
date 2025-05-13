@@ -310,7 +310,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
             fetchLocationAndInit();
         } else {
             Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-            // 권한 없더라도 추천은 보여줌
             fetchRecommendations();
         }
     }
