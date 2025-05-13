@@ -114,26 +114,16 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <Button
-            android:id="@+id/btn_sort_recommend"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="추천순"
-            android:textColor="#000000"
-            android:textSize="14sp"
-            android:layout_marginEnd="8dp"
-            android:paddingHorizontal="16dp"
-            android:backgroundTint="#F0F0F0"/>
-
-        <Button
             android:id="@+id/btn_sort_location"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="#F0F0F0"
+            android:paddingHorizontal="16dp"
             android:text="지역순"
             android:textColor="#000000"
             android:textSize="14sp"
-            android:layout_marginEnd="8dp"
-            android:paddingHorizontal="16dp"
-            android:backgroundTint="#F0F0F0"/>
+            android:onClick="onSortLocationClicked" />
 
         <Button
             android:id="@+id/btn_sort_distance"
@@ -142,9 +132,10 @@
             android:text="거리순"
             android:textColor="#000000"
             android:textSize="14sp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="16dp"
             android:paddingHorizontal="16dp"
-            android:backgroundTint="#F0F0F0"/>
+            android:backgroundTint="#F0F0F0"
+            android:onClick="onSortDistanceClicked"/>
     </LinearLayout>
 
     <!-- 스크롤 가능한 찜 목록 -->

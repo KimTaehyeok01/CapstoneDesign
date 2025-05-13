@@ -48,7 +48,7 @@ public class NearbyRecommendActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
 
     private ImageButton btnBackRecommend;
-    private ImageButton btnRefreshRecommend;   // ★ 추가: 새로고침 버튼 참조
+    private ImageButton btnRefreshRecommend;
     private TextView tvWeatherRecommend;
     private LinearLayout itemContainer;
 
