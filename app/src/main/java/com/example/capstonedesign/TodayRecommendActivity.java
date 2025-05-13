@@ -7,8 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -64,7 +62,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
         // View 바인딩
         btnBackRecommend    = findViewById(R.id.btnBackRecommend);
-        btnRefreshRecommend = findViewById(R.id.btnRefreshRecommend); // ★
+        btnRefreshRecommend = findViewById(R.id.btnRefreshRecommend);
         tvWeatherRecommend  = findViewById(R.id.tvWeatherRecommend);
         editSearchRecommend = findViewById(R.id.editSearchRecommend);
         itemContainer       = findViewById(R.id.item_container);
@@ -76,36 +74,29 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
         btnBackRecommend.setOnClickListener(v -> finish());
 
-        // 새로고침 클릭 시 애니메이션 후 추천 갱신
-        btnRefreshRecommend.setOnClickListener(v -> animateAndRefresh()); // ★
+        // 새로고침 클릭 시 애니메이션과 함께 위치 재조회 및 추천 갱신
+        btnRefreshRecommend.setOnClickListener(v -> {
+            itemContainer.animate()
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction(() -> {
+                        // 위치 권한 및 데이터 재조회
+                        fetchLocationAndInit();
+                        // 페이드 인 애니메이션
+                        itemContainer.setAlpha(0f);
+                        itemContainer.animate()
+                                .alpha(1f)
+                                .setDuration(200)
+                                .start();
+                    })
+                    .start();
+        });
 
         // 위치 권한 요청 → 승인되면 날씨 조회 & 추천 불러오기
         requestLocationPermission();
     }
 
-    // 애니메이션 후 추천 갱신 메서드
-    private void animateAndRefresh() {
-        Animation fadeOut = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
-        fadeOut.setDuration(300);
-        fadeOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override public void onAnimationStart(Animation animation) {}
-            @Override public void onAnimationRepeat(Animation animation) {}
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                itemContainer.removeAllViews();
-                fetchRecommendationsWithAnimation();
-            }
-        });
-        itemContainer.startAnimation(fadeOut);
-    }
-
-    private void fetchRecommendationsWithAnimation() {
-        fetchRecommendations();
-        Animation fadeIn = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
-        fadeIn.setDuration(300);
-        itemContainer.startAnimation(fadeIn);
-    }
-
+    // 1) 위치 권한 요청
     private void requestLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -119,6 +110,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         }
     }
 
+    // 2) 권한 승인 후: 날씨 조회 + 오늘의 추천 10개 불러오기
     private void fetchLocationAndInit() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -131,10 +123,11 @@ public class TodayRecommendActivity extends AppCompatActivity {
                     } else {
                         tvWeatherRecommend.setText("위치를 찾을 수 없습니다.");
                     }
-                    fetchRecommendationsWithAnimation(); // ★ 여기서도 애니메이션 포함 호출
+                    fetchRecommendations();
                 });
     }
 
+    // 3) 날씨 정보 가져오기
     private void fetchWeather(double latitude, double longitude) {
         String urlStr = "https://api.openweathermap.org/data/2.5/weather?lat="
                 + latitude
@@ -179,6 +172,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         }).start();
     }
 
+    // 4) 오늘의 추천 10개 장소 불러오기 (랜덤)
     private void fetchRecommendations() {
         CollectionReference locationsRef = db.collection("sports_locations");
         locationsRef.get().addOnCompleteListener(task -> {
@@ -192,15 +186,18 @@ public class TodayRecommendActivity extends AppCompatActivity {
                 docs.add(doc);
             }
 
+            // 랜덤 섞고 최대 10개
             Collections.shuffle(docs);
             int limit = Math.min(docs.size(), 10);
 
+            itemContainer.removeAllViews();
             for (int i = 0; i < limit; i++) {
                 addRecommendationCard(docs.get(i));
             }
         });
     }
 
+    // 5) 카드뷰 인플레이트 및 데이터 바인딩
     private void addRecommendationCard(QueryDocumentSnapshot doc) {
         View card = LayoutInflater.from(this)
                 .inflate(R.layout.item_nearby_card, itemContainer, false);
@@ -229,9 +226,34 @@ public class TodayRecommendActivity extends AppCompatActivity {
             imgPlace.setImageResource(R.drawable.ic_climb);
         }
 
+        // --- 즐겨찾기 초기 상태 반영 ---
+        if (currentUser != null && name != null) {
+            String userId = currentUser.getUid();
+            DocumentReference favRef = db
+                    .collection("users")
+                    .document(userId)
+                    .collection("favorites")
+                    .document(name);
+            favRef.get().addOnSuccessListener(snap -> {
+                if (snap.exists()) {
+                    imgFavorite.setImageResource(R.drawable.baseline_favorite_24);
+                } else {
+                    imgFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
+                }
+            });
+        } else {
+            imgFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
+        }
+
+        // 찜 토글
+        imgFavorite.setOnClickListener(v -> toggleFavorite(doc, imgFavorite));
+        // 상세 페이지 이동
+        card.setOnClickListener(v -> openDetail(doc));
+
         itemContainer.addView(card);
     }
 
+    // 6) 찜 화면(즐겨찾기) 토글
     private void toggleFavorite(QueryDocumentSnapshot doc, ImageView favButton) {
         if (currentUser == null) {
             Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
@@ -266,6 +288,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         });
     }
 
+    // 7) 상세 페이지로 이동
     private void openDetail(QueryDocumentSnapshot doc) {
         String placeName = doc.getString("name");
         if (placeName == null) return;
@@ -275,6 +298,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // 권한 요청 결과 처리
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -286,7 +310,8 @@ public class TodayRecommendActivity extends AppCompatActivity {
             fetchLocationAndInit();
         } else {
             Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-            fetchRecommendationsWithAnimation(); // 권한 없어도 애니메이션 포함
+            // 권한 없더라도 추천은 보여줌
+            fetchRecommendations();
         }
     }
 }
