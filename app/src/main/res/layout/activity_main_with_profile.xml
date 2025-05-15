@@ -81,6 +81,7 @@
                     android:padding="8dp"
                     android:layout_marginBottom="16dp">
 
+                    <!-- 카테고리 아이콘들 (클라이밍, 카누, 서핑, ...) -->
                     <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="0dp"
@@ -291,7 +292,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/ic_climb" />
+                            android:src="@drawable/ic_climb"
+                            android:background="@drawable/rounded_bg"
+                            android:clipToOutline="true" />
                         <TextView
                             android:id="@+id/tv_today_item1"
                             android:layout_width="wrap_content"
@@ -320,7 +323,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/ic_luzi" />
+                            android:src="@drawable/ic_luzi"
+                            android:background="@drawable/rounded_bg"
+                            android:clipToOutline="true" />
                         <TextView
                             android:id="@+id/tv_today_item2"
                             android:layout_width="wrap_content"
@@ -365,7 +370,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/ic_climb" />
+                            android:src="@drawable/ic_climb"
+                            android:background="@drawable/rounded_bg"
+                            android:clipToOutline="true" />
                         <TextView
                             android:id="@+id/tv_nearby_item1"
                             android:layout_width="wrap_content"
@@ -394,7 +401,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/ic_luzi" />
+                            android:src="@drawable/ic_luzi"
+                            android:background="@drawable/rounded_bg"
+                            android:clipToOutline="true" />
                         <TextView
                             android:id="@+id/tv_nearby_item2"
                             android:layout_width="wrap_content"

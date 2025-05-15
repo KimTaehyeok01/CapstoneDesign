@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 메인화면 오늘의 추천 및 주변활동 추천 이미지 xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <corners android:radius="12dp"/>
+    <!-- 배경색은 투명 혹은 흰색 등 선택 -->
+    <solid android:color="@android:color/white"/>
+</shape>
