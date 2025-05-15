@@ -13,13 +13,9 @@ import com.example.capstonedesign.settings_information.InformationActivity;
 import com.example.capstonedesign.settings_information.PushSettingActivity;
 import com.example.capstonedesign.settings_information.InterestChangeActivity;
 import com.example.capstonedesign.R;
-
-// 자동 버전 표시에 필요한 클래스
 import com.example.capstonedesign.BuildConfig;
 
 public class SettingsActivity extends AppCompatActivity {
-
-    // 버전 토글 상태 변수
     private boolean isVersionVisible = false;
 
     @Override
@@ -27,7 +23,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);  // settings.xml 사용
 
-        // 뒤로가기 버튼 (ic_setting_left_arrow)
+        // 뒤로가기 버튼
         ImageButton btnSettingBack = findViewById(R.id.btnSettingBack);
         btnSettingBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +72,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         // BuildConfig.VERSION_NAME을 통해 자동 버전 텍스트 설정
         versionValue.setText("v" + BuildConfig.VERSION_NAME);
-        versionValue.setVisibility(View.GONE); // 처음엔 숨김
+        versionValue.setVisibility(View.GONE);
 
         versionText.setOnClickListener(v -> {
             isVersionVisible = !isVersionVisible;

@@ -50,7 +50,6 @@ dependencies {
 
     // FCM 푸시 메시징
     implementation 'com.google.firebase:firebase-messaging'
-    // In-App Messaging Display (이 한 줄만 추가했습니다)
     implementation 'com.google.firebase:firebase-inappmessaging-display'
 
     // Google Maps & Location

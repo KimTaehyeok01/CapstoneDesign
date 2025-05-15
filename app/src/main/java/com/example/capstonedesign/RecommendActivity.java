@@ -47,7 +47,7 @@ public class RecommendActivity extends AppCompatActivity {
 
                             int count = Math.min(5, jsonArray.length()); // 카드 개수 제한
 
-                            // 👉 여기서 화면에 출력할 디버그 메시지 만들기
+                            // 여기서 화면에 출력할 디버그 메시지 만들기
                             StringBuilder debugInfo = new StringBuilder();
                             debugInfo.append("받은 추천 개수: ").append(jsonArray.length()).append("\n");
 
@@ -68,7 +68,7 @@ public class RecommendActivity extends AppCompatActivity {
 
                                 itemContainer.addView(cardView);
 
-                                // 👉 디버그 텍스트에 추가
+                                // 디버그 텍스트에 추가
                                 debugInfo.append(i + 1).append(". ").append(item.optString("name")).append("\n");
                             }
 

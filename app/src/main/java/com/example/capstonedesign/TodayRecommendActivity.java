@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,8 +47,8 @@ public class TodayRecommendActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
 
     private ImageButton btnBackRecommend;
+    private ImageButton btnRefreshRecommend;
     private TextView tvWeatherRecommend;
-    private EditText editSearchRecommend;
     private LinearLayout itemContainer;
 
     private final String weatherApiKey = "f5a32755e587860fe98d96a6a54af17f";
@@ -61,8 +60,8 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
         // View 바인딩
         btnBackRecommend    = findViewById(R.id.btnBackRecommend);
+        btnRefreshRecommend = findViewById(R.id.btnRefreshRecommend);
         tvWeatherRecommend  = findViewById(R.id.tvWeatherRecommend);
-        editSearchRecommend = findViewById(R.id.editSearchRecommend);
         itemContainer       = findViewById(R.id.item_container);
 
         // Firebase & Location 초기화
@@ -71,6 +70,24 @@ public class TodayRecommendActivity extends AppCompatActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         btnBackRecommend.setOnClickListener(v -> finish());
+
+        // 새로고침 클릭 시 애니메이션과 함께 위치 재조회 및 추천 갱신
+        btnRefreshRecommend.setOnClickListener(v -> {
+            itemContainer.animate()
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction(() -> {
+                        // 위치 권한 및 데이터 재조회
+                        fetchLocationAndInit();
+                        // 페이드 인 애니메이션
+                        itemContainer.setAlpha(0f);
+                        itemContainer.animate()
+                                .alpha(1f)
+                                .setDuration(200)
+                                .start();
+                    })
+                    .start();
+        });
 
         // 위치 권한 요청 → 승인되면 날씨 조회 & 추천 불러오기
         requestLocationPermission();
@@ -233,7 +250,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         itemContainer.addView(card);
     }
 
-    // 6) 찜(즐겨찾기) 토글
+    // 6) 찜 화면(즐겨찾기) 토글
     private void toggleFavorite(QueryDocumentSnapshot doc, ImageView favButton) {
         if (currentUser == null) {
             Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
@@ -290,7 +307,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
             fetchLocationAndInit();
         } else {
             Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-            // 권한 없더라도 추천은 보여줌
             fetchRecommendations();
         }
     }
