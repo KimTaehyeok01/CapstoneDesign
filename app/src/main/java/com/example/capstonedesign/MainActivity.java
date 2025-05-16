@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -59,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imgToday1, imgToday2, imgNearby1, imgNearby2;
     private TextView  tvToday1, tvToday2, tvNearby1, tvNearby2;
 
+    // 랜덤 뽑기 UI
+    private ImageView imgRandomPlace, btnDiceRefresh;
+    private TextView tvRandomPlaceName;
+
     // 프로필 패널 뷰
     private TextView tvProfileName, tvProfileEmail, tvProfileAge, tvProfileInterest, tvProfileSeason;
 
@@ -70,6 +75,54 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+    private Handler slotHandler = new Handler();
+    private boolean isSlotRunning = false;
+    private List<QueryDocumentSnapshot> placeDocs;
+    private int slotIndex = 0;
+    private long slotDelay = 10; // ✅ 더 빠른 시작
+
+    private void startSlotAnimation(List<QueryDocumentSnapshot> docs) {
+        if (docs == null || docs.isEmpty()) return;
+
+        placeDocs = docs;
+        slotIndex = 0;
+        slotDelay = 50;
+        isSlotRunning = true;
+
+        slotHandler.post(slotRunnable);
+    }
+
+
+
+    private Runnable slotRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!isSlotRunning || placeDocs == null || placeDocs.isEmpty()) return;
+
+            int randomIndex = (int) (Math.random() * placeDocs.size()); // ✅ 매번 랜덤
+            QueryDocumentSnapshot doc = placeDocs.get(randomIndex);
+            String name = doc.getString("name");
+            String imageUrl = doc.getString("image");
+
+            tvRandomPlaceName.setText(name != null ? name : "이름 없음");
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(MainActivity.this).load(imageUrl).into(imgRandomPlace);
+            }
+
+            slotDelay += 30;
+            if (slotDelay < 500) {
+                slotHandler.postDelayed(this, slotDelay);
+            } else {
+                isSlotRunning = false;
+                tvRandomPlaceName.setOnClickListener(v -> startPlaceDetailActivity(name));
+                imgRandomPlace.setOnClickListener(v -> startPlaceDetailActivity(name));
+
+            }
+        }
+    };
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +215,28 @@ public class MainActivity extends AppCompatActivity {
         imgNearby2.setOnClickListener(nearbyClick);  // 주변 추천 2번 이미지
         tvNearby2.setOnClickListener(nearbyClick);   // 주변 추천 2번 텍스트
         // ─── 추가된 코드 끝 ───────────────────────────────────────────────────
+        // 랜덤 뽑기 UI 연결
+        imgRandomPlace = findViewById(R.id.img_random_place);
+        tvRandomPlaceName = findViewById(R.id.tv_random_place_name);
+        btnDiceRefresh = findViewById(R.id.btn_dice_refresh);
+
+// 주사위 GIF 초기 로드
+        Glide.with(this).asGif().load(R.drawable.ic_dice).into(btnDiceRefresh);
+
+// 주사위 클릭 시 랜덤 추천 시작
+        btnDiceRefresh.setOnClickListener(v -> {
+            Glide.with(this).asGif().load(R.drawable.ic_dice).into(btnDiceRefresh);
+            db.collection("sports_locations").get().addOnSuccessListener(snapshot -> {
+                List<QueryDocumentSnapshot> docs = new ArrayList<>();
+                for (QueryDocumentSnapshot d : snapshot) docs.add(d);
+                if (!docs.isEmpty()) {
+                    startSlotAnimation(docs); // 슬롯 시작
+                } else {
+                    Toast.makeText(this, "추천할 장소가 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
 
         // 날씨
         tvWeather = findViewById(R.id.tv_weather);
@@ -182,6 +257,35 @@ public class MainActivity extends AppCompatActivity {
 
         // 위치 권한 → 날씨·추천 로드
         requestLocationPermission();
+    }
+    private void startPlaceDetailActivity(String place) {
+        Intent intent = new Intent(this, PlaceDetailActivity.class);
+        intent.putExtra("place_name", place);
+        startActivity(intent);
+    }
+
+    private void loadRandomPlace() {
+        db.collection("sports_locations").get().addOnSuccessListener(snapshot -> {
+            List<QueryDocumentSnapshot> docs = new ArrayList<>();
+            for (QueryDocumentSnapshot d : snapshot) docs.add(d);
+
+            if (!docs.isEmpty()) {
+                Collections.shuffle(docs);
+                QueryDocumentSnapshot placeDoc = docs.get(0);
+
+                String name = placeDoc.getString("name");
+                String imageUrl = placeDoc.getString("image");
+
+                tvRandomPlaceName.setText(name != null ? name : "이름 없음");
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    Glide.with(this).load(imageUrl).into(imgRandomPlace);
+                }
+
+                tvRandomPlaceName.setOnClickListener(v -> startPlaceDetailActivity(name));
+            } else {
+                Toast.makeText(this, "추천할 장소가 없습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void requestLocationPermission() {
