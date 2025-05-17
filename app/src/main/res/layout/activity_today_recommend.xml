@@ -46,7 +46,7 @@
 
     </LinearLayout>
 
-    <!-- 2. 콘텐츠 스크롤 영역 (검색바 제거됨) -->
+    <!-- 2. 콘텐츠 스크롤 영역 -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_view"
         android:layout_width="0dp"
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- 추천 헤더 (텍스트 + 새로고침 버튼) -->
+            <!-- 추천 헤더 (새로고침 버튼 제거됨) -->
             <LinearLayout
                 android:id="@+id/header_layout"
                 android:layout_width="match_parent"
@@ -80,15 +80,7 @@
                     android:text="오늘의 추천!"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
-
-                <ImageButton
-                    android:id="@+id/btnRefreshRecommend"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_refresh"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="새로 고침" />
-
+                <!-- ImageButton (ic_refresh) 완전 제거 -->
             </LinearLayout>
 
             <!-- 카드 인플레이트용 컨테이너 -->
