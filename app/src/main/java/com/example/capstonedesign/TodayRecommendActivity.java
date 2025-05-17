@@ -76,7 +76,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
         tvWeatherRecommend  = findViewById(R.id.tvWeatherRecommend);
         itemContainer       = findViewById(R.id.item_container);
 
-        // RecommendActivity 에서 쓰던 뷰
         recommendButton = findViewById(R.id.recommendButton);
         resultTextView  = findViewById(R.id.resultTextView);
 
