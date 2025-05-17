@@ -234,7 +234,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         }).start();
     }
 
-    // 4) 오늘의 추천 10개 장소 (랜덤)
+    // 4) 오늘의 추천 10개 장소
     private void fetchRecommendations() {
         CollectionReference locationsRef = db.collection("sports_locations");
         locationsRef.get().addOnCompleteListener(task -> {
@@ -258,7 +258,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         });
     }
 
-    // 5) 카드뷰 생성 및 바인딩 (오늘의 추천 / 즐겨찾기 / 상세 이동)
+    // 5) 카드뷰 생성 및 바인딩
     private void addRecommendationCard(QueryDocumentSnapshot doc) {
         View card = LayoutInflater.from(this)
                 .inflate(R.layout.item_nearby_card, itemContainer, false);
