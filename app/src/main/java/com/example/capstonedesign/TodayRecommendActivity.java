@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,11 +23,16 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.android.gms.tasks.Task;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -35,6 +41,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,8 +57,13 @@ public class TodayRecommendActivity extends AppCompatActivity {
     private ImageButton btnRefreshRecommend;
     private TextView tvWeatherRecommend;
     private LinearLayout itemContainer;
+    private Button recommendButton;
+    private TextView resultTextView;
 
     private final String weatherApiKey = "f5a32755e587860fe98d96a6a54af17f";
+
+    // GPT 추천용
+    private GPTRecommender recommender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,22 +76,27 @@ public class TodayRecommendActivity extends AppCompatActivity {
         tvWeatherRecommend  = findViewById(R.id.tvWeatherRecommend);
         itemContainer       = findViewById(R.id.item_container);
 
+        // RecommendActivity 에서 쓰던 뷰
+        recommendButton = findViewById(R.id.recommendButton);
+        resultTextView  = findViewById(R.id.resultTextView);
+
         // Firebase & Location 초기화
         db                  = FirebaseFirestore.getInstance();
         currentUser         = FirebaseAuth.getInstance().getCurrentUser();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        // GPT Recommender 초기화
+        recommender = new GPTRecommender();
+
         btnBackRecommend.setOnClickListener(v -> finish());
 
-        // 새로고침 클릭 시 애니메이션과 함께 위치 재조회 및 추천 갱신
+        // 새로고침 클릭 시 페이드 아웃→위치/추천 재조회→페이드 인
         btnRefreshRecommend.setOnClickListener(v -> {
             itemContainer.animate()
                     .alpha(0f)
                     .setDuration(200)
                     .withEndAction(() -> {
-                        // 위치 권한 및 데이터 재조회
-                        fetchLocationAndInit();
-                        // 페이드 인 애니메이션
+                        fetchLocationAndInit(); // 날씨+랜덤 추천
                         itemContainer.setAlpha(0f);
                         itemContainer.animate()
                                 .alpha(1f)
@@ -89,7 +106,59 @@ public class TodayRecommendActivity extends AppCompatActivity {
                     .start();
         });
 
-        // 위치 권한 요청 → 승인되면 날씨 조회 & 추천 불러오기
+        // GPT 추천 버튼 클릭 시
+        recommendButton.setOnClickListener(v -> {
+            resultTextView.setText("추천 중...");
+            itemContainer.removeAllViews();
+
+            // Firebase 로그인된 사용자 ID 가져오기
+            if (currentUser == null) {
+                Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String userId = currentUser.getUid();
+
+            recommender.getRecommendations(userId)
+                    .addOnSuccessListener(result -> {
+                        try {
+                            JSONArray jsonArray = new JSONArray(result);
+                            LayoutInflater inflater = LayoutInflater.from(this);
+
+                            // 디버그 메시지 구성
+                            StringBuilder debugInfo = new StringBuilder();
+                            debugInfo.append("받은 추천 개수: ").append(jsonArray.length()).append("\n");
+
+                            int count = Math.min(5, jsonArray.length());
+                            for (int i = 0; i < count; i++) {
+                                JSONObject item = jsonArray.getJSONObject(i);
+                                View cardView = inflater.inflate(R.layout.item_nearby_card, itemContainer, false);
+
+                                ImageView imgPlace    = cardView.findViewById(R.id.img_place);
+                                TextView tvName       = cardView.findViewById(R.id.tv_place_name);
+                                TextView tvAddress    = cardView.findViewById(R.id.tv_place_address);
+                                TextView tvRegion     = cardView.findViewById(R.id.tv_place_region);
+                                TextView tvPrice      = cardView.findViewById(R.id.tv_place_price);
+
+                                tvName   .setText(item.optString("name",    "이름 없음"));
+                                tvAddress.setText(item.optString("address", "주소 없음"));
+                                tvRegion .setText(item.optString("region",  "지역 정보 없음"));
+                                tvPrice  .setText(item.optString("price",   "가격 정보 없음"));
+
+                                itemContainer.addView(cardView);
+                                debugInfo.append(i+1).append(". ")
+                                        .append(item.optString("name","")).append("\n");
+                            }
+
+                            resultTextView.setText(debugInfo.toString());
+
+                        } catch (JSONException e) {
+                            resultTextView.setText("파싱 오류: " + e.getMessage());
+                        }
+                    })
+                    .addOnFailureListener(e -> resultTextView.setText("추천 실패: " + e.getMessage()));
+        });
+
+        // 최초 권한 요청 → 날씨 조회 & 랜덤 추천
         requestLocationPermission();
     }
 
@@ -120,11 +189,11 @@ public class TodayRecommendActivity extends AppCompatActivity {
                     } else {
                         tvWeatherRecommend.setText("위치를 찾을 수 없습니다.");
                     }
-                    fetchRecommendations();
+                    fetchRecommendations();  // 랜덤 10개
                 });
     }
 
-    // 3) 날씨 정보 가져오기
+    // 3) 날씨 가져오기
     private void fetchWeather(double latitude, double longitude) {
         String urlStr = "https://api.openweathermap.org/data/2.5/weather?lat="
                 + latitude
@@ -134,8 +203,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
         new Thread(() -> {
             try {
-                URL url = new URL(urlStr);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
                 conn.setRequestMethod("GET");
 
                 BufferedReader reader = new BufferedReader(
@@ -143,9 +211,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
                 );
                 StringBuilder sb = new StringBuilder();
                 String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
+                while ((line = reader.readLine()) != null) sb.append(line);
                 reader.close();
                 conn.disconnect();
 
@@ -169,7 +235,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         }).start();
     }
 
-    // 4) 오늘의 추천 10개 장소 불러오기 (랜덤)
+    // 4) 오늘의 추천 10개 장소 (랜덤)
     private void fetchRecommendations() {
         CollectionReference locationsRef = db.collection("sports_locations");
         locationsRef.get().addOnCompleteListener(task -> {
@@ -183,7 +249,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
                 docs.add(doc);
             }
 
-            // 랜덤 섞고 최대 10개
             Collections.shuffle(docs);
             int limit = Math.min(docs.size(), 10);
 
@@ -194,7 +259,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         });
     }
 
-    // 5) 카드뷰 인플레이트 및 데이터 바인딩
+    // 5) 카드뷰 생성 및 바인딩 (오늘의 추천 / 즐겨찾기 / 상세 이동)
     private void addRecommendationCard(QueryDocumentSnapshot doc) {
         View card = LayoutInflater.from(this)
                 .inflate(R.layout.item_nearby_card, itemContainer, false);
@@ -223,7 +288,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
             imgPlace.setImageResource(R.drawable.ic_climb);
         }
 
-        // --- 즐겨찾기 초기 상태 반영 ---
+        // 즐겨찾기 초기 반영
         if (currentUser != null && name != null) {
             String userId = currentUser.getUid();
             DocumentReference favRef = db
@@ -250,7 +315,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         itemContainer.addView(card);
     }
 
-    // 6) 찜 화면(즐겨찾기) 토글
+    // 6) 즐겨찾기 토글
     private void toggleFavorite(QueryDocumentSnapshot doc, ImageView favButton) {
         if (currentUser == null) {
             Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
@@ -274,7 +339,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
                     favButton.setImageResource(R.drawable.baseline_favorite_border_24);
                 });
             } else {
-                Map<String,Object> data = new java.util.HashMap<>();
+                Map<String,Object> data = new HashMap<>();
                 data.put("name", name);
                 data.put("address", addr);
                 favRef.set(data).addOnSuccessListener(unused -> {
@@ -295,7 +360,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // 권한 요청 결과 처리
+    // 권한 결과 처리
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -308,6 +373,32 @@ public class TodayRecommendActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
             fetchRecommendations();
+        }
+    }
+
+    // GPT 기반 추천을 호출하는 Helper 클래스
+    private static class GPTRecommender {
+        private final FirebaseFunctions functions;
+
+        public GPTRecommender() {
+            // asia-northeast3 (예시)
+            functions = FirebaseFunctions.getInstance("asia-northeast3");
+        }
+
+        public Task<String> getRecommendations(String userId) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("userId", userId);
+
+            return functions
+                    .getHttpsCallable("recommendPlacesByGPT")
+                    .call(data)
+                    .continueWith(task -> {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        HttpsCallableResult result = task.getResult();
+                        return (String) result.getData();
+                    });
         }
     }
 }
