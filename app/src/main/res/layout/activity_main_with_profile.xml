@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 메인 콘텐츠 (기존 activity_main.xml 전체) -->
+    <!-- 메인 콘텐츠 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
@@ -73,192 +73,68 @@
                     android:hint="활동하고 싶은 레저를 검색해보세요"
                     android:padding="8dp" />
 
-                <GridLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:columnCount="4"
-                    android:alignmentMode="alignMargins"
-                    android:padding="8dp"
                     android:layout_marginBottom="16dp">
 
-                    <!-- 카테고리 아이콘들 (클라이밍, 카누, 서핑, ...) -->
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
+                    <!-- 랜덤 추천 제목 -->
+                    <TextView
+                        android:id="@+id/tv_random_title"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:padding="8dp"
+                        android:layout_marginTop="12dp"
+                        android:text="오늘의 랜덤 추천"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
                         android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground">
+                        android:foreground="?attr/selectableItemBackground" />
+
+                    <!-- 이미지와 주사위 -->
+                    <LinearLayout
+                        android:layout_width="384dp"
+                        android:layout_height="140dp"
+                        android:layout_marginTop="50dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <!-- 랜덤 추천 이미지에 라운드 -->
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_climbing" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="클라이밍"
-                            android:textSize="12sp"
-                            android:gravity="center"
-                            android:textColor="#000000" />
+                            android:id="@+id/img_random_place"
+                            android:layout_width="200dp"
+                            android:layout_height="160dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_random"
+                            android:scaleType="centerCrop"
+                            android:background="@drawable/bg_round_corners"
+                            android:clipToOutline="true"
+                            android:outlineProvider="background" />
+
+                        <ImageView
+                            android:id="@+id/btn_dice_refresh"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginBottom="8dp"
+                            android:clickable="true"
+                            android:contentDescription="AI 추천"
+                            android:focusable="true"
+                            android:src="@drawable/ic_dice" />
+
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_canoe" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="카누"
-                            android:textSize="12sp"
-                            android:gravity="center"
-                            android:textColor="#000000" />
-                    </LinearLayout>
+                </FrameLayout>
 
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_surfing" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="서핑"
-                            android:textSize="12sp"
-                            android:gravity="center"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_archery" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="양궁"
-                            android:textSize="12sp"
-                            android:gravity="center"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_ski" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="스키"
-                            android:textSize="12sp"
-                            android:gravity="center"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_iceskating" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="아이스 스케이트"
-                            android:textSize="11sp"
-                            android:gravity="center"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_hangglider" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="행글라이딩"
-                            android:textSize="12sp"
-                            android:gravity="center"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:clickable="true"
-                        android:foreground="?attr/selectableItemBackground">
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_paragliding" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="패러글라이딩"
-                            android:textSize="12sp"
-                            android:gravity="center"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-
-                </GridLayout>
+                <TextView
+                    android:id="@+id/tv_random_place_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="주사위를 클릭하세요"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:paddingTop="4dp"
+                    android:gravity="center" />
 
                 <TextView
                     android:id="@+id/tv_today_recommend"
@@ -287,13 +163,14 @@
                         android:clickable="true"
                         android:foreground="?attr/selectableItemBackground">
 
+                        <!-- 오늘의 추천 아이템1 이미지에 라운드 -->
                         <ImageView
                             android:id="@+id/img_today_item1"
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
                             android:scaleType="centerCrop"
                             android:src="@drawable/ic_climb"
-                            android:background="@drawable/rounded_bg"
+                            android:background="@drawable/bg_round_corners"
                             android:clipToOutline="true" />
                         <TextView
                             android:id="@+id/tv_today_item1"
@@ -318,13 +195,14 @@
                         android:clickable="true"
                         android:foreground="?attr/selectableItemBackground">
 
+                        <!-- 오늘의 추천 아이템2 이미지에 라운드 -->
                         <ImageView
                             android:id="@+id/img_today_item2"
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
                             android:scaleType="centerCrop"
                             android:src="@drawable/ic_luzi"
-                            android:background="@drawable/rounded_bg"
+                            android:background="@drawable/bg_round_corners"
                             android:clipToOutline="true" />
                         <TextView
                             android:id="@+id/tv_today_item2"
@@ -365,13 +243,14 @@
                         android:clickable="true"
                         android:foreground="?attr/selectableItemBackground">
 
+                        <!-- 주변 추천 아이템1 이미지에 라운드 -->
                         <ImageView
                             android:id="@+id/img_nearby_item1"
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
                             android:scaleType="centerCrop"
                             android:src="@drawable/ic_climb"
-                            android:background="@drawable/rounded_bg"
+                            android:background="@drawable/bg_round_corners"
                             android:clipToOutline="true" />
                         <TextView
                             android:id="@+id/tv_nearby_item1"
@@ -396,13 +275,14 @@
                         android:clickable="true"
                         android:foreground="?attr/selectableItemBackground">
 
+                        <!-- 주변 추천 아이템2 이미지에 라운드 -->
                         <ImageView
                             android:id="@+id/img_nearby_item2"
                             android:layout_width="match_parent"
                             android:layout_height="120dp"
                             android:scaleType="centerCrop"
                             android:src="@drawable/ic_luzi"
-                            android:background="@drawable/rounded_bg"
+                            android:background="@drawable/bg_round_corners"
                             android:clipToOutline="true" />
                         <TextView
                             android:id="@+id/tv_nearby_item2"
