@@ -380,7 +380,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
         private final FirebaseFunctions functions;
 
         public GPTRecommender() {
-            // asia-northeast3 (예시)
             functions = FirebaseFunctions.getInstance("asia-northeast3");
         }
 
