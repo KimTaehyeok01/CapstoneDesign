@@ -298,5 +298,3 @@ public class TodayRecommendActivity extends AppCompatActivity {
         }
     }
 }
-
-
