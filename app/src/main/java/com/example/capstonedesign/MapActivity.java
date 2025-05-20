@@ -1,6 +1,7 @@
 package com.example.capstonedesign;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -99,7 +100,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         btnMyLocationContainer = findViewById(R.id.btnMyLocationContainer);
         btnMyLocationContainer.setOnClickListener(view -> {
-            // 위치 설정 꺼져있으면 기능 차단
             SharedPreferences prefs = getSharedPreferences("PushSettingsPrefs", MODE_PRIVATE);
             boolean isLocationOn = prefs.getBoolean("location_on", true);
             if (!isLocationOn) {
@@ -174,25 +174,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void searchLeisureSports(String searchQuery) {
+        String lowerQuery = searchQuery.toLowerCase();
         db.collection("sports_locations")
-                .orderBy("name")
-                .startAt(searchQuery)
-                .endAt(searchQuery + "\uf8ff")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        mMap.clear();
-                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                            Double lat = doc.getDouble("latitude");
-                            Double lng = doc.getDouble("longitude");
-                            String placeName = doc.getString("name");
-                            if (lat != null && lng != null && placeName != null) {
+                    mMap.clear();
+                    boolean found = false;
+
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        Double lat = doc.getDouble("latitude");
+                        Double lng = doc.getDouble("longitude");
+                        String placeName = doc.getString("name");
+                        if (lat != null && lng != null && placeName != null) {
+                            if (placeName.toLowerCase().contains(lowerQuery)) {
+                                found = true;
                                 LatLng placeLatLng = new LatLng(lat, lng);
                                 mMap.addMarker(new MarkerOptions().position(placeLatLng).title(placeName));
                                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(placeLatLng, 15), 1000, null);
                             }
                         }
-                    } else {
+                    }
+
+                    if (!found) {
                         Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -214,7 +217,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             return;
         }
 
-        // 지도 초기 로딩 시 위치 설정 확인
         SharedPreferences prefs = getSharedPreferences("PushSettingsPrefs", MODE_PRIVATE);
         boolean isLocationOn = prefs.getBoolean("location_on", true);
         if (!isLocationOn) {
@@ -289,6 +291,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 recreate();
             }
+        }
+    }
+
+    //  장소명 클릭 시 PlaceDetailActivity로 이동
+    public void onPlaceNameClicked(View view) {
+        if (currentPlaceName != null && !currentPlaceName.isEmpty()) {
+            Intent intent = new Intent(this, PlaceDetailActivity.class);
+            intent.putExtra("place_name", currentPlaceName);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "장소 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (placeInfoContainer.getVisibility() == View.VISIBLE) {
+            placeInfoContainer.setVisibility(View.GONE);
+        } else {
+            super.onBackPressed();
         }
     }
 }
