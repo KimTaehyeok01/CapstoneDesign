@@ -8,13 +8,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import androidx.core.widget.NestedScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,10 +29,10 @@ import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.functions.FirebaseFunctions;
 import com.google.android.gms.tasks.Task;
 
 import org.json.JSONArray;
@@ -68,6 +68,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
     private LinearLayout itemContainer;
     private Button recommendButton;
     private TextView resultTextView;
+    private ProgressBar progressLoading;
 
     private final String weatherApiKey = "f5a32755e587860fe98d96a6a54af17f";
     private final String googleApiKey  = "AIzaSyDhaN2JivN_B886eY9yrzpF2YnPaCy2E6E";
@@ -77,32 +78,42 @@ public class TodayRecommendActivity extends AppCompatActivity {
     private Handler fallbackHandler;
     private Runnable fallbackRunnable;
 
+    // 액티비티 활성 상태 체크
+    private boolean isActive = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_today_recommend);
+        isActive = true;
 
+        // 뷰 바인딩
         btnBackRecommend   = findViewById(R.id.btnBackRecommend);
         tvWeatherRecommend = findViewById(R.id.tvWeatherRecommend);
         scrollView         = findViewById(R.id.scroll_view);
         itemContainer      = findViewById(R.id.item_container);
         recommendButton    = findViewById(R.id.recommendButton);
         resultTextView     = findViewById(R.id.resultTextView);
+        progressLoading    = findViewById(R.id.progress_loading);
 
         db                  = FirebaseFirestore.getInstance();
         currentUser         = FirebaseAuth.getInstance().getCurrentUser();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         recommender         = new GPTRecommender();
-
-        fallbackHandler = new Handler(Looper.getMainLooper());
+        fallbackHandler     = new Handler(Looper.getMainLooper());
 
         btnBackRecommend.setOnClickListener(v -> finish());
 
         recommendButton.setOnClickListener(v -> {
+            // 로딩 인디케이터 표시
+            progressLoading.setVisibility(View.VISIBLE);
+
+            // 버튼 비활성화, 스크롤 맨 위로
+            recommendButton.setEnabled(false);
             scrollView.post(() -> scrollView.fullScroll(View.FOCUS_UP));
             resultTextView.setText("추천 중...");
-            itemContainer.animate()
-                    .alpha(0f).setDuration(200)
+            itemContainer
+                    .animate().alpha(0f).setDuration(200)
                     .withEndAction(() -> {
                         fetchGPTRecommendations();
                         itemContainer.animate().alpha(1f).setDuration(200).start();
@@ -110,6 +121,21 @@ public class TodayRecommendActivity extends AppCompatActivity {
         });
 
         requestLocationPermission();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        isActive = false;
+        fallbackHandler.removeCallbacksAndMessages(null);
+    }
+
+    private void onFetchFinished() {
+        runOnUiThread(() -> {
+            // 로딩 인디케이터 숨기기
+            progressLoading.setVisibility(View.GONE);
+            recommendButton.setEnabled(true);
+        });
     }
 
     private void requestLocationPermission() {
@@ -131,10 +157,23 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
+                    if (!isActive) return;
                     if (location != null) {
                         fetchWeather(location.getLatitude(), location.getLongitude());
+                        runOnUiThread(() -> {
+                            resultTextView.setText("초기 추천 로딩...");
+                            progressLoading.setVisibility(View.VISIBLE);
+                            fetchRecommendations();
+                            // 백그라운드 GPT 추천
+                            resultTextView.setText("GPT 추천 중...");
+                            fetchGPTRecommendations();
+                        });
                     } else {
-                        tvWeatherRecommend.setText("위치를 찾을 수 없습니다.");
+                        runOnUiThread(() -> {
+                            if (!isActive) return;
+                            tvWeatherRecommend.setText("위치를 찾을 수 없습니다.");
+                            onFetchFinished();
+                        });
                     }
                 });
     }
@@ -149,9 +188,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
             try {
                 HttpURLConnection conn = (HttpURLConnection)new java.net.URL(url).openConnection();
                 conn.setRequestMethod("GET");
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(conn.getInputStream())
-                );
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) sb.append(line);
@@ -164,29 +201,66 @@ public class TodayRecommendActivity extends AppCompatActivity {
                         .getString("description");
                 double temp = j.getJSONObject("main").getDouble("temp");
 
-                runOnUiThread(() ->
-                        tvWeatherRecommend.setText("현재 날씨: " + desc + " (" + temp + "°C)")
-                );
+                runOnUiThread(() -> {
+                    if (!isActive) return;
+                    tvWeatherRecommend.setText("현재 날씨: " + desc + " (" + temp + "°C)");
+                });
             } catch (Exception e) {
                 e.printStackTrace();
-                runOnUiThread(() ->
-                        tvWeatherRecommend.setText("날씨 불러오기 실패")
-                );
+                runOnUiThread(() -> {
+                    if (!isActive) return;
+                    tvWeatherRecommend.setText("날씨 불러오기 실패");
+                });
             }
         }).start();
     }
 
+    private void fetchRecommendations() {
+        try {
+            db.collection("sports_locations").get()
+                    .addOnSuccessListener(qs -> {
+                        runOnUiThread(() -> {
+                            if (!isActive) return;
+                            itemContainer.removeAllViews();
+                            java.util.List<DocumentSnapshot> docs = qs.getDocuments();
+                            java.util.Collections.shuffle(docs);
+                            for (int i = 0; i < Math.min(docs.size(), 10); i++) {
+                                addRecommendationCard(docs.get(i));
+                            }
+                            resultTextView.setText("추천 완료");
+                            onFetchFinished();
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        runOnUiThread(() -> {
+                            if (!isActive) return;
+                            Toast.makeText(this, "초기 추천 불러오기 실패", Toast.LENGTH_SHORT).show();
+                            onFetchFinished();
+                        });
+                    });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            onFetchFinished();
+        }
+    }
+
     private void fetchGPTRecommendations() {
         if (currentUser == null) {
-            Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
-            resultTextView.setText("추천 실패");
+            runOnUiThread(() -> {
+                if (!isActive) return;
+                Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+                onFetchFinished();
+            });
             return;
         }
 
         fallbackRunnable = () -> {
+            if (!isActive) return;
             if ("추천 중...".contentEquals(resultTextView.getText())) {
-                Toast.makeText(this, "응답이 늦어 기본 추천으로 전환합니다.", Toast.LENGTH_SHORT).show();
-                fetchRecommendations();
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "응답 지연, 기본 추천으로 전환", Toast.LENGTH_SHORT).show();
+                    fetchRecommendations();
+                });
             }
         };
         fallbackHandler.postDelayed(fallbackRunnable, 5000);
@@ -194,14 +268,16 @@ public class TodayRecommendActivity extends AppCompatActivity {
         recommender.getRecommendations(currentUser.getUid())
                 .addOnSuccessListener(raw -> {
                     fallbackHandler.removeCallbacks(fallbackRunnable);
-                    Log.d(TAG, "GPT raw: " + raw);
                     try {
                         JSONArray arr = new JSONArray(raw);
                         if (arr.length() == 0) {
                             fetchRecommendations();
                             return;
                         }
-                        itemContainer.removeAllViews();
+                        runOnUiThread(() -> {
+                            if (!isActive) return;
+                            itemContainer.removeAllViews();
+                        });
 
                         final int limit = Math.min(arr.length(), 10);
                         final AtomicInteger processed = new AtomicInteger(0);
@@ -213,15 +289,15 @@ public class TodayRecommendActivity extends AppCompatActivity {
                                 onProcessed(limit, processed, found);
                                 continue;
                             }
-                            // **필드 기반 조회로 수정**
                             db.collection("sports_locations")
                                     .whereEqualTo("name", name)
                                     .get()
-                                    .addOnSuccessListener((QuerySnapshot qs) -> {
-                                        if (!qs.isEmpty()) {
-                                            for (DocumentSnapshot doc : qs.getDocuments()) {
+                                    .addOnSuccessListener((QuerySnapshot qsSnap) -> {
+                                        if (!isActive) return;
+                                        if (!qsSnap.isEmpty()) {
+                                            for (DocumentSnapshot doc : qsSnap.getDocuments()) {
                                                 found.incrementAndGet();
-                                                addRecommendationCard(doc);
+                                                runOnUiThread(() -> addRecommendationCard(doc));
                                             }
                                         } else {
                                             fetchGooglePlace(name, limit, processed, found);
@@ -229,12 +305,13 @@ public class TodayRecommendActivity extends AppCompatActivity {
                                         onProcessed(limit, processed, found);
                                     })
                                     .addOnFailureListener(e -> {
+                                        if (!isActive) return;
                                         fetchGooglePlace(name, limit, processed, found);
                                         onProcessed(limit, processed, found);
                                     });
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    } catch (JSONException ex) {
+                        ex.printStackTrace();
                         fetchRecommendations();
                     }
                 })
@@ -249,25 +326,13 @@ public class TodayRecommendActivity extends AppCompatActivity {
             if (found.get() == 0) {
                 fetchRecommendations();
             } else {
-                resultTextView.setText("추천완료");
+                runOnUiThread(() -> {
+                    if (!isActive) return;
+                    resultTextView.setText("추천완료");
+                    onFetchFinished();
+                });
             }
         }
-    }
-
-    private void fetchRecommendations() {
-        db.collection("sports_locations").get()
-                .addOnSuccessListener(qs -> {
-                    java.util.List<DocumentSnapshot> docs = qs.getDocuments();
-                    java.util.Collections.shuffle(docs);
-                    itemContainer.removeAllViews();
-                    for (int i = 0; i < Math.min(docs.size(), 10); i++) {
-                        addRecommendationCard(docs.get(i));
-                    }
-                    resultTextView.setText("추천완료");
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "랜덤 추천 실패", Toast.LENGTH_SHORT).show()
-                );
     }
 
     private void fetchGooglePlace(String name, int limit, AtomicInteger processed, AtomicInteger found) {
@@ -279,9 +344,11 @@ public class TodayRecommendActivity extends AppCompatActivity {
             Request req = new Request.Builder().url(url).build();
             httpClient.newCall(req).enqueue(new Callback() {
                 @Override public void onFailure(Call call, IOException e) {
+                    if (!isActive) return;
                     onProcessed(limit, processed, found);
                 }
                 @Override public void onResponse(Call call, Response resp) throws IOException {
+                    if (!isActive) return;
                     if (!resp.isSuccessful()) {
                         onProcessed(limit, processed, found);
                         return;
@@ -315,9 +382,11 @@ public class TodayRecommendActivity extends AppCompatActivity {
         Request req = new Request.Builder().url(url).build();
         httpClient.newCall(req).enqueue(new Callback() {
             @Override public void onFailure(Call call, IOException e) {
+                if (!isActive) return;
                 onProcessed(limit, processed, found);
             }
             @Override public void onResponse(Call call, Response resp) throws IOException {
+                if (!isActive) return;
                 if (!resp.isSuccessful()) {
                     onProcessed(limit, processed, found);
                     return;
@@ -339,6 +408,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
                         photoUrl = "";
                     }
                     runOnUiThread(() -> {
+                        if (!isActive) return;
                         found.incrementAndGet();
                         addGoogleCard(name, address, phone, photoUrl);
                         onProcessed(limit, processed, found);
@@ -350,8 +420,12 @@ public class TodayRecommendActivity extends AppCompatActivity {
         });
     }
 
+    private String sanitize(String raw) {
+        return raw.replaceAll("[\\\\/#\\[\\]\\.?*]", "_");
+    }
+
     private void addRecommendationCard(DocumentSnapshot doc) {
-        if (!doc.exists()) return;
+        if (!doc.exists() || !isActive) return;
         View card = LayoutInflater.from(this)
                 .inflate(R.layout.item_nearby_card, itemContainer, false);
         ImageView img = card.findViewById(R.id.img_place);
@@ -379,16 +453,17 @@ public class TodayRecommendActivity extends AppCompatActivity {
         }
 
         if (currentUser != null && name != null) {
-            DocumentReference favRef = db.collection("users")
+            String safeId = sanitize(name);
+            DocumentReference favRef = db
+                    .collection("users")
                     .document(currentUser.getUid())
                     .collection("favorites")
-                    .document(name);
+                    .document(safeId);
             favRef.get().addOnSuccessListener(snap -> {
-                fav.setImageResource(
-                        snap.exists()
-                                ? R.drawable.baseline_favorite_24
-                                : R.drawable.baseline_favorite_border_24
-                );
+                if (!isActive) return;
+                fav.setImageResource(snap.exists()
+                        ? R.drawable.baseline_favorite_24
+                        : R.drawable.baseline_favorite_border_24);
             });
         } else {
             fav.setImageResource(R.drawable.baseline_favorite_border_24);
@@ -400,10 +475,51 @@ public class TodayRecommendActivity extends AppCompatActivity {
             i.putExtra("place_name", name);
             startActivity(i);
         });
-        itemContainer.addView(card);
+
+        runOnUiThread(() -> {
+            if (!isActive) return;
+            itemContainer.addView(card);
+        });
+    }
+
+    private void toggleFavorite(DocumentSnapshot doc, ImageView favButton) {
+        String name = doc.getString("name");
+        String addr = doc.getString("address");
+        if (!isActive) return;
+        if (currentUser == null || name == null) {
+            Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String safeId = sanitize(name);
+        DocumentReference favRef = db
+                .collection("users")
+                .document(currentUser.getUid())
+                .collection("favorites")
+                .document(safeId);
+
+        favRef.get().addOnSuccessListener(snap -> {
+            if (!isActive) return;
+            if (snap.exists()) {
+                favRef.delete().addOnSuccessListener(unused -> {
+                    if (!isActive) return;
+                    favButton.setImageResource(R.drawable.baseline_favorite_border_24);
+                    Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
+                });
+            } else {
+                Map<String,Object> data = new HashMap<>();
+                data.put("name", name);
+                data.put("address", addr);
+                favRef.set(data).addOnSuccessListener(unused -> {
+                    if (!isActive) return;
+                    favButton.setImageResource(R.drawable.baseline_favorite_24);
+                    Toast.makeText(this, "찜 추가됨", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     private void addGoogleCard(String name, String address, String phone, String photoUrl) {
+        if (!isActive) return;
         View card = LayoutInflater.from(this)
                 .inflate(R.layout.item_nearby_card, itemContainer, false);
         ImageView img = card.findViewById(R.id.img_place);
@@ -411,7 +527,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
         TextView  a   = card.findViewById(R.id.tv_place_address);
         TextView  r   = card.findViewById(R.id.tv_place_region);
         TextView  p   = card.findViewById(R.id.tv_place_price);
-        ImageView fav = card.findViewById(R.id.img_favorite);
 
         n.setText(name);
         a.setText(address.isEmpty() ? "주소 정보 없음" : address);
@@ -423,42 +538,15 @@ public class TodayRecommendActivity extends AppCompatActivity {
         } else {
             img.setImageResource(R.drawable.ic_climb);
         }
-        fav.setVisibility(View.GONE);
         card.setOnClickListener(v -> {
             Intent i = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("geo:0,0?q=" + Uri.encode(name + " " + address)));
             i.setPackage("com.google.android.apps.maps");
             startActivity(i);
         });
-        itemContainer.addView(card);
-    }
-
-    private void toggleFavorite(DocumentSnapshot doc, ImageView favButton) {
-        String name = doc.getString("name");
-        String addr = doc.getString("address");
-        if (currentUser == null || name == null) {
-            Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        DocumentReference favRef = db.collection("users")
-                .document(currentUser.getUid())
-                .collection("favorites")
-                .document(name);
-        favRef.get().addOnSuccessListener(snap -> {
-            if (snap.exists()) {
-                favRef.delete().addOnSuccessListener(u -> {
-                    favButton.setImageResource(R.drawable.baseline_favorite_border_24);
-                    Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
-                });
-            } else {
-                Map<String,Object> data = new HashMap<>();
-                data.put("name", name);
-                data.put("address", addr);
-                favRef.set(data).addOnSuccessListener(u -> {
-                    favButton.setImageResource(R.drawable.baseline_favorite_24);
-                    Toast.makeText(this, "찜 추가됨", Toast.LENGTH_SHORT).show();
-                });
-            }
+        runOnUiThread(() -> {
+            if (!isActive) return;
+            itemContainer.addView(card);
         });
     }
 
@@ -472,8 +560,11 @@ public class TodayRecommendActivity extends AppCompatActivity {
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             fetchLocationAndInit();
         } else {
-            Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-            fetchRecommendations();
+            runOnUiThread(() -> {
+                if (!isActive) return;
+                Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+                onFetchFinished();
+            });
         }
     }
 

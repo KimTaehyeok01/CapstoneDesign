@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- 추천 헤더 (새로고침 버튼 제거됨) -->
+            <!-- 추천 헤더 -->
             <LinearLayout
                 android:id="@+id/header_layout"
                 android:layout_width="match_parent"
@@ -80,17 +80,16 @@
                     android:text="오늘의 추천!"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
-                <!-- ImageButton (ic_refresh) 완전 제거 -->
             </LinearLayout>
 
-            <!-- 카드 인플레이트용 컨테이너 -->
+            <!-- 카드 컨테이너 -->
             <LinearLayout
                 android:id="@+id/item_container"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <!-- 추천 받기 버튼 -->
+            <!-- 추천받기 버튼 -->
             <Button
                 android:id="@+id/recommendButton"
                 android:layout_width="match_parent"
@@ -98,7 +97,7 @@
                 android:text="추천받기"
                 android:layout_marginTop="16dp"/>
 
-            <!-- 결과 출력 TextView -->
+            <!-- 결과 텍스트 -->
             <TextView
                 android:id="@+id/resultTextView"
                 android:layout_width="match_parent"
@@ -110,5 +109,18 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- 중앙 로딩 인디케이터 -->
+    <ProgressBar
+        android:id="@+id/progress_loading"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
