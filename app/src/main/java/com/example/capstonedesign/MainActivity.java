@@ -75,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
-
-    // 슬롯 애니메이션
     private Handler slotHandler = new Handler();
     private boolean isSlotRunning = false;
     private List<QueryDocumentSnapshot> placeDocs;
@@ -411,7 +409,6 @@ public class MainActivity extends AppCompatActivity {
 
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
-                    // 오늘 추천은 항상 로드
                     loadTodayRecommendations();
 
                     if (location != null) {
