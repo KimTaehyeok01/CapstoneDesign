@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 오늘·주변 추천용 뷰
     private ImageView imgToday1, imgToday2, imgNearby1, imgNearby2;
-    private TextView  tvToday1, tvToday2, tvNearby1, tvNearby2;
+    private TextView tvToday1, tvToday2, tvNearby1, tvNearby2;
 
     // 랜덤 뽑기 UI
     private ImageView imgRandomPlace, btnDiceRefresh;
@@ -75,75 +75,29 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+
+    // 슬롯 애니메이션
     private Handler slotHandler = new Handler();
     private boolean isSlotRunning = false;
     private List<QueryDocumentSnapshot> placeDocs;
-    private int slotIndex = 0;
     private long slotDelay = 10;
-
-    private void startSlotAnimation(List<QueryDocumentSnapshot> docs) {
-        if (docs == null || docs.isEmpty()) return;
-
-        placeDocs = docs;
-        slotIndex = 0;
-        slotDelay = 50;
-        isSlotRunning = true;
-
-        slotHandler.post(slotRunnable);
-    }
-
-    private Runnable slotRunnable = new Runnable() {
-        @Override
-        public void run() {
-            // 액티비티가 새로고침이나 멈추면 바로 종료
-            if (!isSlotRunning || placeDocs == null || placeDocs.isEmpty()) return;
-            if (isFinishing() || isDestroyed()) return;
-
-            int randomIndex = (int) (Math.random() * placeDocs.size());
-            QueryDocumentSnapshot doc = placeDocs.get(randomIndex);
-            String name = doc.getString("name");
-            String imageUrl = doc.getString("image");
-
-            tvRandomPlaceName.setText(name != null ? name : "이름 없음");
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                Glide.with(MainActivity.this).load(imageUrl).into(imgRandomPlace);
-            }
-
-            slotDelay += 30;
-            if (slotDelay < 500) {
-                slotHandler.postDelayed(this, slotDelay);
-            } else {
-                isSlotRunning = false;
-                tvRandomPlaceName.setOnClickListener(v -> startPlaceDetailActivity(name));
-                imgRandomPlace.setOnClickListener(v -> startPlaceDetailActivity(name));
-            }
-        }
-    };
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // 홈 버튼 등으로 액티비티가 백그라운드로 들어갈 때 슬롯 애니메이션 중지
-        isSlotRunning = false;
-        slotHandler.removeCallbacks(slotRunnable);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_with_profile);
 
-        // 시스템 바(insets) 패딩
+        // 시스템 바(insets) 패딩 적용
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets sys = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(sys.left, sys.top, sys.right, sys.bottom);
             return insets;
         });
 
-        // Drawer & 메뉴
-        drawerLayout      = findViewById(R.id.drawer_layout);
-        iv_menu           = findViewById(R.id.iv_menu);
-        btn_close_drawer  = findViewById(R.id.btn_close_drawer);
+        // Drawer & 메뉴 초기화
+        drawerLayout     = findViewById(R.id.drawer_layout);
+        iv_menu          = findViewById(R.id.iv_menu);
+        btn_close_drawer = findViewById(R.id.btn_close_drawer);
         iv_menu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
         btn_close_drawer.setOnClickListener(v -> drawerLayout.closeDrawer(GravityCompat.START));
 
@@ -162,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         navHeart.setOnClickListener(v -> startActivity(new Intent(this, FavoriteListActivity.class)));
         navSetting.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
 
-        // 검색 바
+        // 검색 바 설정
         EditText searchBar = findViewById(R.id.main_search_bar);
         searchBar.setFocusable(false);
         searchBar.setClickable(true);
@@ -196,9 +150,7 @@ public class MainActivity extends AppCompatActivity {
             if (v == imgToday2 || v == tvToday2) {
                 place = tvToday2.getText().toString();
             }
-            Intent intent = new Intent(MainActivity.this, PlaceDetailActivity.class);
-            intent.putExtra("place_name", place);
-            startActivity(intent);
+            startPlaceDetailActivity(place);
         };
         imgToday1.setOnClickListener(todayClick);
         tvToday1.setOnClickListener(todayClick);
@@ -210,9 +162,7 @@ public class MainActivity extends AppCompatActivity {
             if (v == imgNearby2 || v == tvNearby2) {
                 place = tvNearby2.getText().toString();
             }
-            Intent intent = new Intent(MainActivity.this, PlaceDetailActivity.class);
-            intent.putExtra("place_name", place);
-            startActivity(intent);
+            startPlaceDetailActivity(place);
         };
         imgNearby1.setOnClickListener(nearbyClick);
         tvNearby1.setOnClickListener(nearbyClick);
@@ -220,21 +170,21 @@ public class MainActivity extends AppCompatActivity {
         tvNearby2.setOnClickListener(nearbyClick);
 
         // 랜덤 뽑기 UI 연결
-        imgRandomPlace = findViewById(R.id.img_random_place);
+        imgRandomPlace    = findViewById(R.id.img_random_place);
         tvRandomPlaceName = findViewById(R.id.tv_random_place_name);
-        btnDiceRefresh = findViewById(R.id.btn_dice_refresh);
+        btnDiceRefresh    = findViewById(R.id.btn_dice_refresh);
 
         // 주사위 GIF 초기 로드
         Glide.with(this).asGif().load(R.drawable.ic_dice).into(btnDiceRefresh);
 
-        // 주사위 클릭 시 랜덤 추천 시작
+        // 주사위 클릭 시 랜덤 추천 애니메이션 시작
         btnDiceRefresh.setOnClickListener(v -> {
             Glide.with(this).asGif().load(R.drawable.ic_dice).into(btnDiceRefresh);
             db.collection("sports_locations").get().addOnSuccessListener(snapshot -> {
                 List<QueryDocumentSnapshot> docs = new ArrayList<>();
                 for (QueryDocumentSnapshot d : snapshot) docs.add(d);
                 if (!docs.isEmpty()) {
-                    startSlotAnimation(docs); // 슬롯 시작
+                    startSlotAnimation(docs);
                 } else {
                     Toast.makeText(this, "추천할 장소가 없습니다.", Toast.LENGTH_SHORT).show();
                 }
@@ -250,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
         db   = FirebaseFirestore.getInstance();
         currentUser = auth.getCurrentUser();
 
-        // 프로필
+        // 프로필 패널
         tvProfileName     = findViewById(R.id.tv_profile_name);
         tvProfileEmail    = findViewById(R.id.tv_profile_email);
         tvProfileAge      = findViewById(R.id.tv_profile_age);
@@ -258,8 +208,76 @@ public class MainActivity extends AppCompatActivity {
         tvProfileSeason   = findViewById(R.id.tv_profile_season);
         loadUserProfileFromFirestore();
 
-        // 위치 권한 → 날씨·추천 로드
+        // 위치 권한 요청 → 날씨, 추천 로드
         requestLocationPermission();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        resetRandomRecommendation();
+    }
+
+    private void resetRandomRecommendation() {
+        // 슬롯 애니메이션 중지
+        isSlotRunning = false;
+        slotHandler.removeCallbacks(slotRunnable);
+
+        // 기본 아이콘을 Glide 로 로드하여 배경 깨짐 방지
+        Glide.with(this)
+                .load(R.drawable.ic_random)
+                .into(imgRandomPlace);
+
+        // 초기 안내 문구
+        tvRandomPlaceName.setText("주사위를 클릭하세요");
+
+        // 상세 이동 리스너 해제
+        tvRandomPlaceName.setOnClickListener(null);
+        imgRandomPlace.setOnClickListener(null);
+    }
+
+    private void startSlotAnimation(List<QueryDocumentSnapshot> docs) {
+        if (docs == null || docs.isEmpty()) return;
+        placeDocs = docs;
+        slotDelay = 50;
+        isSlotRunning = true;
+        slotHandler.post(slotRunnable);
+    }
+
+    private final Runnable slotRunnable = new Runnable() {
+        @Override
+        public void run() {
+            // 애니메이션 중지 조건
+            if (!isSlotRunning || placeDocs == null || placeDocs.isEmpty()) return;
+            if (isFinishing() || isDestroyed()) return;
+
+            int randomIndex = (int) (Math.random() * placeDocs.size());
+            QueryDocumentSnapshot doc = placeDocs.get(randomIndex);
+            String name = doc.getString("name");
+            String imageUrl = doc.getString("image");
+
+            tvRandomPlaceName.setText(name != null ? name : "이름 없음");
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                Glide.with(MainActivity.this).load(imageUrl).into(imgRandomPlace);
+            }
+
+            slotDelay += 30;
+            if (slotDelay < 500) {
+                slotHandler.postDelayed(this, slotDelay);
+            } else {
+                isSlotRunning = false;
+                tvRandomPlaceName.setOnClickListener(v -> startPlaceDetailActivity(name));
+                imgRandomPlace.setOnClickListener(v -> startPlaceDetailActivity(name));
+            }
+        }
+    };
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // 슬롯 애니메이션 중지
+        isSlotRunning = false;
+        slotHandler.removeCallbacks(slotRunnable);
     }
 
     private void startPlaceDetailActivity(String place) {
@@ -268,65 +286,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void loadRandomPlace() {
-        db.collection("sports_locations").get().addOnSuccessListener(snapshot -> {
-            List<QueryDocumentSnapshot> docs = new ArrayList<>();
-            for (QueryDocumentSnapshot d : snapshot) docs.add(d);
-
-            if (!docs.isEmpty()) {
-                Collections.shuffle(docs);
-                QueryDocumentSnapshot placeDoc = docs.get(0);
-
-                String name = placeDoc.getString("name");
-                String imageUrl = placeDoc.getString("image");
-
-                tvRandomPlaceName.setText(name != null ? name : "이름 없음");
-                if (imageUrl != null && !imageUrl.isEmpty()) {
-                    Glide.with(this).load(imageUrl).into(imgRandomPlace);
-                }
-
-                tvRandomPlaceName.setOnClickListener(v -> startPlaceDetailActivity(name));
-            } else {
-                Toast.makeText(this, "추천할 장소가 없습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void requestLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
-                    LOCATION_PERMISSION_REQUEST_CODE
-            );
-        } else {
-            getLastLocation();
-        }
-    }
-
-    private void getLastLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) return;
-
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, location -> {
-                    // 오늘 추천은 항상 로드
-                    loadTodayRecommendations();
-
-                    if (location != null) {
-                        fetchWeather(location.getLatitude(), location.getLongitude());
-                        loadNearbyRecommendations(location);
-                    } else {
-                        tvWeather.setText("위치를 찾을 수 없습니다.");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "위치 가져오기 실패", e);
-                    loadTodayRecommendations();
-                });
-    }
-
+    // 오늘 추천 불러오기
     private void loadTodayRecommendations() {
         db.collection("sports_locations")
                 .get()
@@ -349,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e(TAG, "오늘 추천 불러오기 실패", e));
     }
 
+    // 주변 추천 불러오기
     private void loadNearbyRecommendations(Location loc) {
         db.collection("sports_locations")
                 .get()
@@ -392,6 +353,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e(TAG, "주변 추천 불러오기 실패", e));
     }
 
+    // 날씨 불러오기
     private void fetchWeather(double lat, double lon) {
         new Thread(() -> {
             try {
@@ -428,6 +390,44 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    // 위치 권한 요청
+    private void requestLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
+                    LOCATION_PERMISSION_REQUEST_CODE
+            );
+        } else {
+            getLastLocation();
+        }
+    }
+
+    // 마지막 위치 가져오기
+    private void getLastLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) return;
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    // 오늘 추천은 항상 로드
+                    loadTodayRecommendations();
+
+                    if (location != null) {
+                        fetchWeather(location.getLatitude(), location.getLongitude());
+                        loadNearbyRecommendations(location);
+                    } else {
+                        tvWeather.setText("위치를 찾을 수 없습니다.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "위치 가져오기 실패", e);
+                    loadTodayRecommendations();
+                });
+    }
+
+    // 퍼미션 결과 처리
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -442,6 +442,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 사용자 프로필 불러오기
     @SuppressWarnings("unchecked")
     private void loadUserProfileFromFirestore() {
         FirebaseUser user = auth.getCurrentUser();
@@ -462,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
                     if (TextUtils.isEmpty(name)) {
                         String ndb = doc.getString("name");
                         if (!TextUtils.isEmpty(ndb)) name = ndb;
-                        else if (user.getEmail()!=null && user.getEmail().contains("@"))
+                        else if (user.getEmail() != null && user.getEmail().contains("@"))
                             name = user.getEmail().split("@")[0];
                         else name = "사용자";
                     }
@@ -470,14 +471,14 @@ public class MainActivity extends AppCompatActivity {
                     tvProfileEmail.setText(user.getEmail());
 
                     Long age = doc.getLong("age");
-                    if (age!=null) tvProfileAge.setText(age + "세");
+                    if (age != null) tvProfileAge.setText(age + "세");
 
                     List<String> cats = (List<String>) doc.get("interestCategory");
-                    if (cats!=null && !cats.isEmpty())
+                    if (cats != null && !cats.isEmpty())
                         tvProfileInterest.setText(TextUtils.join(", ", cats));
 
                     List<String> seas = (List<String>) doc.get("interestSeasons");
-                    if (seas!=null && !seas.isEmpty())
+                    if (seas != null && !seas.isEmpty())
                         tvProfileSeason.setText(TextUtils.join(", ", seas));
                 })
                 .addOnFailureListener(e ->
