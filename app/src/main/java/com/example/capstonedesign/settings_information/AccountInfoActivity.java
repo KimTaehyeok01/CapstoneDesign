@@ -1,33 +1,38 @@
 package com.example.capstonedesign.settings_information;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.capstonedesign.R;
 import com.example.capstonedesign.login_signup.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.List;
 
 public class AccountInfoActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private EditText editName, editAge;
-    private FrameLayout btnModifyContainer;
 
-    @SuppressLint("ClickableViewAccessibility")
+    private TextView tvEmail, tvName, tvAge, tvHeight, tvGender;
+    private ImageButton btnAccountBack;
+    private TextView textLogout;
+    private ImageView arrowLogout;
+    private LinearLayout containerSeason, containerLeisure;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,35 +43,17 @@ public class AccountInfoActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // View 연결
-        editName = findViewById(R.id.editName);
-        editAge = findViewById(R.id.editAge);
-        btnModifyContainer = findViewById(R.id.btnModifyContainer);
-        ImageButton btnAccountBack = findViewById(R.id.btnAccountBack);
+        tvEmail = findViewById(R.id.tvEmail);
+        tvName = findViewById(R.id.tvName);
+        tvAge = findViewById(R.id.tvAge);
+        tvHeight = findViewById(R.id.tvHeight);
+        tvGender = findViewById(R.id.tvGender);
+        containerSeason = findViewById(R.id.containerSeason);
+        containerLeisure = findViewById(R.id.containerLeisure);
 
-        // 개별 로그아웃 아이템 연결
-        TextView textLogout = findViewById(R.id.textLogout); // 텍스트만 눌릴 때
-        ImageView arrowLogout = findViewById(R.id.arrowLogout); // 화살표 눌릴 때
-
-        // 공통 버튼 애니메이션
-        View.OnTouchListener scaleTouchListener = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        v.setScaleX(0.96f);
-                        v.setScaleY(0.96f);
-                        v.setAlpha(0.7f);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        v.setScaleX(1f);
-                        v.setScaleY(1f);
-                        v.setAlpha(1f);
-                        break;
-                }
-                return false;
-            }
-        };
+        btnAccountBack = findViewById(R.id.btnAccountBack);
+        textLogout = findViewById(R.id.textLogout);
+        arrowLogout = findViewById(R.id.arrowLogout);
 
         // 뒤로가기 버튼
         btnAccountBack.setOnClickListener(v -> {
@@ -74,81 +61,106 @@ public class AccountInfoActivity extends AppCompatActivity {
             overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
 
-        // 로그아웃 리스너 (텍스트 or 화살표 누를 때만 작동)
+        // 로그아웃 처리
         View.OnClickListener logoutClickListener = v -> {
             mAuth.signOut();
-
-            // 자동로그인 설정 삭제
             SharedPreferences preferences = getSharedPreferences("autoLogin", MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.remove("autoLoginEnabled");
-            editor.apply();
+            preferences.edit().remove("autoLoginEnabled").apply();
 
-            Intent intent = new Intent(AccountInfoActivity.this, LoginActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
         };
-
-        textLogout.setOnTouchListener(scaleTouchListener);
-        arrowLogout.setOnTouchListener(scaleTouchListener);
         textLogout.setOnClickListener(logoutClickListener);
         arrowLogout.setOnClickListener(logoutClickListener);
 
-        // 수정 버튼 클릭
-        btnModifyContainer.setOnTouchListener(scaleTouchListener);
-        btnModifyContainer.setOnClickListener(v -> {
-            String inputName = editName.getText().toString().trim();
-            String inputAge = editAge.getText().toString().trim();
+        // 사용자 정보 불러오기
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "로그인된 사용자 정보가 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            if (inputName.isEmpty() || inputAge.isEmpty()) {
-                Toast.makeText(AccountInfoActivity.this, "이름과 나이를 모두 입력해주세요.", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        tvEmail.setText(currentUser.getEmail());
 
-            if (mAuth.getCurrentUser() == null) {
-                Toast.makeText(AccountInfoActivity.this, "로그인 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        String uid = currentUser.getUid();
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        tvName.setText(doc.getString("name"));
+                        tvAge.setText(String.valueOf(doc.get("age")));
+                        tvHeight.setText(String.valueOf(doc.get("height")) + "cm");
+                        tvGender.setText(doc.getString("gender"));
 
-            String uid = mAuth.getCurrentUser().getUid();
+                        List<String> seasonList = (List<String>) doc.get("interestSeasons");
+                        List<String> leisureList = (List<String>) doc.get("interestCategory");
 
-            db.collection("users").document(uid).get()
-                    .addOnSuccessListener(document -> {
-                        if (document.exists()) {
-                            String currentName = document.getString("name");
+                        containerSeason.removeAllViews();
+                        containerLeisure.removeAllViews();
 
-                            String currentAge = "";
-                            if (document.get("age") instanceof Number) {
-                                currentAge = String.valueOf(document.get("age"));
-                            } else if (document.get("age") instanceof String) {
-                                currentAge = document.getString("age");
+                        if (seasonList != null) {
+                            for (String season : seasonList) {
+                                addCardTo(containerSeason, season, getSeasonImage(season));
                             }
-
-                            // 이름 또는 나이 중 하나라도 같으면 수정 불가
-                            if (inputName.equals(currentName) || inputAge.equals(currentAge)) {
-                                Toast.makeText(AccountInfoActivity.this,
-                                        "입력한 이름이나 나이가 기존 정보와 동일합니다.", Toast.LENGTH_SHORT).show();
-                            } else {
-                                db.collection("users").document(uid)
-                                        .update("name", inputName, "age", inputAge)
-                                        .addOnSuccessListener(unused -> {
-                                            Toast.makeText(AccountInfoActivity.this,
-                                                    "정보가 성공적으로 수정되었습니다.", Toast.LENGTH_SHORT).show();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Toast.makeText(AccountInfoActivity.this,
-                                                    "수정 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        });
-                            }
-                        } else {
-                            Toast.makeText(AccountInfoActivity.this, "사용자 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(AccountInfoActivity.this,
-                                "정보 조회 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        });
+
+                        if (leisureList != null) {
+                            for (String leisure : leisureList) {
+                                addCardTo(containerLeisure, leisure, getLeisureImage(leisure));
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
+                    Log.e("AccountInfo", "Firestore 오류", e);
+                });
+    }
+
+    private void addCardTo(LinearLayout container, String label, int imageResId) {
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(16, 16, 16, 16);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(16, 0, 16, 0);
+        card.setLayoutParams(params);
+
+        ImageView imageView = new ImageView(this);
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setImageResource(imageResId);
+
+        TextView textView = new TextView(this);
+        textView.setText(label);
+        textView.setTextSize(14);
+        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        card.addView(imageView);
+        card.addView(textView);
+        container.addView(card);
+    }
+
+    private int getSeasonImage(String season) {
+        switch (season.trim()) {
+            case "봄": return R.drawable.season1;
+            case "여름": return R.drawable.season2;
+            case "가을": return R.drawable.season3;
+            case "겨울": return R.drawable.season4;
+            default: return R.drawable.ic_question;
+        }
+    }
+
+    private int getLeisureImage(String leisure) {
+        switch (leisure.trim()) {
+            case "육상 스포츠": return R.drawable.group1;
+            case "해상 스포츠": return R.drawable.group2;
+            case "항공 스포츠": return R.drawable.group3;
+            default: return R.drawable.ic_question;
+        }
     }
 }
