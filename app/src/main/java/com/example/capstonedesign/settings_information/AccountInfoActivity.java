@@ -30,10 +30,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 public class AccountInfoActivity extends AppCompatActivity {
@@ -151,14 +149,39 @@ public class AccountInfoActivity extends AppCompatActivity {
 
     // 프로필 사진 선택 다이얼로그
     private void showImagePickerDialog() {
-        String[] options = { "사진 찍기", "갤러리에서 선택" };
+        String[] options = { "사진 찍기", "갤러리에서 선택", "기본 프로필로 되돌리기" };
         new AlertDialog.Builder(this)
                 .setTitle("프로필 사진 설정")
                 .setItems(options, (dialog, which) -> {
-                    if (which == 0) openCamera();
-                    else             openGallery();
+                    switch (which) {
+                        case 0: openCamera(); break;
+                        case 1: openGallery(); break;
+                        case 2: resetToDefaultProfile(); break;
+                    }
                 })
                 .show();
+    }
+
+    // 기본 프로필로 되돌리기
+    private void resetToDefaultProfile() {
+        // 스토리지에서 삭제
+        profileImageRef.delete()
+                .addOnSuccessListener(aVoid -> {
+                    // Firestore 필드 제거
+                    db.collection("users").document(uid)
+                            .update("profileImageUrl", "")
+                            .addOnSuccessListener(aVoid2 ->
+                                    Toast.makeText(this, "기본 프로필로 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                            )
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Firestore 업데이트 실패", Toast.LENGTH_SHORT).show()
+                            );
+                    // ImageView 리셋
+                    imgProfile.setImageResource(R.drawable.ic_default_profile);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "스토리지 삭제 실패", Toast.LENGTH_SHORT).show()
+                );
     }
 
     // 갤러리 열기
@@ -213,7 +236,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                                             );
                                 })
                                 .addOnFailureListener(e ->
-                                        Toast.makeText(this, "다운로드 URL 획득 실패", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, "다운ロード URL 획득 실패", Toast.LENGTH_SHORT).show()
                                 )
                 )
                 .addOnFailureListener(e ->
