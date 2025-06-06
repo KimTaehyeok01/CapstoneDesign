@@ -88,13 +88,20 @@ public class WithdrawActivity extends AppCompatActivity {
 
     private void reauthenticateAndDelete(String password) {
         FirebaseUser user = auth.getCurrentUser();
-        if (user == null) return;
+        if (user == null || user.getEmail() == null) {
+            showToast("사용자 정보가 없습니다. 다시 로그인해 주세요.");
+            return;
+        }
 
         AuthCredential credential = EmailAuthProvider
                 .getCredential(user.getEmail(), password);
 
         user.reauthenticate(credential)
-                .addOnSuccessListener(aVoid -> deleteFirestoreDataAndAccount())
+                .addOnSuccessListener(aVoid -> {
+                    user.reload()
+                            .addOnSuccessListener(unused -> deleteFirestoreDataAndAccount())
+                            .addOnFailureListener(e -> showToast("유저 정보 갱신 실패: " + e.getMessage()));
+                })
                 .addOnFailureListener(e ->
                         showToast("재인증 실패: " + e.getMessage())
                 );
