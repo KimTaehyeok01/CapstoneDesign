@@ -126,6 +126,21 @@
         app:layout_constraintStart_toEndOf="@id/imgMarker"
         android:layout_marginStart="8dp" />
 
+    <!-- 필터 아이콘 -->
+    <ImageButton
+        android:id="@+id/btnFilter"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_filter"
+        android:background="@android:color/transparent"
+        android:contentDescription="필터"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@id/searchContainer"
+        app:layout_constraintEnd_toEndOf="@id/searchContainer"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"/>
+
     <View
         android:id="@+id/divider"
         android:layout_width="0dp"

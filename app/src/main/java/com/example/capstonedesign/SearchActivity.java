@@ -23,7 +23,7 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity {
 
     private EditText editSearch;
-    private ImageButton btnSearchGlass, btnCancel;
+    private ImageButton btnSearchGlass, btnCancel, btnFilter;
     private TextView tvNearbySearch;
 
     private RecyclerView recyclerSearchResults;
@@ -46,6 +46,14 @@ public class SearchActivity extends AppCompatActivity {
         btnSearchGlass = findViewById(R.id.btnSearchGlass);
         btnCancel = findViewById(R.id.btnCancel);
         tvNearbySearch = findViewById(R.id.tvNearbySearch);
+
+        // 필터 버튼 초기화
+        btnFilter = findViewById(R.id.btnFilter);
+        btnFilter.setOnClickListener(view -> {
+            Intent intent = new Intent(SearchActivity.this, SearchFilterActivity.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        });
 
         firestore = FirebaseFirestore.getInstance();
 

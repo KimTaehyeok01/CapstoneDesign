@@ -68,6 +68,9 @@
         <!-- 검색 창 액티비티 -->
         <activity android:name=".SearchActivity" />
 
+        <!-- 필터 검색 액티비티 -->
+        <activity android:name=".SearchFilterActivity" />
+
         <!-- 찜 화면 액티비티 -->
         <activity android:name=".FavoriteListActivity" />
 
