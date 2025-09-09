@@ -67,7 +67,8 @@ public class WithdrawActivity extends AppCompatActivity {
 
         EditText input = new EditText(this);
         input.setHint("비밀번호");
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setInputType(InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
         new AlertDialog.Builder(this)
                 .setTitle("비밀번호 확인")
@@ -89,19 +90,11 @@ public class WithdrawActivity extends AppCompatActivity {
         FirebaseUser user = auth.getCurrentUser();
         if (user == null) return;
 
-        AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), password);
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(user.getEmail(), password);
 
         user.reauthenticate(credential)
-                .addOnSuccessListener(aVoid -> {
-                    // 사용자 상태 갱신 후 Firestore + Auth 삭제
-                    user.reload()
-                            .addOnSuccessListener(reloadedUser -> {
-                                deleteFirestoreDataAndAccount();
-                            })
-                            .addOnFailureListener(e -> {
-                                showToast("사용자 정보 갱신 실패: " + e.getMessage());
-                            });
-                })
+                .addOnSuccessListener(aVoid -> deleteFirestoreDataAndAccount())
                 .addOnFailureListener(e ->
                         showToast("재인증 실패: " + e.getMessage())
                 );

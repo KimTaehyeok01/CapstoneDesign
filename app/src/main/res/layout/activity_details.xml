@@ -183,7 +183,7 @@
                     android:contentDescription="돈 아이콘" />
 
                 <TextView
-                    android:id="@+id/textViewDetails"
+                    android:id="@+id/textViewPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="무료이용 가능 ~ 123,456,789 원"
@@ -216,9 +216,17 @@
                     android:textSize="14sp"
                     android:clickable="true"
                     android:focusable="true" />
-
-
             </LinearLayout>
+
+            <!-- 더보기 -->
+            <TextView
+                android:id="@+id/textViewMore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="더보기\nhttps://cafe.naver.com/gangneungcc"
+                android:textSize="14sp"
+                android:layout_marginTop="16dp"
+                android:textColor="#0000EE" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

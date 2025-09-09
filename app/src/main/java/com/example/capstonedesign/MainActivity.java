@@ -49,9 +49,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
-    // 오늘 추천 중복 방지 플래그
-    private boolean isTodayLoaded = false;
-
     // UI 컴포넌트
     private DrawerLayout drawerLayout;
     private ImageView iv_menu;
@@ -146,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
         tvNearby1  = findViewById(R.id.tv_nearby_item1);
         tvNearby2  = findViewById(R.id.tv_nearby_item2);
 
-        // 클릭 리스너 설정
         View.OnClickListener todayClick = v -> {
             String place = tvToday1.getText().toString();
             if (v == imgToday2 || v == tvToday2) {
@@ -210,10 +206,7 @@ public class MainActivity extends AppCompatActivity {
         tvProfileSeason   = findViewById(R.id.tv_profile_season);
         loadUserProfileFromFirestore();
 
-        // **즉시 호출**: onCreate 직후 오늘 추천 로드
-        loadTodayRecommendations();
-
-        // 위치 권한 요청 → 날씨, 주변 추천 로드
+        // 위치 권한 요청 → 날씨, 추천 로드
         requestLocationPermission();
     }
 
@@ -224,10 +217,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetRandomRecommendation() {
+        // 슬롯 애니메이션 중지
         isSlotRunning = false;
         slotHandler.removeCallbacks(slotRunnable);
-        Glide.with(this).load(R.drawable.ic_random).into(imgRandomPlace);
+
+        // 기본 아이콘을 Glide 로 로드하여 배경 깨짐 방지
+        Glide.with(this)
+                .load(R.drawable.ic_random)
+                .into(imgRandomPlace);
+
+        // 초기 안내 문구
         tvRandomPlaceName.setText("주사위를 클릭하세요");
+
+        // 상세 이동 리스너 해제
         tvRandomPlaceName.setOnClickListener(null);
         imgRandomPlace.setOnClickListener(null);
     }
@@ -243,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
     private final Runnable slotRunnable = new Runnable() {
         @Override
         public void run() {
+            // 애니메이션 중지 조건
             if (!isSlotRunning || placeDocs == null || placeDocs.isEmpty()) return;
             if (isFinishing() || isDestroyed()) return;
 
@@ -270,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        // 슬롯 애니메이션 중지
         isSlotRunning = false;
         slotHandler.removeCallbacks(slotRunnable);
     }
@@ -280,11 +284,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // 오늘 추천 불러오기 (한 번만 실행)
+    // 오늘 추천 불러오기
     private void loadTodayRecommendations() {
-        if (isTodayLoaded) return;
-        isTodayLoaded = true;
-
         db.collection("sports_locations")
                 .get()
                 .addOnSuccessListener(snapshot -> {
@@ -408,7 +409,6 @@ public class MainActivity extends AppCompatActivity {
 
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
-                    // 중복 없이 오늘 추천은 한 번만
                     loadTodayRecommendations();
 
                     if (location != null) {

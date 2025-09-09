@@ -48,6 +48,12 @@ public class LoginActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         checkboxAutoLogin = findViewById(R.id.checkboxAutoLogin);
 
+        // 앱 시작할 때 자동 로그인 체크
+        if (preferences.getBoolean("autoLoginEnabled", false)) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
+
         // 로그인 버튼 클릭 시
         btnLogin.setOnClickListener(v -> {
             String email = editTextEmail.getText().toString().trim();
@@ -75,9 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         } else {
-                            String error = task.getException() != null
-                                    ? task.getException().getMessage()
-                                    : "로그인 실패";
+                            String error = task.getException() != null ? task.getException().getMessage() : "로그인 실패";
                             Toast.makeText(this, "로그인 실패: " + error, Toast.LENGTH_LONG).show();
                         }
                     });

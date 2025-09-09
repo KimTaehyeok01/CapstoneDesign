@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F0E3">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 상단바 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginTop="20dp">
+
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@null"
+                android:src="@drawable/search_ic_back_arrow"
+                android:contentDescription="@string/back" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="검색 필터"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/btn_reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="모두 초기화"
+                android:textSize="14sp"
+                android:textColor="#000000" />
+        </LinearLayout>
+
+        <!-- 계절 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="계절"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/group_season"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:singleLine="false"
+            app:singleSelection="false"
+            app:selectionRequired="false"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="8dp">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_spring"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="봄"
+                android:checkable="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_summer"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="여름"
+                android:checkable="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_autumn"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="가을"
+                android:checkable="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_winter"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="겨울"
+                android:checkable="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_allseason"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="사계절"
+                android:checkable="true" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- 육상 / 해상 / 항공 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="육상 / 해상 / 항공"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/group_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:singleLine="false"
+            app:singleSelection="false"
+            app:selectionRequired="false"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="8dp">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_land"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="육상"
+                android:checkable="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_water"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="해상"
+                android:checkable="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_air"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="항공"
+                android:checkable="true" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- 지역 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="지역"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/group_region"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="8dp"
+            app:selectionRequired="false"
+            app:singleLine="false"
+            app:singleSelection="false">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_gyeonggi"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="경기도" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_gangwon"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="강원도" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_chungcheong"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="충청도" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_jeolla"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="전라도" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_gyeongsang"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="경상도" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_jejudo"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="제주도" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_seoul"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="서울" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_incheon"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="인천" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_daejeon"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="대전" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_daegu"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="대구" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_gwangju"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="광주" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_busan"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="부산" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_ulsan"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="울산" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_sejong"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="세종" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- 더 눈에 띄는 적용 버튼 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApply"
+            style="?attr/materialButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:text="적용"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:elevation="4dp"
+            app:cornerRadius="14dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#3D2ED6"
+            app:rippleColor="#33FFFFFF"
+            app:backgroundTint="#5B48EE" />
+        <!-- 배경(#5B48EE)과 테두리(#3D2ED6)는 #F6F0E3 배경과 고대비 -->
+    </LinearLayout>
+</ScrollView>

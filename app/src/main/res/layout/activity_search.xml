@@ -103,6 +103,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- ic_marker 아이콘과 '현재 내 주변에서 검색' 텍스트 -->
+    <!-- 마커 아이콘 -->
     <ImageView
         android:id="@+id/imgMarker"
         android:layout_width="24dp"
@@ -114,32 +115,36 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp" />
 
+    <!-- 텍스트: 현재 내 주변에서 검색 -->
     <TextView
         android:id="@+id/tvNearbySearch"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="현재 내 주변에서 검색"
         android:textSize="14sp"
         android:textColor="@android:color/black"
+        app:layout_constraintStart_toEndOf="@id/imgMarker"
+        app:layout_constraintEnd_toStartOf="@id/btnFilter"
         app:layout_constraintTop_toTopOf="@id/imgMarker"
         app:layout_constraintBottom_toBottomOf="@id/imgMarker"
-        app:layout_constraintStart_toEndOf="@id/imgMarker"
-        android:layout_marginStart="8dp" />
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constrainedWidth="true" />
 
-    <!-- 필터 아이콘 -->
+    <!-- 필터 버튼: 오른쪽 끝, 작게 -->
     <ImageButton
         android:id="@+id/btnFilter"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@null"
         android:src="@drawable/ic_filter"
-        android:background="@android:color/transparent"
-        android:contentDescription="필터"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintTop_toBottomOf="@id/searchContainer"
-        app:layout_constraintEnd_toEndOf="@id/searchContainer"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"/>
+        android:scaleType="fitCenter"
+        android:contentDescription="검색 필터"
+        app:layout_constraintTop_toTopOf="@id/imgMarker"
+        app:layout_constraintBottom_toBottomOf="@id/imgMarker"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp"/>
+
 
     <View
         android:id="@+id/divider"

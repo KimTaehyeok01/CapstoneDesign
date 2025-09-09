@@ -34,7 +34,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
 
     private ImageView imageViewPlace, imageViewFavorite, imageViewCall;
-    private TextView textViewTitle, textViewAddress, textViewDetails, textViewPhone, toolbarTitle;
+    private TextView textViewTitle, textViewAddress, textViewPrice, textViewPhone, textViewMore, toolbarTitle;
     private LinearLayout textViewHours;
 
     private boolean isFavorite = false;
@@ -52,10 +52,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
         textViewTitle = findViewById(R.id.textViewTitle);
         textViewAddress = findViewById(R.id.textViewAddress);
         textViewHours = findViewById(R.id.textViewHours);
-        textViewDetails = findViewById(R.id.textViewDetails);
+        textViewPrice = findViewById(R.id.textViewPrice);
         textViewPhone = findViewById(R.id.textViewPhone);
+        textViewMore = findViewById(R.id.textViewMore);
         imageViewFavorite = findViewById(R.id.imageViewFavorite);
-        imageViewCall = findViewById(R.id.imageViewCall);
+        imageViewCall = findViewById(R.id.imageViewCall); // 전화 아이콘 뷰 추가 연결
 
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -117,7 +118,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             String name = documentSnapshot.getString("name");
                             String address = documentSnapshot.getString("address");
                             String hours = documentSnapshot.getString("hours");
-                            String details = documentSnapshot.getString("details");
+                            String price = documentSnapshot.getString("price");
                             String phone = documentSnapshot.getString("phone");
                             String more = documentSnapshot.getString("summary");
                             String imageUrl = documentSnapshot.getString("image");
@@ -127,9 +128,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                 toolbarTitle.setText(name);
                             }
                             if (address != null) textViewAddress.setText(address);
-                            if (details != null) textViewDetails.setText(details);
+                            if (price != null) textViewPrice.setText(price);
                             if (phone != null && !phone.isEmpty()) textViewPhone.setText(phone);
                             else textViewPhone.setText("전화번호 없음");
+                            if (more != null) textViewMore.setText(more);
 
                             if (hours != null) {
                                 textViewHours.removeAllViews();
