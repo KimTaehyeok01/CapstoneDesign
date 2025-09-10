@@ -1,4 +1,3 @@
-// com.example.capstonedesign.util.FilterPrefs
 package com.example.capstonedesign.util;
 
 import android.content.Context;

@@ -75,7 +75,6 @@ public class FilterActivity extends AppCompatActivity {
             MaterialButton b = findViewById(id);
             if (b != null) {
                 b.setCheckable(true);
-                //  수동 토글은 넣지 않는다. (기본 동작으로 토글됨)
             }
         }
     }
