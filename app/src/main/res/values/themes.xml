@@ -1,17 +1,29 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
     <style name="Base.Theme.CapstoneDesign" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- 액션바 숨김 -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-
         <item name="android:statusBarColor">#66000000</item>
-
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Theme.CapstoneDesign" parent="Base.Theme.CapstoneDesign" />
+
+    <style name="ChoiceButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/bg_choice_button_unselected</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#4E4A42</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="ChoiceButton.Selected">
+        <item name="android:background">@drawable/bg_choice_button_selected</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

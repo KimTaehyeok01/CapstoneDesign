@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ImageView iv_menu;
     private ImageButton btn_close_drawer;
-    private ImageButton navSearch, navHome, navSetting, navMarker, navHeart;
+    // 수정된 부분: navSearch -> navPsychological
+    private ImageButton navPsychological, navHome, navSetting, navMarker, navHeart;
     private TextView tvWeather, tvTodayRecommend, tvNearbyRecommend;
 
     // 오늘·주변 추천용 뷰
@@ -100,12 +101,14 @@ public class MainActivity extends AppCompatActivity {
         btn_close_drawer.setOnClickListener(v -> drawerLayout.closeDrawer(GravityCompat.START));
 
         // 하단 네비게이션
-        navSearch  = findViewById(R.id.nav_search);
+        navPsychological = findViewById(R.id.nav_psychological);
         navMarker  = findViewById(R.id.nav_marker);
         navHome    = findViewById(R.id.nav_home);
         navHeart   = findViewById(R.id.nav_heart);
         navSetting = findViewById(R.id.nav_setting);
-        navSearch.setOnClickListener(v -> startActivity(new Intent(this, SearchActivity.class)));
+
+
+        navPsychological.setOnClickListener(v -> startActivity(new Intent(this, FeelingInputActivity.class)));
         navMarker.setOnClickListener(v -> startActivity(new Intent(this, MapActivity.class)));
         navHome.setOnClickListener(v -> {
             finish();

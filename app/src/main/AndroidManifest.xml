@@ -113,6 +113,10 @@
         <!-- 주변 활동 추천 화면 액티비티 -->
         <activity android:name=".NearbyRecommendActivity" />
 
+        <!-- 심리 상태 추천 화면 액티비티 -->
+        <activity android:name=".FeelingInputActivity" />
+
+
         <service
             android:name=".settings_information.MyFirebaseMessagingService"
             android:exported="false">

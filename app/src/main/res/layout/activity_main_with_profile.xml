@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 메인 콘텐츠 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
@@ -78,7 +77,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp">
 
-                    <!-- 랜덤 추천 제목 -->
                     <TextView
                         android:id="@+id/tv_random_title"
                         android:layout_width="wrap_content"
@@ -90,7 +88,6 @@
                         android:clickable="true"
                         android:foreground="?attr/selectableItemBackground" />
 
-                    <!-- 이미지와 주사위 -->
                     <LinearLayout
                         android:layout_width="384dp"
                         android:layout_height="140dp"
@@ -98,7 +95,6 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
-                        <!-- 랜덤 추천 이미지에 라운드 -->
                         <ImageView
                             android:id="@+id/img_random_place"
                             android:layout_width="200dp"
@@ -163,7 +159,6 @@
                         android:clickable="true"
                         android:foreground="?attr/selectableItemBackground">
 
-                        <!-- 오늘의 추천 아이템1 이미지에 라운드 -->
                         <ImageView
                             android:id="@+id/img_today_item1"
                             android:layout_width="match_parent"
@@ -195,7 +190,6 @@
                         android:clickable="true"
                         android:foreground="?attr/selectableItemBackground">
 
-                        <!-- 오늘의 추천 아이템2 이미지에 라운드 -->
                         <ImageView
                             android:id="@+id/img_today_item2"
                             android:layout_width="match_parent"
@@ -243,7 +237,6 @@
                         android:clickable="true"
                         android:foreground="?attr/selectableItemBackground">
 
-                        <!-- 주변 추천 아이템1 이미지에 라운드 -->
                         <ImageView
                             android:id="@+id/img_nearby_item1"
                             android:layout_width="match_parent"
@@ -275,7 +268,6 @@
                         android:clickable="true"
                         android:foreground="?attr/selectableItemBackground">
 
-                        <!-- 주변 추천 아이템2 이미지에 라운드 -->
                         <ImageView
                             android:id="@+id/img_nearby_item2"
                             android:layout_width="match_parent"
@@ -310,13 +302,13 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <ImageButton
-                android:id="@+id/nav_search"
+                android:id="@+id/nav_psychological"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:src="@drawable/ic_main_search"
-                android:contentDescription="검색" />
+                android:src="@drawable/ic_psychological"
+                android:contentDescription="심리 상태 입력" />
 
             <ImageButton
                 android:id="@+id/nav_marker"
@@ -356,7 +348,6 @@
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- 왼쪽에서 슬라이드될 프로필 패널 -->
     <LinearLayout
         android:id="@+id/nav_profile"
         android:layout_width="280dp"
@@ -366,7 +357,6 @@
         android:background="@drawable/main_profile"
         android:padding="16dp">
 
-        <!-- 닫기 버튼 -->
         <ImageButton
             android:id="@+id/btn_close_drawer"
             android:layout_width="24dp"
@@ -375,7 +365,6 @@
             android:background="@android:color/transparent"
             android:contentDescription="닫기" />
 
-        <!-- 프로필 헤더 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -401,7 +390,6 @@
                 android:textColor="#000000" />
         </LinearLayout>
 
-        <!-- 이메일 -->
         <TextView
             android:id="@+id/tv_profile_email_label"
             android:layout_width="wrap_content"
@@ -419,7 +407,6 @@
             android:textColor="#000000"
             android:layout_marginBottom="12dp" />
 
-        <!-- 나이 -->
         <TextView
             android:id="@+id/tv_profile_age_label"
             android:layout_width="wrap_content"
@@ -437,7 +424,6 @@
             android:textColor="#000000"
             android:layout_marginBottom="12dp" />
 
-        <!-- 관심 종목 -->
         <TextView
             android:id="@+id/tv_profile_interest_label"
             android:layout_width="wrap_content"
@@ -456,7 +442,6 @@
             android:layout_marginTop="4dp"
             android:layout_marginBottom="12dp" />
 
-        <!-- 선호하는 계절 -->
         <TextView
             android:id="@+id/tv_profile_season_label"
             android:layout_width="wrap_content"
