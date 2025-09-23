@@ -35,10 +35,14 @@ android {
 }
 
 dependencies {
+
     // Firebase SDK (최신 BOM 기준)
     implementation platform('com.google.firebase:firebase-bom:33.10.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
+
+    // 둥근 모서리와 그림자 효과를 주는 CardView 위젯을 사용하기 위해 추가
+    implementation("androidx.cardview:cardview:1.0.0")
 
     // Firestore 추가
     implementation 'com.google.firebase:firebase-firestore'
@@ -72,5 +76,4 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-functions:20.3.0'
     implementation 'com.google.firebase:firebase-auth:22.3.0'
-
 }
