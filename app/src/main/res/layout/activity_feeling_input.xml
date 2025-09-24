@@ -59,7 +59,8 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_gibun" />
+            android:src="@drawable/ic_gibun"
+            android:contentDescription="기분 아이콘" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -94,7 +95,8 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_mood_unhappy" />
+                android:src="@drawable/ic_mood_unhappy"
+                android:contentDescription="선택된 기분 아이콘" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -127,31 +129,68 @@
             android:progressDrawable="@drawable/custom_seekbar_progress"
             android:thumb="@drawable/custom_seekbar_thumb" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp">
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:weightSum="5">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:drawableStart="@drawable/ic_face_sad"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_face_sad"
                 android:drawablePadding="4dp"
                 android:gravity="center"
                 android:text="나쁨"
-                android:textColor="#858585" />
+                android:textColor="#858585"
+                android:textSize="12sp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:drawableStart="@drawable/ic_face_happy"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_face_anxious"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:text="불안"
+                android:textColor="#858585"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_face_neutral"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:text="보통"
+                android:textColor="#858585"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_face_good"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:text="괜찮음"
+                android:textColor="#858585"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_face_happy"
                 android:drawablePadding="4dp"
                 android:gravity="center"
                 android:text="좋음"
-                android:textColor="#858585" />
-        </RelativeLayout>
+                android:textColor="#858585"
+                android:textSize="12sp" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"

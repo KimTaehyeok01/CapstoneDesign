@@ -120,11 +120,6 @@ public class FeelingInputActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * 버튼 그룹의 스타일(배경, 텍스트 스타일)을 업데이트하는 메소드
-     * @param buttonGroup 업데이트할 버튼들의 리스트
-     * @param selectedButton 현재 선택된 버튼
-     */
     private void updateButtonStyles(List<TextView> buttonGroup, TextView selectedButton) {
         for (TextView button : buttonGroup) {
             if (button == selectedButton) {
@@ -139,9 +134,6 @@ public class FeelingInputActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * 선택된 데이터들을 Firebase Firestore에 저장하는 메소드
-     */
     private void saveDataToFirestore() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
