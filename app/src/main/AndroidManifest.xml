@@ -116,6 +116,10 @@
         <!-- 심리 상태 추천 화면 액티비티 -->
         <activity android:name=".FeelingInputActivity" />
 
+        <!-- 심리 상태 추천 결과 화면 액티비티 -->
+        <activity android:name=".RecommendationResultActivity" />
+
+
 
         <service
             android:name=".settings_information.MyFirebaseMessagingService"

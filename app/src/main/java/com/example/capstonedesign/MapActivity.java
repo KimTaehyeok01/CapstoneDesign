@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
@@ -59,6 +58,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private String currentPlaceName = "";
     private String currentPlaceAddress = "";
     private String currentPlacePhone = "";
+    private LatLng targetLocation = null;
+    private String targetPlaceName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         MapsInitializer.initialize(getApplicationContext(), MapsInitializer.Renderer.LATEST, renderer -> {});
+
+        // Intent에서 데이터를 먼저 확인하고, 있으면 멤버 변수에 저장합니다.
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("latitude") && intent.hasExtra("longitude")) {
+            double lat = intent.getDoubleExtra("latitude", 0);
+            double lng = intent.getDoubleExtra("longitude", 0);
+            targetPlaceName = intent.getStringExtra("place_name");
+            targetLocation = new LatLng(lat, lng);
+        }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -180,6 +190,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     mMap.clear();
                     boolean found = false;
+                    LatLng firstResultLatLng = null;
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         Double lat = doc.getDouble("latitude");
@@ -187,15 +198,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         String placeName = doc.getString("name");
                         if (lat != null && lng != null && placeName != null) {
                             if (placeName.toLowerCase().contains(lowerQuery)) {
-                                found = true;
-                                LatLng placeLatLng = new LatLng(lat, lng);
-                                mMap.addMarker(new MarkerOptions().position(placeLatLng).title(placeName));
-                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(placeLatLng, 15), 1000, null);
+                                if (!found) {
+                                    found = true;
+                                    firstResultLatLng = new LatLng(lat, lng);
+                                }
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(placeName));
                             }
                         }
                     }
 
-                    if (!found) {
+                    if (found) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstResultLatLng, 15), 1000, null);
+                    } else {
                         Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -207,40 +221,48 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
-            return;
-        }
-
-        SharedPreferences prefs = getSharedPreferences("PushSettingsPrefs", MODE_PRIVATE);
-        boolean isLocationOn = prefs.getBoolean("location_on", true);
-        if (!isLocationOn) {
-            LatLng defaultLocation = new LatLng(37.5665, 126.9780);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
-            Toast.makeText(this, "위치 서비스가 꺼져 있어 기본 위치로 이동합니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        mMap.setMyLocationEnabled(true);
-
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-            if (location != null) {
-                LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 17), 1000, null);
-                mMap.addMarker(new MarkerOptions().position(myLocation).title("내 위치"));
-            } else {
-                LatLng defaultLocation = new LatLng(37.5665, 126.9780);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
+        // 1. '주변 보기'로 들어온 경우, 해당 위치로 바로 이동
+        if (targetLocation != null) {
+            mMap.addMarker(new MarkerOptions().position(targetLocation).title(targetPlaceName));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(targetLocation, 15));
+        } else {
+            // 2. 일반적인 경우 (내 위치 찾기)
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_PERMISSION_REQUEST_CODE);
+                return;
             }
-        });
+
+            SharedPreferences prefs = getSharedPreferences("PushSettingsPrefs", MODE_PRIVATE);
+            boolean isLocationOn = prefs.getBoolean("location_on", true);
+            if (!isLocationOn) {
+                LatLng defaultLocation = new LatLng(37.5665, 126.9780); // 서울 시청
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
+                Toast.makeText(this, "위치 서비스가 꺼져 있어 기본 위치로 이동합니다.", Toast.LENGTH_SHORT).show();
+            } else {
+                mMap.setMyLocationEnabled(true);
+                fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 17), 1000, null);
+                    } else {
+                        LatLng defaultLocation = new LatLng(37.5665, 126.9780);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
+                    }
+                });
+            }
+        }
 
         mMap.setOnMarkerClickListener(marker -> {
             String clickedPlaceName = marker.getTitle();
+            if (clickedPlaceName == null || clickedPlaceName.equals("내 위치")) {
+                placeInfoContainer.setVisibility(View.GONE);
+                return true;
+            }
 
             db.collection("sports_locations")
                     .whereEqualTo("name", clickedPlaceName)
@@ -294,7 +316,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    //  장소명 클릭 시 PlaceDetailActivity로 이동
     public void onPlaceNameClicked(View view) {
         if (currentPlaceName != null && !currentPlaceName.isEmpty()) {
             Intent intent = new Intent(this, PlaceDetailActivity.class);
