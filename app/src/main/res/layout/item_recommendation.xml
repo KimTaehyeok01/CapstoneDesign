@@ -117,10 +117,13 @@
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:text="주변 보기"
             android:textColor="#555555"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:icon="@drawable/ic_nearby"
+            app:iconTint="#555555"/>
     </LinearLayout>
 
 </LinearLayout>
