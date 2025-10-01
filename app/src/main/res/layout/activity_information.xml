@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 배경 이미지 -->
     <ImageView
         android:id="@+id/imgBackground"
         android:layout_width="0dp"
@@ -18,15 +17,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 기존 정보를 포함하는 ScrollView -->
     <ScrollView
         android:id="@+id/scrollInfo"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@android:color/transparent"
         android:fillViewport="true"
+        android:fitsSystemWindows="true"
+        android:paddingTop="32dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/bottomOverlayContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -36,7 +36,6 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- 상단 타이틀 영역: 뒤로가기 버튼과 '내정보' 텍스트 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,9 +61,13 @@
                     android:textStyle="bold"
                     android:textColor="@android:color/black"
                     android:gravity="center" />
+
+                <View
+                    android:layout_width="24dp"
+                    android:layout_height="24dp" />
+
             </LinearLayout>
 
-            <!-- 첫 번째 구분선 -->
             <ImageView
                 android:id="@+id/line1"
                 android:layout_width="match_parent"
@@ -74,7 +77,6 @@
                 android:scaleType="fitXY"
                 android:src="@drawable/setting_line" />
 
-            <!-- '계정정보' 버튼 -->
             <LinearLayout
                 android:id="@+id/btn_account_info"
                 android:layout_width="match_parent"
@@ -100,7 +102,6 @@
                     android:src="@drawable/setting_right_arrow" />
             </LinearLayout>
 
-            <!-- '비밀번호 변경' 버튼 -->
             <LinearLayout
                 android:id="@+id/btn_password_change"
                 android:layout_width="match_parent"
@@ -126,7 +127,6 @@
                     android:src="@drawable/setting_right_arrow" />
             </LinearLayout>
 
-            <!-- '탈퇴하기' 버튼 -->
             <LinearLayout
                 android:id="@+id/btn_withdraw"
                 android:layout_width="match_parent"
@@ -155,13 +155,13 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- 하단 오버레이 컨테이너 : 탈퇴하기 창을 동적으로 추가할 영역 -->
     <FrameLayout
         android:id="@+id/bottomOverlayContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:visibility="gone"
         android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

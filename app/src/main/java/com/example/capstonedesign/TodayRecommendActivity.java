@@ -71,14 +71,13 @@ public class TodayRecommendActivity extends AppCompatActivity {
     private ProgressBar progressLoading;
 
     private final String weatherApiKey = "f5a32755e587860fe98d96a6a54af17f";
-    private final String googleApiKey  = "AIzaSyDhaN2JivN_B886eY9yrzpF2YnPaCy2E6E";
+    private final String googleApiKey  = "YOUR_GOOGLE_API_KEY"; // 실제 키로 변경하세요
 
     private GPTRecommender recommender;
     private final OkHttpClient httpClient = new OkHttpClient();
     private Handler fallbackHandler;
     private Runnable fallbackRunnable;
 
-    // 액티비티 활성 상태 체크
     private boolean isActive = false;
 
     @Override
@@ -87,7 +86,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
         setContentView(R.layout.activity_today_recommend);
         isActive = true;
 
-        // 뷰 바인딩
         btnBackRecommend   = findViewById(R.id.btnBackRecommend);
         tvWeatherRecommend = findViewById(R.id.tvWeatherRecommend);
         scrollView         = findViewById(R.id.scroll_view);
@@ -105,10 +103,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
         btnBackRecommend.setOnClickListener(v -> finish());
 
         recommendButton.setOnClickListener(v -> {
-            // 로딩 인디케이터 표시
             progressLoading.setVisibility(View.VISIBLE);
-
-            // 버튼 비활성화, 스크롤 맨 위로
             recommendButton.setEnabled(false);
             scrollView.post(() -> scrollView.fullScroll(View.FOCUS_UP));
             resultTextView.setText("추천 중...");
@@ -127,12 +122,14 @@ public class TodayRecommendActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         isActive = false;
-        fallbackHandler.removeCallbacksAndMessages(null);
+        if (fallbackHandler != null) {
+            fallbackHandler.removeCallbacksAndMessages(null);
+        }
     }
 
     private void onFetchFinished() {
         runOnUiThread(() -> {
-            // 로딩 인디케이터 숨기기
+            if (!isActive) return;
             progressLoading.setVisibility(View.GONE);
             recommendButton.setEnabled(true);
         });
@@ -164,7 +161,6 @@ public class TodayRecommendActivity extends AppCompatActivity {
                             resultTextView.setText("초기 추천 로딩...");
                             progressLoading.setVisibility(View.VISIBLE);
                             fetchRecommendations();
-                            // 백그라운드 GPT 추천
                             resultTextView.setText("GPT 추천 중...");
                             fetchGPTRecommendations();
                         });
@@ -203,7 +199,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
                     if (!isActive) return;
-                    tvWeatherRecommend.setText("현재 날씨: " + desc + " (" + temp + "°C)");
+                    tvWeatherRecommend.setText("현재 날씨: " + desc + " (" + (int)temp + "°C)");
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -220,7 +216,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
             db.collection("sports_locations").get()
                     .addOnSuccessListener(qs -> {
                         runOnUiThread(() -> {
-                            if (!isActive) return;
+                            if (!isActive || qs == null) return;
                             itemContainer.removeAllViews();
                             java.util.List<DocumentSnapshot> docs = qs.getDocuments();
                             java.util.Collections.shuffle(docs);
@@ -256,7 +252,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
         fallbackRunnable = () -> {
             if (!isActive) return;
-            if ("추천 중...".contentEquals(resultTextView.getText())) {
+            if (resultTextView.getText().toString().contains("추천 중")) {
                 runOnUiThread(() -> {
                     Toast.makeText(this, "응답 지연, 기본 추천으로 전환", Toast.LENGTH_SHORT).show();
                     fetchRecommendations();
@@ -267,7 +263,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
 
         recommender.getRecommendations(currentUser.getUid())
                 .addOnSuccessListener(raw -> {
-                    fallbackHandler.removeCallbacks(fallbackRunnable);
+                    if (fallbackHandler != null) fallbackHandler.removeCallbacks(fallbackRunnable);
                     try {
                         JSONArray arr = new JSONArray(raw);
                         if (arr.length() == 0) {
@@ -294,7 +290,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
                                     .get()
                                     .addOnSuccessListener((QuerySnapshot qsSnap) -> {
                                         if (!isActive) return;
-                                        if (!qsSnap.isEmpty()) {
+                                        if (qsSnap != null && !qsSnap.isEmpty()) {
                                             for (DocumentSnapshot doc : qsSnap.getDocuments()) {
                                                 found.incrementAndGet();
                                                 runOnUiThread(() -> addRecommendationCard(doc));
@@ -316,7 +312,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    fallbackHandler.removeCallbacks(fallbackRunnable);
+                    if (fallbackHandler != null) fallbackHandler.removeCallbacks(fallbackRunnable);
                     fetchRecommendations();
                 });
     }
@@ -343,13 +339,13 @@ public class TodayRecommendActivity extends AppCompatActivity {
                     + "&key="   + googleApiKey;
             Request req = new Request.Builder().url(url).build();
             httpClient.newCall(req).enqueue(new Callback() {
-                @Override public void onFailure(Call call, IOException e) {
+                @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     if (!isActive) return;
                     onProcessed(limit, processed, found);
                 }
-                @Override public void onResponse(Call call, Response resp) throws IOException {
+                @Override public void onResponse(@NonNull Call call, @NonNull Response resp) throws IOException {
                     if (!isActive) return;
-                    if (!resp.isSuccessful()) {
+                    if (!resp.isSuccessful() || resp.body() == null) {
                         onProcessed(limit, processed, found);
                         return;
                     }
@@ -381,13 +377,13 @@ public class TodayRecommendActivity extends AppCompatActivity {
                 + "&key="      + googleApiKey;
         Request req = new Request.Builder().url(url).build();
         httpClient.newCall(req).enqueue(new Callback() {
-            @Override public void onFailure(Call call, IOException e) {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 if (!isActive) return;
                 onProcessed(limit, processed, found);
             }
-            @Override public void onResponse(Call call, Response resp) throws IOException {
+            @Override public void onResponse(@NonNull Call call, @NonNull Response resp) throws IOException {
                 if (!isActive) return;
-                if (!resp.isSuccessful()) {
+                if (!resp.isSuccessful() || resp.body() == null) {
                     onProcessed(limit, processed, found);
                     return;
                 }
@@ -395,7 +391,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
                     JSONObject result = new JSONObject(resp.body().string()).getJSONObject("result");
                     String address = result.optString("formatted_address","");
                     String phone   = result.optString("formatted_phone_number","");
-                    String photoUrl;
+                    String photoUrl = "";
                     if (result.has("photos")) {
                         String photoRef = result.getJSONArray("photos")
                                 .getJSONObject(0)
@@ -404,16 +400,16 @@ public class TodayRecommendActivity extends AppCompatActivity {
                                 + "?maxwidth=400"
                                 + "&photoreference=" + photoRef
                                 + "&key=" + googleApiKey;
-                    } else {
-                        photoUrl = "";
                     }
+                    final String finalPhotoUrl = photoUrl;
                     runOnUiThread(() -> {
                         if (!isActive) return;
                         found.incrementAndGet();
-                        addGoogleCard(name, address, phone, photoUrl);
-                        onProcessed(limit, processed, found);
+                        addGoogleCard(name, address, phone, finalPhotoUrl);
                     });
                 } catch (Exception ex) {
+                    // onProcessed 호출을 여기서도 해야 함
+                } finally {
                     onProcessed(limit, processed, found);
                 }
             }
@@ -421,30 +417,28 @@ public class TodayRecommendActivity extends AppCompatActivity {
     }
 
     private String sanitize(String raw) {
+        if (raw == null) return "";
         return raw.replaceAll("[\\\\/#\\[\\]\\.?*]", "_");
     }
 
     private void addRecommendationCard(DocumentSnapshot doc) {
-        if (!doc.exists() || !isActive) return;
+        if (doc == null || !doc.exists() || !isActive) return;
         View card = LayoutInflater.from(this)
                 .inflate(R.layout.item_nearby_card, itemContainer, false);
         ImageView img = card.findViewById(R.id.img_place);
         TextView  n   = card.findViewById(R.id.tv_place_name);
         TextView  a   = card.findViewById(R.id.tv_place_address);
         TextView  r   = card.findViewById(R.id.tv_place_region);
-        TextView  p   = card.findViewById(R.id.tv_place_price);
         ImageView fav = card.findViewById(R.id.img_favorite);
 
-        String name     = doc.getString("name");
+        final String name = doc.getString("name");
         String address  = doc.getString("address");
         String region   = doc.getString("topic");
-        String details  = doc.getString("details");
         String imageUrl = doc.getString("image");
 
         n.setText(name    != null ? name    : "장소명 없음");
         a.setText(address != null ? address : "주소 없음");
         r.setText(region  != null ? region  : "지역 없음");
-        p.setText(details != null ? details : "정보 없음");
 
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(this).load(imageUrl).into(img);
@@ -460,7 +454,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
                     .collection("favorites")
                     .document(safeId);
             favRef.get().addOnSuccessListener(snap -> {
-                if (!isActive) return;
+                if (!isActive || snap == null) return;
                 fav.setImageResource(snap.exists()
                         ? R.drawable.baseline_favorite_24
                         : R.drawable.baseline_favorite_border_24);
@@ -483,9 +477,9 @@ public class TodayRecommendActivity extends AppCompatActivity {
     }
 
     private void toggleFavorite(DocumentSnapshot doc, ImageView favButton) {
+        if (!isActive) return;
         String name = doc.getString("name");
         String addr = doc.getString("address");
-        if (!isActive) return;
         if (currentUser == null || name == null) {
             Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
             return;
@@ -498,7 +492,7 @@ public class TodayRecommendActivity extends AppCompatActivity {
                 .document(safeId);
 
         favRef.get().addOnSuccessListener(snap -> {
-            if (!isActive) return;
+            if (!isActive || snap == null) return;
             if (snap.exists()) {
                 favRef.delete().addOnSuccessListener(unused -> {
                     if (!isActive) return;
@@ -526,12 +520,10 @@ public class TodayRecommendActivity extends AppCompatActivity {
         TextView  n   = card.findViewById(R.id.tv_place_name);
         TextView  a   = card.findViewById(R.id.tv_place_address);
         TextView  r   = card.findViewById(R.id.tv_place_region);
-        TextView  p   = card.findViewById(R.id.tv_place_price);
 
         n.setText(name);
         a.setText(address.isEmpty() ? "주소 정보 없음" : address);
         r.setText("");
-        p.setText(phone.isEmpty() ? "전화번호 없음" : phone);
 
         if (!photoUrl.isEmpty()) {
             Glide.with(this).load(photoUrl).into(img);
@@ -542,7 +534,9 @@ public class TodayRecommendActivity extends AppCompatActivity {
             Intent i = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("geo:0,0?q=" + Uri.encode(name + " " + address)));
             i.setPackage("com.google.android.apps.maps");
-            startActivity(i);
+            if (i.resolveActivity(getPackageManager()) != null) {
+                startActivity(i);
+            }
         });
         runOnUiThread(() -> {
             if (!isActive) return;
@@ -555,16 +549,16 @@ public class TodayRecommendActivity extends AppCompatActivity {
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE
-                && grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            fetchLocationAndInit();
-        } else {
-            runOnUiThread(() -> {
-                if (!isActive) return;
-                Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-                onFetchFinished();
-            });
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchLocationAndInit();
+            } else {
+                runOnUiThread(() -> {
+                    if (!isActive) return;
+                    Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+                    onFetchFinished();
+                });
+            }
         }
     }
 
@@ -579,7 +573,9 @@ public class TodayRecommendActivity extends AppCompatActivity {
             return functions.getHttpsCallable("recommendPlacesByGPT")
                     .call(data)
                     .continueWith(task -> {
-                        if (!task.isSuccessful()) throw task.getException();
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
                         Object raw = task.getResult().getData();
                         if (raw instanceof String) return (String)raw;
                         @SuppressWarnings("unchecked")

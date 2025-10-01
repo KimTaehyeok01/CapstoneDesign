@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 배경 이미지 -->
     <ImageView
         android:id="@+id/imgBackground"
         android:layout_width="0dp"
@@ -18,34 +17,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- ⬅ 뒤로가기 버튼 -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="48dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_setting_left_arrow"
         android:contentDescription="뒤로가기"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 타이틀 텍스트 -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="48dp"
         android:text="푸시알림설정"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"/>
 
-    <!-- ━ 상단 구분선 -->
     <ImageView
         android:id="@+id/lineTop"
         android:layout_width="0dp"
@@ -57,7 +54,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 위치 서비스 텍스트 -->
     <TextView
         android:id="@+id/tvLocationService"
         android:layout_width="wrap_content"
@@ -70,7 +66,6 @@
         app:layout_constraintTop_toBottomOf="@id/lineTop"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 위치 서비스 토글 버튼 -->
     <ImageButton
         android:id="@+id/btnLocationToggle"
         android:layout_width="48dp"
@@ -80,9 +75,9 @@
         android:src="@drawable/ic_on_button"
         android:contentDescription="위치 서비스 토글"
         app:layout_constraintTop_toTopOf="@id/tvLocationService"
+        app:layout_constraintBottom_toBottomOf="@id/tvLocationService"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 공지사항 텍스트 -->
     <TextView
         android:id="@+id/tvNotice"
         android:layout_width="wrap_content"
@@ -95,7 +90,6 @@
         app:layout_constraintTop_toBottomOf="@id/tvLocationService"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- 공지사항 토글 버튼 -->
     <ImageButton
         android:id="@+id/btnNoticeToggle"
         android:layout_width="48dp"
@@ -105,14 +99,14 @@
         android:src="@drawable/ic_on_button"
         android:contentDescription="공지사항 토글"
         app:layout_constraintTop_toTopOf="@id/tvNotice"
+        app:layout_constraintBottom_toBottomOf="@id/tvNotice"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 하단 확인 버튼 -->
     <FrameLayout
         android:id="@+id/btnConfirmContainer"
         android:layout_width="283dp"
         android:layout_height="62dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="68dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

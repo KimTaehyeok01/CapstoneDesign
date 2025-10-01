@@ -52,7 +52,6 @@ public class NearbyRecommendActivity extends AppCompatActivity {
     private TextView tvWeatherRecommend;
     private LinearLayout itemContainer;
 
-    // 날씨 API 키
     private final String weatherApiKey = "f5a32755e587860fe98d96a6a54af17f";
 
     @Override
@@ -60,7 +59,6 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nearby_recommend);
 
-        // View 바인딩
         btnBackRecommend    = findViewById(R.id.btnBackRecommend);
         btnRefreshRecommend = findViewById(R.id.btnRefreshRecommend);
         tvWeatherRecommend  = findViewById(R.id.tvWeatherRecommend);
@@ -70,16 +68,14 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         currentUser         = FirebaseAuth.getInstance().getCurrentUser();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // 뒤로가기 버튼
         btnBackRecommend.setOnClickListener(v -> finish());
 
-        // 새로고침 클릭 시 위치 & 주변 추천 재조회, 페이드 애니메이션
         btnRefreshRecommend.setOnClickListener(v -> {
             itemContainer.animate()
                     .alpha(0f)
                     .setDuration(200)
                     .withEndAction(() -> {
-                        fetchLocationAndData();    // 위치와 데이터 재로드
+                        fetchLocationAndData();
                         itemContainer.setAlpha(0f);
                         itemContainer.animate()
                                 .alpha(1f)
@@ -91,7 +87,6 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         requestLocationPermission();
     }
 
-    // 위치 권한 요청
     private void requestLocationPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -105,7 +100,6 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         }
     }
 
-    // 권한 승인 후 위치와 데이터 가져오기
     private void fetchLocationAndData() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -124,7 +118,6 @@ public class NearbyRecommendActivity extends AppCompatActivity {
                 });
     }
 
-    // 날씨 정보 가져오기
     private void fetchWeather(double latitude, double longitude) {
         String urlStr = "https://api.openweathermap.org/data/2.5/weather?lat="
                 + latitude
@@ -157,7 +150,7 @@ public class NearbyRecommendActivity extends AppCompatActivity {
 
                 runOnUiThread(() ->
                         tvWeatherRecommend.setText(
-                                "현재 날씨: " + description + " (" + temp + "°C)"
+                                "현재 날씨: " + description + " (" + (int)temp + "°C)"
                         )
                 );
             } catch (Exception e) {
@@ -169,11 +162,10 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         }).start();
     }
 
-    // 주변 장소 50km 이내 최대 5개 가져오기
     private void fetchNearbyRecommendations(Location currentLocation) {
         CollectionReference locationsRef = db.collection("sports_locations");
         locationsRef.get().addOnCompleteListener(task -> {
-            if (!task.isSuccessful()) {
+            if (!task.isSuccessful() || task.getResult() == null) {
                 Toast.makeText(this, "장소를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -206,7 +198,6 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         });
     }
 
-    // 카드뷰 인플레이트 및 데이터 바인딩
     private void addRecommendationCard(QueryDocumentSnapshot doc) {
         View card = LayoutInflater.from(this)
                 .inflate(R.layout.item_nearby_card, itemContainer, false);
@@ -215,19 +206,16 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         TextView tvName       = card.findViewById(R.id.tv_place_name);
         TextView tvAddress    = card.findViewById(R.id.tv_place_address);
         TextView tvRegion     = card.findViewById(R.id.tv_place_region);
-        TextView tvPrice      = card.findViewById(R.id.tv_place_price);
         ImageView imgFavorite = card.findViewById(R.id.img_favorite);
 
-        String name     = doc.getString("name");
+        final String name = doc.getString("name");
         String address  = doc.getString("address");
         String region   = doc.getString("topic");
-        String details  = doc.getString("details");
         String imageUrl = doc.getString("image");
 
         tvName   .setText(name    != null ? name    : "장소명 없음");
         tvAddress.setText(address != null ? address : "주소 없음");
         tvRegion .setText(region  != null ? region  : "지역 없음");
-        tvPrice  .setText(details != null ? details : "가격 정보 없음");
 
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(this).load(imageUrl).into(imgPlace);
@@ -235,7 +223,6 @@ public class NearbyRecommendActivity extends AppCompatActivity {
             imgPlace.setImageResource(R.drawable.ic_climb);
         }
 
-        // 찜아이콘 클릭 시 즐겨찾기 상태 반영
         if (currentUser != null && name != null) {
             String userId = currentUser.getUid();
             DocumentReference favRef = db
@@ -244,7 +231,7 @@ public class NearbyRecommendActivity extends AppCompatActivity {
                     .collection("favorites")
                     .document(name);
             favRef.get().addOnSuccessListener(snap -> {
-                if (snap.exists()) {
+                if (snap != null && snap.exists()) {
                     imgFavorite.setImageResource(R.drawable.baseline_favorite_24);
                 } else {
                     imgFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
@@ -254,15 +241,12 @@ public class NearbyRecommendActivity extends AppCompatActivity {
             imgFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
         }
 
-        // 클릭하면 토글
         imgFavorite.setOnClickListener(v -> toggleFavorite(doc, imgFavorite));
-        // 카드 클릭 시 상세화면
         card.setOnClickListener(v -> openDetail(doc));
 
         itemContainer.addView(card);
     }
 
-    // 찜 토글
     private void toggleFavorite(QueryDocumentSnapshot doc, ImageView favButton) {
         if (currentUser == null) {
             Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
@@ -281,13 +265,11 @@ public class NearbyRecommendActivity extends AppCompatActivity {
 
         favRef.get().addOnSuccessListener(snap -> {
             if (snap.exists()) {
-                // 찜 해제
                 favRef.delete().addOnSuccessListener(unused -> {
                     Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
                     favButton.setImageResource(R.drawable.baseline_favorite_border_24);
                 });
             } else {
-                // 찜 추가
                 Map<String,Object> data = new java.util.HashMap<>();
                 data.put("name", name);
                 data.put("address", addr);
@@ -299,7 +281,6 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         });
     }
 
-    // 상세 페이지 이동
     private void openDetail(QueryDocumentSnapshot doc) {
         String placeName = doc.getString("name");
         if (placeName == null) return;
@@ -308,7 +289,6 @@ public class NearbyRecommendActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // 권한 결과 처리
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,

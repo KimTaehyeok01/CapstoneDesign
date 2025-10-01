@@ -5,9 +5,9 @@
     android:id="@+id/today_recommend_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFDF7">
+    android:background="#FFFDF7"
+    android:fitsSystemWindows="true">
 
-    <!-- 1. 상단 바 -->
     <LinearLayout
         android:id="@+id/top_bar"
         android:layout_width="0dp"
@@ -46,7 +46,6 @@
 
     </LinearLayout>
 
-    <!-- 2. 콘텐츠 스크롤 영역 -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_view"
         android:layout_width="0dp"
@@ -63,7 +62,6 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- 추천 헤더 -->
             <LinearLayout
                 android:id="@+id/header_layout"
                 android:layout_width="match_parent"
@@ -82,14 +80,12 @@
                     android:textStyle="bold"/>
             </LinearLayout>
 
-            <!-- 카드 컨테이너 -->
             <LinearLayout
                 android:id="@+id/item_container"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <!-- 추천받기 버튼 -->
             <Button
                 android:id="@+id/recommendButton"
                 android:layout_width="match_parent"
@@ -97,7 +93,6 @@
                 android:text="추천받기"
                 android:layout_marginTop="16dp"/>
 
-            <!-- 결과 텍스트 -->
             <TextView
                 android:id="@+id/resultTextView"
                 android:layout_width="match_parent"
@@ -110,7 +105,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- 중앙 로딩 인디케이터 -->
     <ProgressBar
         android:id="@+id/progress_loading"
         style="?android:attr/progressBarStyleLarge"

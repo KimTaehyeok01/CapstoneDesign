@@ -5,9 +5,9 @@
     android:id="@+id/today_recommend_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFDF7">
+    android:background="#FFFDF7"
+    android:fitsSystemWindows="true">
 
-    <!-- 1. 상단 바 -->
     <LinearLayout
         android:id="@+id/top_bar"
         android:layout_width="0dp"
@@ -46,7 +46,6 @@
             android:textSize="12sp"/>
     </LinearLayout>
 
-    <!-- 2. 본문 스크롤 (검색바 제거) -->
     <ScrollView
         android:id="@+id/scrollViewRecommend"
         android:layout_width="0dp"
@@ -64,7 +63,6 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- 오늘의 추천 헤더 (텍스트 + 새로고침 버튼) -->
             <LinearLayout
                 android:id="@+id/header_layout"
                 android:layout_width="match_parent"
@@ -91,7 +89,6 @@
                     android:contentDescription="새로 고침"/>
             </LinearLayout>
 
-            <!-- 카드 인플레이트용 컨테이너 -->
             <LinearLayout
                 android:id="@+id/item_container"
                 android:orientation="vertical"

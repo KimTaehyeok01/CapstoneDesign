@@ -3,74 +3,66 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout_withdraw"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"> <!-- 필요 시 반투명 배경 (검은색) -->
+    android:layout_height="match_parent"
+    android:background="#80000000"> <LinearLayout
+    android:id="@+id/boxContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@drawable/ic_mb_drawal">
 
-
-    <!-- 중앙에 배치할 메인 컨테이너 (하얀 상자 모양 아이콘) -->
-    <LinearLayout
-        android:id="@+id/boxContainer"
+    <TextView
+        android:id="@+id/tvWithdrawTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:padding="24dp"
+        android:text="회원 탈퇴"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
         android:gravity="center"
-        android:background="@drawable/ic_mb_drawal">
+        android:layout_marginBottom="12dp" />
 
-        <!-- 상단 '회원 탈퇴' 텍스트 -->
-        <TextView
-            android:id="@+id/tvWithdrawTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="회원 탈퇴"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:gravity="center"
-            android:layout_marginBottom="12dp" />
+    <TextView
+        android:id="@+id/tvWithdrawMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="정말 탈퇴하시겠습니까?"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
 
-        <!-- 안내 문구: "정말 탈퇴하시겠습니까?" -->
-        <TextView
-            android:id="@+id/tvWithdrawMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="정말 탈퇴하시겠습니까?"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/btnCancelDelete"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/ic_delete_cancle"
+            android:text="취소"
             android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:gravity="center"
-            android:layout_marginBottom="24dp" />
+            android:textColor="@android:color/black" />
 
-        <!-- 버튼 영역 (취소 / 탈퇴하기) -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="8dp">
-
-            <!-- 왼쪽: 취소 버튼 -->
-            <Button
-                android:id="@+id/btnCancelDelete"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="48dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/ic_delete_cancle"
-                android:text="취소"
-                android:textSize="16sp"
-                android:textColor="@android:color/black" />
-
-            <!-- 오른쪽: 탈퇴하기 버튼 -->
-            <Button
-                android:id="@+id/btnDeleteConfirm"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="48dp"
-                android:background="@drawable/ic_delete"
-                android:text="탈퇴하기"
-                android:textSize="16sp"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
-
+        <Button
+            android:id="@+id/btnDeleteConfirm"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:background="@drawable/ic_delete"
+            android:text="탈퇴하기"
+            android:textSize="16sp"
+            android:textColor="@android:color/white" />
     </LinearLayout>
+
+</LinearLayout>
 </FrameLayout>

@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 배경 이미지 -->
     <ImageView
         android:id="@+id/imgBackground"
         android:layout_width="0dp"
@@ -18,33 +17,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 뒤로가기 -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="48dp"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_setting_left_arrow"
         android:onClick="onBackClicked"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- 타이틀 -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="48dp"
         android:text="관심사 변경"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@android:color/black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"/>
 
-    <!-- 상단 구분선 -->
     <ImageView
         android:id="@+id/lineTop"
         android:layout_width="0dp"
@@ -56,19 +54,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- “계절” 레이블 -->
     <TextView
         android:id="@+id/tvSeasonLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="48dp"
         android:text="계절"
         android:textSize="16sp"
+        android:textColor="@android:color/black"
         app:layout_constraintTop_toBottomOf="@id/lineTop"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- 계절 버튼들 -->
     <LinearLayout
         android:id="@+id/llSeasonButtons"
         android:layout_width="0dp"
@@ -81,68 +78,65 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSeasonSpring"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/ic_interest_change_season"
-            android:backgroundTint="#D88480"
             android:text="봄"
             android:textColor="@android:color/white"
+            android:backgroundTint="#D88480"
+            app:cornerRadius="8dp"
             android:onClick="onSeasonSpringClicked"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSeasonSummer"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/ic_interest_change_season"
-            android:backgroundTint="#D88480"
             android:text="여름"
             android:textColor="@android:color/white"
+            android:backgroundTint="#D88480"
+            app:cornerRadius="8dp"
             android:onClick="onSeasonSummerClicked"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSeasonFall"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/ic_interest_change_season"
-            android:backgroundTint="#D88480"
             android:text="가을"
             android:textColor="@android:color/white"
+            android:backgroundTint="#D88480"
+            app:cornerRadius="8dp"
             android:onClick="onSeasonFallClicked"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSeasonWinter"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/ic_interest_change_season"
-            android:backgroundTint="#D88480"
             android:text="겨울"
             android:textColor="@android:color/white"
+            android:backgroundTint="#D88480"
+            app:cornerRadius="8dp"
             android:onClick="onSeasonWinterClicked"/>
     </LinearLayout>
 
-    <!-- 계절 안내문 -->
     <TextView
         android:id="@+id/tvSeasonInstruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="220dp"
-        android:layout_marginTop="52dp"
         android:text="선호하는 계절을 선택해주세요"
         android:textColor="@android:color/darker_gray"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="@id/llSeasonButtons"
         app:layout_constraintTop_toBottomOf="@id/llSeasonButtons" />
 
-    <!-- 중간 구분선 -->
     <ImageView
         android:id="@+id/lineMid"
         android:layout_width="0dp"
@@ -153,19 +147,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSeasonInstruction" />
 
-    <!-- “레저스포츠” 레이블 -->
     <TextView
         android:id="@+id/tvSportsLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="48dp"
         android:text="레저스포츠"
         android:textSize="16sp"
+        android:textColor="@android:color/black"
         app:layout_constraintTop_toBottomOf="@id/lineMid"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- 스포츠 버튼들 -->
     <LinearLayout
         android:id="@+id/llSportsButtons"
         android:layout_width="0dp"
@@ -178,61 +171,58 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSportsLand"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/ic_interest_change_sports"
-            android:backgroundTint="#D88480"
             android:text="육상 스포츠"
             android:textColor="@android:color/white"
+            android:backgroundTint="#D88480"
+            app:cornerRadius="8dp"
             android:onClick="onSportsLandClicked"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSportsSea"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:background="@drawable/ic_interest_change_sports"
-            android:backgroundTint="#D88480"
             android:text="해상 스포츠"
             android:textColor="@android:color/white"
+            android:backgroundTint="#D88480"
+            app:cornerRadius="8dp"
             android:onClick="onSportsSeaClicked"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSportsAir"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/ic_interest_change_sports"
-            android:backgroundTint="#D88480"
             android:text="항공 스포츠"
             android:textColor="@android:color/white"
+            android:backgroundTint="#D88480"
+            app:cornerRadius="8dp"
             android:onClick="onSportsAirClicked"/>
     </LinearLayout>
 
-    <!-- 스포츠 안내문 -->
     <TextView
         android:id="@+id/tvSportsInstruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="204dp"
-        android:layout_marginTop="48dp"
         android:text="선호하는 스포츠를 선택해주세요"
         android:textColor="@android:color/darker_gray"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="@id/llSportsButtons"
         app:layout_constraintTop_toBottomOf="@id/llSportsButtons" />
 
-    <!-- 확인 버튼 (원본 그대로) -->
     <FrameLayout
         android:id="@+id/btnConfirmContainer"
         android:layout_width="283dp"
         android:layout_height="62dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="68dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -243,13 +233,15 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_pw_modify"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY"
+            android:contentDescription="확인"/>
 
         <TextView
             android:id="@+id/btnSubmitText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="확인"
+            android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
             android:gravity="center"/>

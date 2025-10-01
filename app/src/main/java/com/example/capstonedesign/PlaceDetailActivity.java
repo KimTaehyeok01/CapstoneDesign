@@ -6,8 +6,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +18,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+// 필요한 import 문 추가
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,8 +52,44 @@ public class PlaceDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
 
+        // 1. Edge-to-Edge 활성화 (setContentView 이전에 호출)
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        setContentView(R.layout.activity_details); // R.layout.activity_details로 가정
+
+        // 2. 시스템 UI와 겹치지 않도록 패딩 설정
+        final View rootView = findViewById(android.R.id.content);
+        // XML에서 상단 바와 스크롤뷰를 찾습니다.
+        final RelativeLayout topAppBar = findViewById(R.id.top_app_bar); // XML에 상단 바 ID가 top_app_bar라고 가정
+        final ScrollView scrollView = (ScrollView) rootView.findViewById(R.id.scrollView); // XML에 ScrollView ID가 scrollView라고 가정
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
+            int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+
+            // 상단 바의 상단 마진을 상태 바 높이만큼 추가합니다.
+            if (topAppBar != null && topAppBar.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) topAppBar.getLayoutParams();
+                params.topMargin = topInset;
+                topAppBar.setLayoutParams(params);
+            }
+
+            // 스크롤뷰의 하단 패딩을 시스템 네비게이션 바 높이만큼 추가합니다.
+            if (scrollView != null) {
+                scrollView.setPadding(
+                        scrollView.getPaddingLeft(),
+                        scrollView.getPaddingTop(),
+                        scrollView.getPaddingRight(),
+                        bottomInset
+                );
+            }
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+
+        // --- 기존 onCreate 코드 시작 ---
         // 뷰 연결
         toolbarTitle = findViewById(R.id.toolbarTitle);
         imageViewPlace = findViewById(R.id.imageViewPlace);
@@ -56,19 +100,17 @@ public class PlaceDetailActivity extends AppCompatActivity {
         textViewPhone = findViewById(R.id.textViewPhone);
         textViewMore = findViewById(R.id.textViewMore);
         imageViewFavorite = findViewById(R.id.imageViewFavorite);
-        imageViewCall = findViewById(R.id.imageViewCall); // 전화 아이콘 뷰 추가 연결
+        imageViewCall = findViewById(R.id.imageViewCall);
 
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // 전달받은 장소 이름
         placeName = getIntent().getStringExtra("place_name");
         if (placeName == null) {
-            finish(); // 예외처리
+            finish();
             return;
         }
 
-        // 찜 버튼 클릭 이벤트
         imageViewFavorite.setOnClickListener(v -> {
             if (currentUser == null) {
                 Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
@@ -82,7 +124,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     .document(placeName);
 
             if (!isFavorite) {
-                // 찜 추가
                 Map<String, Object> data = new HashMap<>();
                 data.put("name", placeName);
                 data.put("address", textViewAddress.getText().toString());
@@ -94,7 +135,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     isFavorite = true;
                 });
             } else {
-                // 찜 해제
                 favRef.delete().addOnSuccessListener(unused -> {
                     Toast.makeText(this, "찜 해제됨", Toast.LENGTH_SHORT).show();
                     imageViewFavorite.setImageResource(R.drawable.baseline_favorite_border_24);
@@ -103,12 +143,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
             }
         });
 
-        // 전화 걸기 클릭 이벤트 (텍스트와 아이콘 모두)
         View.OnClickListener callListener = v -> requestCallPermission();
         textViewPhone.setOnClickListener(callListener);
         imageViewCall.setOnClickListener(callListener);
 
-        // Firestore에서 장소 정보 불러오기
         firestore.collection("sports_locations")
                 .whereEqualTo("name", placeName)
                 .get()
@@ -157,7 +195,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                 }
                             }
 
-                            // 찜 상태 확인
                             if (currentUser != null) {
                                 String userId = currentUser.getUid();
                                 firestore.collection("users")
@@ -187,7 +224,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 });
     }
 
-    // 권한 요청
     private void requestCallPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -199,7 +235,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
         }
     }
 
-    // 요청 결과 처리
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -214,10 +249,9 @@ public class PlaceDetailActivity extends AppCompatActivity {
         }
     }
 
-    // 실제 전화 걸기
     private void startCall() {
         String number = textViewPhone.getText().toString();
-        if (number.equals("전화번호 없음")) {
+        if (number.equals("전화번호 없음") || number.isEmpty()) {
             Toast.makeText(this, "전화번호가 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -226,12 +260,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // 뒤로가기 버튼 클릭 시
     public void onBackClicked(View view) {
         finish();
     }
 
-    // 홈 버튼 클릭 시
     public void onHomeClicked(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);

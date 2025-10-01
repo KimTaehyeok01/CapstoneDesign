@@ -26,7 +26,7 @@
         android:contentDescription="뒤로가기"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="48dp"
         android:layout_marginStart="16dp" />
 
     <TextView
@@ -171,10 +171,13 @@
             android:id="@+id/recyclerRecentSearches"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible" /> <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerSearchResults"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" /> </FrameLayout>
+            android:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerSearchResults"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

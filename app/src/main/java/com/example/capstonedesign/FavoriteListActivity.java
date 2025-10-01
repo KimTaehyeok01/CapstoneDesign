@@ -10,6 +10,7 @@ import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -22,6 +23,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+// 필요한 import 문 추가
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.capstonedesign.settings_information.SettingsActivity;
@@ -57,8 +63,41 @@ public class FavoriteListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 1. Edge-to-Edge 활성화 (setContentView 이전에 호출)
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
         setContentView(R.layout.activity_favorite_list);
 
+        // 2. 시스템 UI와 겹치지 않도록 패딩 설정
+        final View rootView = findViewById(android.R.id.content);
+        final View topBarContainer = findViewById(R.id.back_button); // 상단 UI의 기준점
+        final View bottomNav = findViewById(R.id.bottom_navigation);
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
+            int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+
+            // 상단 UI(뒤로가기 버튼)의 마진을 상태 바 높이만큼 추가합니다.
+            if (topBarContainer != null && topBarContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) topBarContainer.getLayoutParams();
+                // dp to px 변환이 필요할 수 있으나, 간단하게 기존 마진을 더해줍니다.
+                // values/dimens.xml 에 정의된 값을 사용하는 것이 가장 좋습니다.
+                // 여기서는 16dp에 해당하는 px 값을 가정하여 더합니다.
+                float density = getResources().getDisplayMetrics().density;
+                params.topMargin = topInset + (int)(16 * density);
+                topBarContainer.setLayoutParams(params);
+            }
+
+            // 하단 네비게이션 바의 아래쪽에 시스템 네비게이션 바 높이만큼 패딩을 줍니다.
+            if (bottomNav != null) {
+                bottomNav.setPadding(bottomNav.getPaddingLeft(), bottomNav.getPaddingTop(), bottomNav.getPaddingRight(), bottomInset);
+            }
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        // --- 기존 onCreate 코드 시작 ---
         itemContainer   = findViewById(R.id.item_container);
         editSearch      = findViewById(R.id.editSearch);
         btnSearchGlass  = findViewById(R.id.btnSearchGlass);
@@ -166,9 +205,8 @@ public class FavoriteListActivity extends AppCompatActivity {
 
                     for (DocumentSnapshot favDoc : favSnap.getDocuments()) {
                         String name = safe(favDoc.get("name"), null);
-                        if (name == null) continue; // 이름 정보가 없으면 건너뛰기
+                        if (name == null) continue;
 
-                        // 이름으로 sports_locations 컬렉션에서 모든 정보 조회
                         db.collection("sports_locations")
                                 .whereEqualTo("name", name)
                                 .limit(1)
@@ -178,7 +216,6 @@ public class FavoriteListActivity extends AppCompatActivity {
 
                                     DocumentSnapshot locDoc = locSnap.getDocuments().get(0);
 
-                                    // sports_locations 에서 모든 정보를 가져옴
                                     String address  = safe(locDoc.get("address"), "주소 정보 없음");
                                     String region   = safe(locDoc.get("topic"),   "지역 정보 없음");
                                     String imageUrl = safe(locDoc.get("image"),   "");
@@ -200,7 +237,6 @@ public class FavoriteListActivity extends AppCompatActivity {
                                     TextView  tvRegion = card.findViewById(R.id.tv_place_region);
                                     ImageView btnFav   = card.findViewById(R.id.img_favorite);
 
-                                    // 조회한 정보로 UI 설정
                                     tvName.setText(name);
                                     tvAddr.setText(address);
                                     tvRegion.setText(region);
