@@ -10,9 +10,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -22,84 +25,69 @@ public class FeelingInputActivity extends AppCompatActivity {
 
     // UI 요소 선언
     private ImageButton btnBack;
-    private SeekBar seekbarMood;
-    private TextView tvMoodValue;
-    private TextView btnEnergyLow, btnEnergyMid, btnEnergyHigh;
+    private SeekBar seekbarAge;
+    private TextView tvAgeValue;
+    private TextView btnThrillLow, btnThrillMid, btnThrillHigh;
     private TextView btnLocationIn, btnLocationOut;
     private AppCompatButton btnGetRecommendation;
 
-    // 선택된 값을 저장할 변수 (초기값은 XML에 선택된 상태로 설정)
-    private String selectedEnergy = "보통";
+    // 선택된 값을 저장할 변수
+    private String selectedAgeString = "20대"; // UI 표시용 문자열 (초기값)
+    private int selectedAgeValue = 20; // 쿼리용 숫자 (초기값)
+    private String selectedThrill = "보통";
     private String selectedLocation = "실내";
-
-    // Firebase 인증 및 Firestore 인스턴스 선언
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feeling_input); // 이전에 만든 XML 파일 이름
+        setContentView(R.layout.activity_feeling_input);
 
-        // Firebase 인스턴스 초기화
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-
-        // UI 요소들을 ID로 찾아와서 변수에 할당
         initViews();
-
-        // 각종 버튼과 SeekBar에 대한 리스너(이벤트 처리) 설정
         setupListeners();
     }
 
     private void initViews() {
         btnBack = findViewById(R.id.btn_back);
-        seekbarMood = findViewById(R.id.seekbar_mood);
-        tvMoodValue = findViewById(R.id.tv_mood_value);
-
-        // 에너지 버튼
-        btnEnergyLow = findViewById(R.id.btnEnergyLow);
-        btnEnergyMid = findViewById(R.id.btnEnergyMid);
-        btnEnergyHigh = findViewById(R.id.btnEnergyHigh);
-
-        // 실내/실외 버튼
+        seekbarAge = findViewById(R.id.seekbar_age);
+        tvAgeValue = findViewById(R.id.tv_age_value);
+        btnThrillLow = findViewById(R.id.btnThrillLow);
+        btnThrillMid = findViewById(R.id.btnThrillMid);
+        btnThrillHigh = findViewById(R.id.btnThrillHigh);
         btnLocationIn = findViewById(R.id.btnLocationIn);
         btnLocationOut = findViewById(R.id.btnLocationOut);
-
         btnGetRecommendation = findViewById(R.id.btn_get_recommendation);
     }
 
     private void setupListeners() {
-        // 1. 뒤로가기 버튼
-        btnBack.setOnClickListener(v -> {
-            finish(); // 현재 액티비티 종료
-        });
+        btnBack.setOnClickListener(v -> finish());
 
-        // 2. 감정 상태 SeekBar
-        seekbarMood.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        seekbarAge.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // SeekBar를 움직일 때마다 tvMoodValue 텍스트를 현재 값(progress)으로 변경
-                tvMoodValue.setText(String.valueOf(progress));
+                selectedAgeString = getAgeString(progress);
+                selectedAgeValue = getAgeValue(progress); // 숫자 값도 함께 업데이트
+                tvAgeValue.setText(selectedAgeString);
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {}
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        // 3. 에너지 버튼 그룹
-        List<TextView> energyButtons = Arrays.asList(btnEnergyLow, btnEnergyMid, btnEnergyHigh);
-        for (TextView button : energyButtons) {
+        Map<TextView, String> thrillMap = new HashMap<>();
+        thrillMap.put(btnThrillLow, "낮음");
+        thrillMap.put(btnThrillMid, "보통");
+        thrillMap.put(btnThrillHigh, "높음");
+
+        for (Map.Entry<TextView, String> entry : thrillMap.entrySet()) {
+            TextView button = entry.getKey();
+            String thrillValue = entry.getValue();
             button.setOnClickListener(v -> {
-                selectedEnergy = button.getText().toString();
-                updateButtonStyles(energyButtons, button);
+                selectedThrill = thrillValue;
+                updateButtonStyles(Arrays.asList(btnThrillLow, btnThrillMid, btnThrillHigh), button);
             });
         }
 
-        // 4. 실내/실외 버튼 그룹
         List<TextView> locationButtons = Arrays.asList(btnLocationIn, btnLocationOut);
         for (TextView button : locationButtons) {
             button.setOnClickListener(v -> {
@@ -108,58 +96,51 @@ public class FeelingInputActivity extends AppCompatActivity {
             });
         }
 
-        // 5. 추천 받기 버튼
-        btnGetRecommendation.setOnClickListener(v -> {
-            saveDataToFirestore();
-        });
+        btnGetRecommendation.setOnClickListener(v -> navigateToRecommendation());
+    }
+
+    // progress를 나이대 문자열로 변환
+    private String getAgeString(int progress) {
+        switch (progress) {
+            case 0: return "10대";
+            case 1: return "20대";
+            case 2: return "30대";
+            case 3: return "40대";
+            case 4: return "50대 이상";
+            default: return "20대";
+        }
+    }
+
+    // progress를 나이대 대표 숫자로 변환
+    private int getAgeValue(int progress) {
+        switch (progress) {
+            case 0: return 10;
+            case 1: return 20;
+            case 2: return 30;
+            case 3: return 40;
+            case 4: return 50; // '50대 이상'은 50으로 처리
+            default: return 20;
+        }
     }
 
     private void updateButtonStyles(List<TextView> buttonGroup, TextView selectedButton) {
         for (TextView button : buttonGroup) {
             if (button == selectedButton) {
-                // 선택된 버튼 스타일 적용
                 button.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_choice_button_selected));
                 button.setTypeface(null, Typeface.BOLD);
             } else {
-                // 선택되지 않은 버튼 스타일 적용
                 button.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_choice_button_unselected));
                 button.setTypeface(null, Typeface.NORMAL);
             }
         }
     }
 
-    private void saveDataToFirestore() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String uid = currentUser.getUid();
-        int moodValue = seekbarMood.getProgress(); // 다음 화면으로 전달할 변수
-
-        Map<String, Object> feelingData = new HashMap<>();
-        feelingData.put("mood", moodValue);
-        feelingData.put("energy", selectedEnergy);
-        feelingData.put("location", selectedLocation);
-        feelingData.put("timestamp", com.google.firebase.firestore.FieldValue.serverTimestamp());
-
-        db.collection("user_feelings").document(uid).set(feelingData)
-                .addOnSuccessListener(aVoid -> {
-                    // 저장 성공 시
-                    Toast.makeText(FeelingInputActivity.this, "데이터가 저장되었습니다.", Toast.LENGTH_SHORT).show();
-
-                    // 다음 화면(추천 화면)으로 이동하는 코드 활성화
-                    Intent intent = new Intent(FeelingInputActivity.this, RecommendationResultActivity.class);
-                    // 선택한 값들을 Intent에 담아서 전달
-                    intent.putExtra("mood", moodValue);
-                    intent.putExtra("energy", selectedEnergy);
-                    intent.putExtra("location", selectedLocation);
-                    startActivity(intent);
-                    finish(); // 현재 화면은 종료
-                })
-                .addOnFailureListener(e -> {
-                    // 저장 실패 시
-                    Toast.makeText(FeelingInputActivity.this, "저장에 실패했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+    private void navigateToRecommendation() {
+        Intent intent = new Intent(FeelingInputActivity.this, RecommendationResultActivity.class);
+        intent.putExtra("ageString", selectedAgeString); // UI 표시용
+        intent.putExtra("ageValue", selectedAgeValue);   // 쿼리용
+        intent.putExtra("energy", selectedThrill);
+        intent.putExtra("location", selectedLocation);
+        startActivity(intent);
     }
 }
