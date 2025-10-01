@@ -50,10 +50,8 @@ public class FavoriteListActivity extends AppCompatActivity {
     private EditText editSearch;
     private ImageButton btnSearchGlass, btnCancel;
 
-    // 하단 네비게이션 버튼
     private ImageButton navSearch, navMarker, navHome, navHeart, navSetting;
 
-    // 모든 카드 뷰를 보관할 리스트
     private final List<View> allCards = new ArrayList<>();
 
     @Override
@@ -61,7 +59,6 @@ public class FavoriteListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite_list);
 
-        // 뷰 바인딩
         itemContainer   = findViewById(R.id.item_container);
         editSearch      = findViewById(R.id.editSearch);
         btnSearchGlass  = findViewById(R.id.btnSearchGlass);
@@ -70,10 +67,8 @@ public class FavoriteListActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> finish());
 
-        // 검색 버튼 클릭
         btnSearchGlass.setOnClickListener(v -> performSearch());
 
-        // 키보드 검색 버튼 처리
         editSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
@@ -83,10 +78,8 @@ public class FavoriteListActivity extends AppCompatActivity {
             return false;
         });
 
-        // 취소 버튼 클릭: 검색어 클리어 후 원래 목록 복원
         btnCancel.setOnClickListener(v -> clearSearch());
 
-        // 정렬 버튼 리스너
         findViewById(R.id.btn_sort_location).setOnClickListener(v -> sortByName());
         findViewById(R.id.btn_sort_distance).setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -104,7 +97,6 @@ public class FavoriteListActivity extends AppCompatActivity {
             }
         });
 
-        // 네비게이션 바 버튼 바인딩 및 클릭 처리
         navSearch  = findViewById(R.id.nav_search);
         navMarker  = findViewById(R.id.nav_marker);
         navHome    = findViewById(R.id.nav_home);
@@ -125,7 +117,6 @@ public class FavoriteListActivity extends AppCompatActivity {
         });
         navSetting.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
 
-        // Firebase 및 위치 서비스 초기화
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db = FirebaseFirestore.getInstance();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -168,37 +159,36 @@ public class FavoriteListActivity extends AppCompatActivity {
                 .collection("favorites")
                 .get()
                 .addOnSuccessListener(favSnap -> {
-                    List<DocumentSnapshot> favDocs = favSnap.getDocuments();
-                    if (favDocs.isEmpty()) {
+                    if (favSnap.isEmpty()) {
                         Toast.makeText(this, "찜한 장소가 없습니다.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    for (DocumentSnapshot favDoc : favDocs) {
-                        String name    = safe(favDoc.get("name"),    "장소명 없음");
-                        String address = safe(favDoc.get("address"), "주소 없음");
+                    for (DocumentSnapshot favDoc : favSnap.getDocuments()) {
+                        String name = safe(favDoc.get("name"), null);
+                        if (name == null) continue; // 이름 정보가 없으면 건너뛰기
 
-                        CollectionReference locRef = db.collection("sports_locations");
-                        locRef.whereEqualTo("name", name)
+                        // 이름으로 sports_locations 컬렉션에서 모든 정보 조회
+                        db.collection("sports_locations")
+                                .whereEqualTo("name", name)
                                 .limit(1)
                                 .get()
                                 .addOnSuccessListener(locSnap -> {
-                                    String region   = "지역 없음";
-                                    String price    = "가격 정보 없음";
-                                    String imageUrl = "";
+                                    if (locSnap.isEmpty()) return;
+
+                                    DocumentSnapshot locDoc = locSnap.getDocuments().get(0);
+
+                                    // sports_locations 에서 모든 정보를 가져옴
+                                    String address  = safe(locDoc.get("address"), "주소 정보 없음");
+                                    String region   = safe(locDoc.get("topic"),   "지역 정보 없음");
+                                    String imageUrl = safe(locDoc.get("image"),   "");
                                     double latitude = 0.0, longitude = 0.0;
 
-                                    if (!locSnap.isEmpty()) {
-                                        DocumentSnapshot locDoc = locSnap.getDocuments().get(0);
-                                        region   = safe(locDoc.get("topic"),   region);
-                                        price    = safe(locDoc.get("details"), price);
-                                        imageUrl = safe(locDoc.get("image"),   "");
-                                        if (locDoc.get("latitude") instanceof Number) {
-                                            latitude = ((Number) locDoc.get("latitude")).doubleValue();
-                                        }
-                                        if (locDoc.get("longitude") instanceof Number) {
-                                            longitude = ((Number) locDoc.get("longitude")).doubleValue();
-                                        }
+                                    if (locDoc.get("latitude") instanceof Number) {
+                                        latitude = ((Number) locDoc.get("latitude")).doubleValue();
+                                    }
+                                    if (locDoc.get("longitude") instanceof Number) {
+                                        longitude = ((Number) locDoc.get("longitude")).doubleValue();
                                     }
 
                                     View card = LayoutInflater.from(this)
@@ -208,22 +198,17 @@ public class FavoriteListActivity extends AppCompatActivity {
                                     TextView  tvName   = card.findViewById(R.id.tv_place_name);
                                     TextView  tvAddr   = card.findViewById(R.id.tv_place_address);
                                     TextView  tvRegion = card.findViewById(R.id.tv_place_region);
-                                    TextView  tvPrice  = card.findViewById(R.id.tv_place_price);
                                     ImageView btnFav   = card.findViewById(R.id.img_favorite);
 
+                                    // 조회한 정보로 UI 설정
                                     tvName.setText(name);
                                     tvAddr.setText(address);
                                     tvRegion.setText(region);
-                                    tvPrice.setText(price);
 
                                     card.setTag(new double[]{ latitude, longitude });
 
                                     if (!imageUrl.isEmpty()) {
-                                        if (imageUrl.startsWith("gs://")) {
-                                            img.setImageResource(R.drawable.ic_climb);
-                                        } else {
-                                            Glide.with(this).load(imageUrl).into(img);
-                                        }
+                                        Glide.with(this).load(imageUrl).into(img);
                                     } else {
                                         img.setImageResource(R.drawable.ic_climb);
                                     }
@@ -235,17 +220,17 @@ public class FavoriteListActivity extends AppCompatActivity {
                                                 .document(name)
                                                 .delete()
                                                 .addOnSuccessListener(u -> {
-                                                    Toast.makeText(this, "찜 목록에서 제거되었습니다.", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(FavoriteListActivity.this, "찜 목록에서 제거되었습니다.", Toast.LENGTH_SHORT).show();
                                                     allCards.remove(card);
                                                     itemContainer.removeView(card);
                                                 })
                                                 .addOnFailureListener(e ->
-                                                        Toast.makeText(this, "삭제 실패", Toast.LENGTH_SHORT).show()
+                                                        Toast.makeText(FavoriteListActivity.this, "삭제 실패", Toast.LENGTH_SHORT).show()
                                                 );
                                     });
 
                                     card.setOnClickListener(v -> {
-                                        Intent i = new Intent(this, PlaceDetailActivity.class);
+                                        Intent i = new Intent(FavoriteListActivity.this, PlaceDetailActivity.class);
                                         i.putExtra("place_name", name);
                                         startActivity(i);
                                     });
@@ -253,7 +238,7 @@ public class FavoriteListActivity extends AppCompatActivity {
                                     allCards.add(card);
                                     itemContainer.addView(card);
                                 })
-                                .addOnFailureListener(e -> Log.e(TAG, "장소 상세 조회 실패", e));
+                                .addOnFailureListener(e -> Log.e(TAG, "장소 상세 조회 실패: " + name, e));
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -269,30 +254,25 @@ public class FavoriteListActivity extends AppCompatActivity {
             return;
         }
 
-        List<View> matched = new ArrayList<>();
+        itemContainer.removeAllViews();
         for (View card : allCards) {
             String name = ((TextView) card.findViewById(R.id.tv_place_name))
                     .getText().toString().toLowerCase();
             if (name.contains(query)) {
-                matched.add(card);
+                itemContainer.addView(card);
             }
         }
 
-        if (matched.isEmpty()) {
+        if (itemContainer.getChildCount() == 0) {
             Toast.makeText(this, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show();
-        }
-
-        itemContainer.removeAllViews();
-        for (View c : matched) {
-            itemContainer.addView(c);
         }
     }
 
     private void clearSearch() {
         editSearch.setText("");
         itemContainer.removeAllViews();
-        for (View c : allCards) {
-            itemContainer.addView(c);
+        for (View card : allCards) {
+            itemContainer.addView(card);
         }
     }
 
@@ -339,12 +319,10 @@ public class FavoriteListActivity extends AppCompatActivity {
                     }
                     Collections.sort(list, (p1, p2) -> Float.compare(p1.second, p2.second));
                     allCards.clear();
+                    itemContainer.removeAllViews();
                     for (Pair<View, Float> p : list) {
                         allCards.add(p.first);
-                    }
-                    itemContainer.removeAllViews();
-                    for (View c : allCards) {
-                        itemContainer.addView(c);
+                        itemContainer.addView(p.first);
                     }
                 })
                 .addOnFailureListener(e -> {
