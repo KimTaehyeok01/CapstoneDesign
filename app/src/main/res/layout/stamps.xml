@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F0F0F0">
 
-    <!-- 상단 앱 바 -->
     <LinearLayout
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
@@ -34,15 +34,13 @@
             android:textColor="#000000" />
 
         <TextView
+            android:id="@+id/tvWeather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="현재 날씨 ☀️"
-            android:textSize="12sp"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:textSize="12sp"/>
     </LinearLayout>
 
-    <!-- 스크롤 가능한 메인 콘텐츠 -->
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
@@ -102,6 +100,7 @@
                     android:background="@android:color/white">
 
                     <TextView
+                        android:id="@+id/tv_current_tier_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="현재 티어: 실버"
@@ -110,53 +109,52 @@
                         android:textStyle="bold"
                         android:layout_marginBottom="12dp"/>
 
+                    <ImageView
+                        android:id="@+id/tier_badge"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/silver_badge"
+                        android:contentDescription="티어 뱃지"
+                        android:layout_marginBottom="16dp"/>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:layout_marginBottom="8dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="종목" android:textColor="@android:color/black" android:layout_weight="1" android:textStyle="bold"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="횟수" android:textColor="@android:color/black" android:layout_weight="1" android:gravity="center" android:textStyle="bold"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="티어" android:textColor="@android:color/black" android:layout_weight="1" android:gravity="end" android:textStyle="bold"/>
+                    </LinearLayout>
 
-                        <ImageView
-                            android:id="@+id/tier_badge"
-                            android:layout_width="60dp"
-                            android:layout_height="60dp"
-                            android:src="@drawable/ic_age"
-                            android:contentDescription="실버 티어 뱃지"
-                            android:layout_marginEnd="16dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="육상" android:textColor="@android:color/darker_gray" android:layout_weight="1"/>
+                        <TextView android:id="@+id/tv_athletics_count" android:layout_width="0dp" android:layout_height="wrap_content" android:text="3" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="center"/>
+                        <TextView android:id="@+id/tv_athletics_tier" android:layout_width="0dp" android:layout_height="wrap_content" android:text="silver" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="end"/>
+                    </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_weight="1"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="수상" android:textColor="@android:color/darker_gray" android:layout_weight="1"/>
+                        <TextView android:id="@+id/tv_water_sports_count" android:layout_width="0dp" android:layout_height="wrap_content" android:text="4" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="center"/>
+                        <TextView android:id="@+id/tv_water_sports_tier" android:layout_width="0dp" android:layout_height="wrap_content" android:text="bronze" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="end"/>
+                    </LinearLayout>
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:layout_marginBottom="4dp">
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="종목" android:textColor="@android:color/black" android:layout_weight="1"/>
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="횟수" android:textColor="@android:color/black" android:layout_weight="1" android:gravity="center"/>
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="티어" android:textColor="@android:color/black" android:layout_weight="1" android:gravity="end"/>
-                            </LinearLayout>
-
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="2dp">
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="육상" android:textColor="@android:color/darker_gray" android:layout_weight="1"/>
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="3" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="center"/>
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="silver" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="end"/>
-                            </LinearLayout>
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="2dp">
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="수상" android:textColor="@android:color/darker_gray" android:layout_weight="1"/>
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="4" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="center"/>
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="silver" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="end"/>
-                            </LinearLayout>
-                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="항공" android:textColor="@android:color/darker_gray" android:layout_weight="1"/>
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="5" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="center"/>
-                                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="silver" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="end"/>
-                            </LinearLayout>
-
-                        </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="항공" android:textColor="@android:color/darker_gray" android:layout_weight="1"/>
+                        <TextView android:id="@+id/tv_air_sports_count" android:layout_width="0dp" android:layout_height="wrap_content" android:text="5" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="center"/>
+                        <TextView android:id="@+id/tv_air_sports_tier" android:layout_width="0dp" android:layout_height="wrap_content" android:text="gold" android:textColor="@android:color/darker_gray" android:layout_weight="1" android:gravity="end"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -183,14 +181,46 @@
                         android:gravity="center_vertical"
                         android:layout_marginBottom="12dp">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:layout_height="wrap_content"
-                            android:text="육상 수상 항공"
-                            android:textColor="@android:color/black"
-                            android:textSize="16sp"/>
+                            android:orientation="horizontal">
 
+                            <Button
+                                android:id="@+id/btn_category_athletics"
+                                style="?android:attr/borderlessButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:paddingHorizontal="8dp"
+                                android:text="육상"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"/>
+
+                            <Button
+                                android:id="@+id/btn_category_water"
+                                style="?android:attr/borderlessButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:paddingHorizontal="8dp"
+                                android:text="수상"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"/>
+
+                            <Button
+                                android:id="@+id/btn_category_air"
+                                style="?android:attr/borderlessButtonStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:paddingHorizontal="8dp"
+                                android:text="항공"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"/>
+
+                        </LinearLayout>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -201,6 +231,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/tv_dynamic_tier_tag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Silver"
@@ -210,7 +241,6 @@
                         android:paddingVertical="4dp"
                         android:textSize="14sp"
                         android:layout_marginBottom="16dp"/>
-
                     <LinearLayout
                         android:id="@+id/btn_tier_analysis"
                         android:layout_width="match_parent"
@@ -225,10 +255,9 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/ic_age"
+                            android:src="@drawable/silver_badge"
                             android:contentDescription="리스트 아이콘"
-                            android:layout_marginEnd="8dp"
-                            app:tint="@android:color/darker_gray"/>
+                            android:layout_marginEnd="8dp"/>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -246,10 +275,9 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/ic_archery"
+                            android:src="@drawable/ic_maplist"
                             android:contentDescription="보기 아이콘"
-                            android:layout_marginEnd="8dp"
-                            app:tint="@android:color/darker_gray"/>
+                            android:layout_marginEnd="8dp"/>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -265,7 +293,6 @@
                         android:textColor="@android:color/darker_gray"
                         android:textSize="14sp"
                         android:layout_gravity="end"/>
-
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -284,5 +311,4 @@
 
         </LinearLayout>
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
