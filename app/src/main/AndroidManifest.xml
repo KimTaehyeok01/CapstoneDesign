@@ -119,6 +119,14 @@
         <!-- 심리 상태 추천 결과 화면 액티비티 -->
         <activity android:name=".RecommendationResultActivity" />
 
+        <activity
+            android:name=".StampActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TierAnalysisActivity"
+            android:exported="false" />
+
+
 
 
         <service
