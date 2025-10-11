@@ -475,21 +475,6 @@
             android:textColor="#000000"
             android:layout_marginTop="4dp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-        <ImageButton
-            android:id="@+id/btn_stamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_stamp1"
-            android:background="@android:color/transparent"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="40dp"
-            android:contentDescription="스탬프" />
-
     </LinearLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>
