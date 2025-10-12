@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView; // <<<<<<<< ScrollView import 추가
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +32,7 @@ public class StampActivity extends AppCompatActivity {
     private ListenerRegistration userListener;
 
     // UI 요소 변수
-    private ScrollView scrollView; // <<<<<<<< ScrollView 변수 추가
+    private ScrollView scrollView;
     private Button btnSportsTab, btnSeasonalTab;
     private TextView tvCurrentTierTitle, tvAthleticsCount, tvAthleticsTier, tvWaterSportsCount, tvWaterSportsTier, tvAirSportsCount, tvAirSportsTier;
     private ImageView tierBadge;
@@ -95,7 +95,7 @@ public class StampActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        scrollView = findViewById(R.id.scrollView); // <<<<<<<< ScrollView ID 연결
+        scrollView = findViewById(R.id.scrollView);
         btnSportsTab = findViewById(R.id.btn_sports_tab);
         btnSeasonalTab = findViewById(R.id.btn_seasonal_tab);
         tvCurrentTierTitle = findViewById(R.id.tv_current_tier_title);
@@ -129,9 +129,7 @@ public class StampActivity extends AppCompatActivity {
                 return;
             }
 
-            // <<<<<<<< [수정된 핵심 부분] >>>>>>>>
-            // runOnUiThread 대신 scrollView.post()를 사용합니다.
-            // 이렇게 하면 화면 레이아웃이 완전히 준비된 후에 UI 업데이트가 실행됩니다.
+
             if (scrollView != null) {
                 scrollView.post(() -> {
                     if (documentSnapshot != null && documentSnapshot.exists()) {
