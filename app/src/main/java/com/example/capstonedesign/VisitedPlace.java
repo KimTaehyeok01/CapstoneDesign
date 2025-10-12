@@ -4,12 +4,13 @@ public class VisitedPlace {
     private String name;
     private String address;
     private String imageUrl;
-    // 참고: 현재 DB 구조상 날짜 데이터는 없으므로, 필요시 DB 구조 변경이 필요합니다.
+    private String region;
 
-    public VisitedPlace(String name, String address, String imageUrl) {
+    public VisitedPlace(String name, String address, String imageUrl, String region) {
         this.name = name;
         this.address = address;
         this.imageUrl = imageUrl;
+        this.region = region;
     }
 
     public String getName() {
@@ -22,5 +23,9 @@ public class VisitedPlace {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public String getRegion() {
+        return region;
     }
 }

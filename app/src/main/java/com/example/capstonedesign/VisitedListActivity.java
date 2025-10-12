@@ -57,35 +57,35 @@ public class VisitedListActivity extends AppCompatActivity {
                     Toast.makeText(this, "방문한 장소가 없습니다.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                // 각 장소 이름으로 상세 정보를 조회
                 fetchPlaceDetails(placeNames);
             }
         });
     }
 
     private void fetchPlaceDetails(List<String> placeNames) {
+        if (placeNames.isEmpty()) return;
         visitedPlaces.clear();
-        AtomicInteger counter = new AtomicInteger(placeNames.size());
 
-        for (String name : placeNames) {
-            db.collection("sports_locations")
-                    .whereEqualTo("name", name)
-                    .limit(1)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                                String address = doc.getString("address");
-                                String imageUrl = doc.getString("image");
-                                visitedPlaces.add(new VisitedPlace(name, address, imageUrl));
-                            }
+        db.collection("sports_locations")
+                .whereIn("name", placeNames)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            String name = doc.getString("name");
+                            String address = doc.getString("address");
+                            String imageUrl = doc.getString("image");
+                            String region = doc.getString("topic");
+                            visitedPlaces.add(new VisitedPlace(name, address, imageUrl, region));
                         }
-                        // 모든 비동기 작업이 끝나면 어댑터에 알림
-                        if (counter.decrementAndGet() == 0) {
-                            adapter.notifyDataSetChanged();
-                        }
-                    });
-        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    if (visitedPlaces.isEmpty()) {
+                        Toast.makeText(this, "장소 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "데이터 로딩 실패", Toast.LENGTH_SHORT).show();
+                });
     }
 }
