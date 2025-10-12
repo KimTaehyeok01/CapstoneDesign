@@ -1,7 +1,10 @@
 package com.example.capstonedesign;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -12,14 +15,20 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,9 +40,12 @@ public class StampActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private ListenerRegistration userListener;
 
+    private FusedLocationProviderClient fusedLocationClient;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1005;
+
     // UI 요소 변수
     private ScrollView scrollView;
-    private Button btnSportsTab, btnSeasonalTab;
+    private Button btnSportsTab, btnSeasonalTab, btnNearbyStamps;
     private TextView tvCurrentTierTitle, tvAthleticsCount, tvAthleticsTier, tvWaterSportsCount, tvWaterSportsTier, tvAirSportsCount, tvAirSportsTier;
     private ImageView tierBadge;
     private TextView btnCategoryAthletics, btnCategoryWater, btnCategoryAir;
@@ -48,6 +60,7 @@ public class StampActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         initializeViews();
 
@@ -78,6 +91,9 @@ public class StampActivity extends AppCompatActivity {
             updateSecondCardUI("air");
             updateCategoryButtonUI(btnCategoryAir);
         });
+
+        // '가까운 스탬프 장소' 버튼 클릭 이벤트 추가
+        btnNearbyStamps.setOnClickListener(v -> requestLocationPermission());
     }
 
     @Override
@@ -106,6 +122,7 @@ public class StampActivity extends AppCompatActivity {
         tvWaterSportsTier = findViewById(R.id.tv_water_sports_tier);
         tvAirSportsCount = findViewById(R.id.tv_air_sports_count);
         tvAirSportsTier = findViewById(R.id.tv_air_sports_tier);
+        btnNearbyStamps = findViewById(R.id.btn_nearby_stamps);
 
         btnCategoryAthletics = findViewById(R.id.btn_category_athletics);
         btnCategoryWater = findViewById(R.id.btn_category_water);
@@ -129,29 +146,98 @@ public class StampActivity extends AppCompatActivity {
                 return;
             }
 
+            if (scrollView == null) return;
 
-            if (scrollView != null) {
-                scrollView.post(() -> {
-                    if (documentSnapshot != null && documentSnapshot.exists()) {
-                        Map<String, Long> stampCounts = (Map<String, Long>) documentSnapshot.get("stampCounts");
-                        if (stampCounts == null) stampCounts = new HashMap<>();
+            scrollView.post(() -> {
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    Map<String, Long> stampCounts = (Map<String, Long>) documentSnapshot.get("stampCounts");
+                    if (stampCounts == null) stampCounts = new HashMap<>();
 
-                        this.currentLandCount = stampCounts.getOrDefault("land", 0L);
-                        this.currentSeaCount = stampCounts.getOrDefault("sea", 0L);
-                        this.currentAirCount = stampCounts.getOrDefault("air", 0L);
+                    this.currentLandCount = stampCounts.getOrDefault("land", 0L);
+                    this.currentSeaCount = stampCounts.getOrDefault("sea", 0L);
+                    this.currentAirCount = stampCounts.getOrDefault("air", 0L);
 
-                        updateFirstCardUI(currentLandCount, currentSeaCount, currentAirCount);
-                        updateCategoryButtonUI(btnCategoryAthletics);
-                        updateSecondCardUI("land");
+                    updateFirstCardUI(currentLandCount, currentSeaCount, currentAirCount);
+                    updateCategoryButtonUI(btnCategoryAthletics);
+                    updateSecondCardUI("land");
 
-                    } else {
-                        updateFirstCardUI(0, 0, 0);
-                        updateCategoryButtonUI(btnCategoryAthletics);
-                        updateSecondCardUI("land");
-                    }
-                });
-            }
+                } else {
+                    updateFirstCardUI(0, 0, 0);
+                    updateCategoryButtonUI(btnCategoryAthletics);
+                    updateSecondCardUI("land");
+                }
+            });
         });
+    }
+
+    private void requestLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            findAndShowNearestPlace();
+        }
+    }
+
+    private void findAndShowNearestPlace() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if (location == null) {
+                Toast.makeText(this, "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            db.collection("sports_locations").get().addOnSuccessListener(queryDocumentSnapshots -> {
+                DocumentSnapshot nearestPlace = null;
+                float minDistance = Float.MAX_VALUE;
+
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    Double lat = doc.getDouble("latitude");
+                    Double lon = doc.getDouble("longitude");
+                    if (lat != null && lon != null) {
+                        float[] results = new float[1];
+                        Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat, lon, results);
+                        float distance = results[0];
+
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            nearestPlace = doc;
+                        }
+                    }
+                }
+
+                if (nearestPlace != null) {
+                    Double lat = nearestPlace.getDouble("latitude");
+                    Double lon = nearestPlace.getDouble("longitude");
+                    String name = nearestPlace.getString("name");
+
+                    if(lat != null && lon != null && name != null) {
+                        Intent intent = new Intent(StampActivity.this, MapActivity.class);
+                        intent.putExtra("latitude", lat);
+                        intent.putExtra("longitude", lon);
+                        intent.putExtra("place_name", name);
+                        startActivity(intent);
+                    }
+                } else {
+                    Toast.makeText(this, "주변에 등록된 장소가 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                findAndShowNearestPlace();
+            } else {
+                Toast.makeText(this, "기능을 사용하려면 위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void updateFirstCardUI(long land, long sea, long air) {
@@ -162,7 +248,7 @@ public class StampActivity extends AppCompatActivity {
         tvAirSportsCount.setText(String.valueOf(air));
         tvAirSportsTier.setText(getTierForCount(air).toLowerCase());
 
-        long maxCount = Collections.max(java.util.Arrays.asList(land, sea, air));
+        long maxCount = Math.max(land, Math.max(sea, air));
         String highestTier = getTierForCount(maxCount);
 
         tvCurrentTierTitle.setText("현재 티어: " + highestTier);
@@ -219,6 +305,7 @@ public class StampActivity extends AppCompatActivity {
     }
 
     private int getTierBackgroundResource(String tier) {
+        if(tier == null) return R.drawable.rounded_bronze_background;
         switch (tier) {
             case "Master": return R.drawable.rounded_master_background;
             case "Platinum": return R.drawable.rounded_platinum_background;
@@ -238,6 +325,7 @@ public class StampActivity extends AppCompatActivity {
     }
 
     private int getTierBadgeResource(String tier) {
+        if(tier == null) return R.drawable.bronze_badge;
         switch (tier) {
             case "Master": return R.drawable.master_badge;
             case "Platinum": return R.drawable.platinum_badge;
