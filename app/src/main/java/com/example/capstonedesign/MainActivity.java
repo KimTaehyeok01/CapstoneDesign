@@ -225,6 +225,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        ImageButton btnContact = findViewById(R.id.btn_contact);
+        btnContact.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, ContactActivity.class));
+        });
+
         // 위치 권한 요청 → 날씨, 추천 로드
         requestLocationPermission();
     }

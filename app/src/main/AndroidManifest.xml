@@ -127,7 +127,10 @@
         <activity
             android:name=".TierAnalysisActivity"
             android:exported="false" />
+
         <activity android:name=".VisitedListActivity" />
+
+        <activity android:name=".ContactActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
