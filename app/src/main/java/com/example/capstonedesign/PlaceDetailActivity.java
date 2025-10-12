@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -18,8 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-// 필요한 import 문 추가
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowCompat;
@@ -27,13 +26,17 @@ import androidx.core.view.WindowCompat;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PlaceDetailActivity extends AppCompatActivity {
@@ -44,6 +47,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private ImageView imageViewPlace, imageViewFavorite, imageViewCall;
     private TextView textViewTitle, textViewAddress, textViewPrice, textViewPhone, textViewMore, toolbarTitle;
     private LinearLayout textViewHours;
+    private ImageButton buttonStamp;
 
     private boolean isFavorite = false;
     private String placeName = "";
@@ -53,29 +57,23 @@ public class PlaceDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Edge-to-Edge 활성화 (setContentView 이전에 호출)
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        setContentView(R.layout.activity_details);
 
-        setContentView(R.layout.activity_details); // R.layout.activity_details로 가정
-
-        // 2. 시스템 UI와 겹치지 않도록 패딩 설정
         final View rootView = findViewById(android.R.id.content);
-        // XML에서 상단 바와 스크롤뷰를 찾습니다.
-        final RelativeLayout topAppBar = findViewById(R.id.top_app_bar); // XML에 상단 바 ID가 top_app_bar라고 가정
-        final ScrollView scrollView = (ScrollView) rootView.findViewById(R.id.scrollView); // XML에 ScrollView ID가 scrollView라고 가정
+        final RelativeLayout topAppBar = findViewById(R.id.top_app_bar);
+        final ScrollView scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);
 
         ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
             int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
             int bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
 
-            // 상단 바의 상단 마진을 상태 바 높이만큼 추가합니다.
             if (topAppBar != null && topAppBar.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
                 ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) topAppBar.getLayoutParams();
                 params.topMargin = topInset;
                 topAppBar.setLayoutParams(params);
             }
 
-            // 스크롤뷰의 하단 패딩을 시스템 네비게이션 바 높이만큼 추가합니다.
             if (scrollView != null) {
                 scrollView.setPadding(
                         scrollView.getPaddingLeft(),
@@ -88,9 +86,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
             return WindowInsetsCompat.CONSUMED;
         });
 
-
-        // --- 기존 onCreate 코드 시작 ---
-        // 뷰 연결
         toolbarTitle = findViewById(R.id.toolbarTitle);
         imageViewPlace = findViewById(R.id.imageViewPlace);
         textViewTitle = findViewById(R.id.textViewTitle);
@@ -101,6 +96,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         textViewMore = findViewById(R.id.textViewMore);
         imageViewFavorite = findViewById(R.id.imageViewFavorite);
         imageViewCall = findViewById(R.id.imageViewCall);
+        buttonStamp = findViewById(R.id.buttonStamp);
 
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -160,6 +156,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             String phone = documentSnapshot.getString("phone");
                             String more = documentSnapshot.getString("summary");
                             String imageUrl = documentSnapshot.getString("image");
+                            String category = documentSnapshot.getString("category");
 
                             if (name != null) {
                                 textViewTitle.setText(name);
@@ -195,6 +192,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                 }
                             }
 
+                            // 스탬프 버튼 리스너 설정
+                            buttonStamp.setOnClickListener(v -> {
+                                checkAndApplyStamp(placeName, category);
+                            });
+
                             if (currentUser != null) {
                                 String userId = currentUser.getUid();
                                 firestore.collection("users")
@@ -222,6 +224,121 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     Toast.makeText(this, "장소 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
                     finish();
                 });
+    }
+
+    private void checkAndApplyStamp(String placeIdentifier, String category) {
+        if (currentUser == null) {
+            Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (placeIdentifier == null || category == null) {
+            Toast.makeText(this, "장소 정보가 없어 스탬프를 찍을 수 없습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = currentUser.getUid();
+        DocumentReference userRef = firestore.collection("users").document(userId);
+
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                List<String> stampedPlaces = (List<String>) documentSnapshot.get("stampedPlaces");
+
+                if (stampedPlaces != null && stampedPlaces.contains(placeIdentifier)) {
+                    Toast.makeText(this, "이미 스탬프를 찍은 장소입니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    applyStamp(userRef, placeIdentifier, category);
+                }
+            } else {
+                applyStamp(userRef, placeIdentifier, category);
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "사용자 정보를 확인하는 데 실패했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void applyStamp(DocumentReference userRef, String placeIdentifier, String category) {
+        String fieldToIncrement;
+        switch (category) {
+            case "육상": fieldToIncrement = "stampCounts.land"; break;
+            case "해상": fieldToIncrement = "stampCounts.sea"; break;
+            case "항공": fieldToIncrement = "stampCounts.air"; break;
+            default:
+                Toast.makeText(this, "스탬프를 찍을 수 없는 카테고리입니다.", Toast.LENGTH_SHORT).show();
+                return;
+        }
+
+        // 1. 스탬프 횟수와 방문 기록을 먼저 업데이트합니다.
+        WriteBatch batch = firestore.batch();
+        batch.update(userRef, fieldToIncrement, FieldValue.increment(1));
+        batch.update(userRef, "stampedPlaces", FieldValue.arrayUnion(placeIdentifier));
+
+        batch.commit()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "스탬프를 찍었습니다!", Toast.LENGTH_SHORT).show();
+                    // 2. 성공 시, 티어 달성 여부를 확인하고 기록합니다.
+                    checkAndRecordAchievement(userRef, category);
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "스탬프 저장에 실패했습니다.", Toast.LENGTH_SHORT).show());
+    }
+
+    // ✅ 티어 달성 여부를 확인하고 Firestore에 기록하는 새 메소드
+    private void checkAndRecordAchievement(DocumentReference userRef, String category) {
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (!documentSnapshot.exists()) return;
+
+            Map<String, Long> stampCounts = (Map<String, Long>) documentSnapshot.get("stampCounts");
+            if (stampCounts == null) return;
+
+            long currentCount = 0;
+            String categoryFieldName = "";
+
+            switch (category) {
+                case "육상":
+                    currentCount = stampCounts.getOrDefault("land", 0L);
+                    categoryFieldName = "land";
+                    break;
+                case "해상":
+                    currentCount = stampCounts.getOrDefault("sea", 0L);
+                    categoryFieldName = "sea";
+                    break;
+                case "항공":
+                    currentCount = stampCounts.getOrDefault("air", 0L);
+                    categoryFieldName = "air";
+                    break;
+            }
+
+            // 티어 달성 횟수 조건 확인 (3, 6, 9, 12, 15...)
+            if (currentCount == 3 || currentCount == 6 || currentCount == 9 || currentCount == 12 || currentCount == 15) {
+                String tier = getTierForCount(currentCount); // 횟수에 맞는 티어 이름 가져오기
+
+                // achievements 컬렉션 참조
+                CollectionReference achievementsRef = userRef.collection("achievements");
+
+                // 중복 기록 방지: 이미 해당 티어/카테고리 기록이 있는지 확인
+                achievementsRef.whereEqualTo("tier", tier).whereEqualTo("category", category)
+                        .limit(1).get().addOnSuccessListener(querySnapshot -> {
+                            if (querySnapshot.isEmpty()) {
+                                // 기록이 없으면 새로 생성
+                                Map<String, Object> achievementData = new HashMap<>();
+                                achievementData.put("tier", tier);
+                                achievementData.put("category", category);
+                                achievementData.put("timestamp", FieldValue.serverTimestamp()); // 서버 시간으로 기록
+
+                                achievementsRef.add(achievementData);
+                            }
+                        });
+            }
+        });
+    }
+
+    // ✅ 횟수로 티어 이름을 반환하는 헬퍼 메소드 (기존에 없다면 추가)
+    private String getTierForCount(long count) {
+        if (count >= 15) return "Master";
+        if (count >= 12) return "Platinum";
+        if (count >= 9) return "Gold";
+        if (count >= 6) return "Silver";
+        if (count >= 3) return "Bronze";
+        return "Unranked";
     }
 
     private void requestCallPermission() {

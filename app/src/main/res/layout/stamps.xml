@@ -187,41 +187,45 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
-                            <Button
+                            <TextView
                                 android:id="@+id/btn_category_athletics"
-                                style="?android:attr/borderlessButtonStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:minWidth="0dp"
                                 android:paddingHorizontal="8dp"
+                                android:paddingVertical="8dp"
                                 android:text="육상"
-                                android:textColor="@color/black"
-                                android:textSize="16sp"/>
+                                android:textSize="16sp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"/>
 
-                            <Button
+                            <TextView
                                 android:id="@+id/btn_category_water"
-                                style="?android:attr/borderlessButtonStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:minWidth="0dp"
                                 android:paddingHorizontal="8dp"
+                                android:paddingVertical="8dp"
                                 android:text="수상"
-                                android:textColor="@color/black"
-                                android:textSize="16sp"/>
+                                android:textSize="16sp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"/>
 
-                            <Button
+                            <TextView
                                 android:id="@+id/btn_category_air"
-                                style="?android:attr/borderlessButtonStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:minWidth="0dp"
                                 android:paddingHorizontal="8dp"
+                                android:paddingVertical="8dp"
                                 android:text="항공"
-                                android:textColor="@color/black"
-                                android:textSize="16sp"/>
+                                android:textSize="16sp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"/>
 
                         </LinearLayout>
                         <TextView
+                            android:id="@+id/tv_next_tier_progress_header"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="다음 티어까지 3"
@@ -232,9 +236,7 @@
 
                     <TextView
                         android:id="@+id/tv_dynamic_tier_tag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Silver"
+                        android:layout_width="wrap_content"  android:layout_height="wrap_content" android:text="Silver"
                         android:textColor="@color/white"
                         android:background="@drawable/rounded_silver_background"
                         android:paddingHorizontal="12dp"
@@ -255,7 +257,7 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/silver_badge"
+                            android:src="@drawable/ic_list"
                             android:contentDescription="리스트 아이콘"
                             android:layout_marginEnd="8dp"/>
                         <TextView
@@ -267,11 +269,14 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:id="@+id/btn_visited_list" android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="16dp">
+                        android:layout_marginBottom="16dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
@@ -287,6 +292,7 @@
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/tv_next_tier_progress_footer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="다음 티어까지 7개 남았어요"
@@ -302,12 +308,6 @@
                 android:layout_height="wrap_content"
                 android:text="가까운 스탬프 장소"
                 android:layout_marginBottom="12dp"/>
-
-            <Button
-                android:id="@+id/btn_get_stamp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="스탬프 도장 받기"/>
 
         </LinearLayout>
     </ScrollView>
