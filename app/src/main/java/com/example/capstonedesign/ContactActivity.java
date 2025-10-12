@@ -48,9 +48,7 @@ public class ContactActivity extends AppCompatActivity {
         btnSubmitInquiry.setOnClickListener(v -> submitInquiry());
 
         btnViewHistory.setOnClickListener(v -> {
-            // TODO: 문의 내역을 보여주는 Activity를 만들고 연결하세요.
-            // startActivity(new Intent(this, InquiryHistoryActivity.class));
-            Toast.makeText(this, "문의 내역 보기 (구현 예정)", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, InquiryHistoryActivity.class));
         });
     }
 

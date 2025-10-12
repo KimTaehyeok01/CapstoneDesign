@@ -130,7 +130,11 @@
 
         <activity android:name=".VisitedListActivity" />
 
+        <!-- 문의하기 화면 액티비티 -->
         <activity android:name=".ContactActivity" />
+
+        <!-- 문의 내역 화면 액티비티 -->
+        <activity android:name=".InquiryHistoryActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
