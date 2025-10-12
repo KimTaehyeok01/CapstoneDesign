@@ -88,8 +88,7 @@
                     android:layout_marginEnd="8dp"
                     android:src="@drawable/ic_stamp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="스탬프 찍기"
-                    android:onClick="onStampClicked"/>
+                    android:contentDescription="스탬프 찍기"/>
 
                 <ImageView
                     android:id="@+id/imageViewFavorite"

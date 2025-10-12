@@ -208,6 +208,15 @@ public class MainActivity extends AppCompatActivity {
         tvProfileInterest = findViewById(R.id.tv_profile_interest);
         tvProfileSeason   = findViewById(R.id.tv_profile_season);
         loadUserProfileFromFirestore();
+        ImageButton btnStamp = findViewById(R.id.btn_stamp); // XML의 스탬프 버튼 ID
+        btnStamp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // StampsActivity로 이동하는 Intent 생성 및 실행
+                Intent intent = new Intent(MainActivity.this, StampActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // 위치 권한 요청 → 날씨, 추천 로드
         requestLocationPermission();
