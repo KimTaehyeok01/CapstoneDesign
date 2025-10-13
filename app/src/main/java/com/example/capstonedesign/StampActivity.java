@@ -45,7 +45,7 @@ public class StampActivity extends AppCompatActivity {
 
     // UI 요소 변수
     private ScrollView scrollView;
-    private Button btnSportsTab, btnSeasonalTab, btnNearbyStamps;
+    private Button btnNearbyStamps;
     private TextView tvCurrentTierTitle, tvAthleticsCount, tvAthleticsTier, tvWaterSportsCount, tvWaterSportsTier, tvAirSportsCount, tvAirSportsTier;
     private ImageView tierBadge;
     private TextView btnCategoryAthletics, btnCategoryWater, btnCategoryAir;
@@ -66,9 +66,6 @@ public class StampActivity extends AppCompatActivity {
 
         ImageButton backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> finish());
-
-        btnSportsTab.setOnClickListener(v -> setActiveTab(btnSportsTab));
-        btnSeasonalTab.setOnClickListener(v -> setActiveTab(btnSeasonalTab));
 
         LinearLayout btnTierAnalysis = findViewById(R.id.btn_tier_analysis);
         btnTierAnalysis.setOnClickListener(v -> {
@@ -92,7 +89,6 @@ public class StampActivity extends AppCompatActivity {
             updateCategoryButtonUI(btnCategoryAir);
         });
 
-        // '가까운 스탬프 장소' 버튼 클릭 이벤트 추가
         btnNearbyStamps.setOnClickListener(v -> requestLocationPermission());
     }
 
@@ -112,8 +108,6 @@ public class StampActivity extends AppCompatActivity {
 
     private void initializeViews() {
         scrollView = findViewById(R.id.scrollView);
-        btnSportsTab = findViewById(R.id.btn_sports_tab);
-        btnSeasonalTab = findViewById(R.id.btn_seasonal_tab);
         tvCurrentTierTitle = findViewById(R.id.tv_current_tier_title);
         tierBadge = findViewById(R.id.tier_badge);
         tvAthleticsCount = findViewById(R.id.tv_athletics_count);
@@ -333,21 +327,6 @@ public class StampActivity extends AppCompatActivity {
             case "Silver": return R.drawable.silver_badge;
             case "Bronze": return R.drawable.bronze_badge;
             default: return R.drawable.bronze_badge;
-        }
-    }
-
-    private void setActiveTab(Button activeButton) {
-        btnSportsTab.setBackgroundResource(R.drawable.rounded_left_button_inactive);
-        btnSportsTab.setTextColor(ContextCompat.getColor(this, R.color.black));
-        btnSeasonalTab.setBackgroundResource(R.drawable.rounded_right_button_inactive);
-        btnSeasonalTab.setTextColor(ContextCompat.getColor(this, R.color.black));
-
-        if (activeButton.getId() == R.id.btn_sports_tab) {
-            btnSportsTab.setBackgroundResource(R.drawable.rounded_left_button_active);
-            btnSportsTab.setTextColor(ContextCompat.getColor(this, R.color.white));
-        } else if (activeButton.getId() == R.id.btn_seasonal_tab) {
-            btnSeasonalTab.setBackgroundResource(R.drawable.rounded_right_button_active);
-            btnSeasonalTab.setTextColor(ContextCompat.getColor(this, R.color.white));
         }
     }
 }
