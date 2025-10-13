@@ -79,6 +79,9 @@
         <!-- 설정 액티비티 -->
         <activity android:name=".settings_information.SettingsActivity" />
 
+        <!-- 공지사항 액티비티 -->
+        <activity android:name=".settings_information.NoticeActivity" />
+
         <!-- 나이 입력 액티비티 -->
         <activity
             android:name=".login_signup.AgeInputActivity"

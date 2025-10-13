@@ -55,6 +55,12 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        // 공지사항 버튼 클릭 시 NoticeActivity 이동
+        LinearLayout btnNotice = findViewById(R.id.btn_notice);
+        btnNotice.setOnClickListener(v -> {
+            startActivity(new Intent(this, NoticeActivity.class));
+        });
+
         // 푸시알림설정 버튼 클릭 시 PushSettingActivity로 이동
         LinearLayout btnPushSetting = findViewById(R.id.btn_push_setting);
         btnPushSetting.setOnClickListener(new View.OnClickListener() {
