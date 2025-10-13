@@ -2,10 +2,12 @@ package com.example.capstonedesign.settings_information;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.example.capstonedesign.R;
 
@@ -15,64 +17,66 @@ public class PushSettingActivity extends AppCompatActivity {
     private static final String KEY_LOCATION_ON = "location_on";
     private static final String KEY_NOTICE_ON = "notice_on";
 
-    private boolean isLocationOn = true;
-    private boolean isNoticeOn = true;
+    private boolean isLocationOn;
+    private boolean isNoticeOn;
 
-    private ImageButton btnLocationToggle;
-    private ImageButton btnNoticeToggle;
+    private SwitchCompat switchLocation;
+    private SwitchCompat switchNotice;
+    private Button btnSubmitConfirm;
+    private ImageButton btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_push_notification);
 
+        // UI 요소 연결
+        switchLocation = findViewById(R.id.switch_location);
+        switchNotice = findViewById(R.id.switch_notice);
+        btnSubmitConfirm = findViewById(R.id.btnSubmitConfirm);
+        btnBack = findViewById(R.id.btnBack);
+
         // 저장된 설정 불러오기
+        loadSettings();
+
+        // 리스너 설정
+        setupListeners();
+    }
+
+    private void loadSettings() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         isLocationOn = prefs.getBoolean(KEY_LOCATION_ON, true);
         isNoticeOn = prefs.getBoolean(KEY_NOTICE_ON, true);
 
-        // 뒤로가기 버튼
-        ImageButton btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> {
-            finish();
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        // 스위치 초기 상태 설정
+        switchLocation.setChecked(isLocationOn);
+        switchNotice.setChecked(isNoticeOn);
+    }
+
+    private void setupListeners() {
+        btnBack.setOnClickListener(v -> finish());
+
+        // 스위치 상태 변경 시 변수 값 업데이트
+        switchLocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            isLocationOn = isChecked;
         });
 
-        // 토글 버튼 연결
-        btnLocationToggle = findViewById(R.id.btnLocationToggle);
-        btnNoticeToggle = findViewById(R.id.btnNoticeToggle);
-
-        // 초기 상태 설정
-        updateToggleState(btnLocationToggle, isLocationOn);
-        updateToggleState(btnNoticeToggle, isNoticeOn);
-
-        // 위치 서비스 토글
-        btnLocationToggle.setOnClickListener(v -> {
-            isLocationOn = !isLocationOn;
-            updateToggleState(btnLocationToggle, isLocationOn);
+        switchNotice.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            isNoticeOn = isChecked;
         });
 
-        // 알림 토글
-        btnNoticeToggle.setOnClickListener(v -> {
-            isNoticeOn = !isNoticeOn;
-            updateToggleState(btnNoticeToggle, isNoticeOn);
-        });
-
-        // 확인 버튼 눌렀을 때 SharedPreferences 저장
-        ImageButton btnSubmitConfirm = findViewById(R.id.btnSubmitConfirm);
+        // 확인 버튼 클릭 시 설정 저장
         btnSubmitConfirm.setOnClickListener(v -> {
-            SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
-            editor.putBoolean(KEY_LOCATION_ON, isLocationOn);
-            editor.putBoolean(KEY_NOTICE_ON, isNoticeOn);
-            editor.apply(); // 비동기 저장
-
+            saveSettings();
+            Toast.makeText(this, "설정이 저장되었습니다.", Toast.LENGTH_SHORT).show();
             finish();
-            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         });
     }
 
-    // 버튼 이미지 업데이트
-    private void updateToggleState(ImageButton button, boolean isOn) {
-        button.setImageResource(isOn ? R.drawable.ic_on_button : R.drawable.ic_off_button);
+    private void saveSettings() {
+        SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
+        editor.putBoolean(KEY_LOCATION_ON, isLocationOn);
+        editor.putBoolean(KEY_NOTICE_ON, isNoticeOn);
+        editor.apply();
     }
 }
