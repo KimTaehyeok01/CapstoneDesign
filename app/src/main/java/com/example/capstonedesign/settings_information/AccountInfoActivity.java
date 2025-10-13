@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -47,7 +48,7 @@ public class AccountInfoActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseStorage storage;
 
-    private ImageView imgProfile;
+    private ImageView imgProfile; // CircleImageView -> ImageView
     private TextView tvEmail, tvName, tvAge, tvHeight, tvGender;
     private ImageButton btnAccountBack;
     private LinearLayout btnLogout;
@@ -127,7 +128,6 @@ public class AccountInfoActivity extends AppCompatActivity {
     }
 
     private void showPhotoSourceDialog() {
-        // "취소"를 "기본 이미지로 변경"으로 수정
         final CharSequence[] options = {"사진 촬영", "갤러리에서 선택", "기본 이미지로 변경"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("프로필 사진 설정");
@@ -137,7 +137,6 @@ public class AccountInfoActivity extends AppCompatActivity {
             } else if (options[item].equals("갤러리에서 선택")) {
                 openGallery();
             } else if (options[item].equals("기본 이미지로 변경")) {
-                // 기본 이미지로 설정하는 함수 호출
                 setDefaultProfileImage();
             }
         });
@@ -165,15 +164,13 @@ public class AccountInfoActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-        return image;
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
     }
 
     private void logout() {
         mAuth.signOut();
         SharedPreferences preferences = getSharedPreferences("autoLogin", MODE_PRIVATE);
         preferences.edit().remove("autoLoginEnabled").apply();
-
         Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -182,32 +179,25 @@ public class AccountInfoActivity extends AppCompatActivity {
 
     private void loadUserInfo() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            Toast.makeText(this, "로그인된 사용자 정보가 없습니다.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (currentUser == null) return;
 
         tvEmail.setText(currentUser.getEmail());
-
         String uid = currentUser.getUid();
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
                         tvName.setText(doc.getString("name"));
-
                         Long age = doc.getLong("age");
                         if (age != null) tvAge.setText(String.valueOf(age));
-
                         Long height = doc.getLong("height");
                         if (height != null) tvHeight.setText(height + "cm");
-
                         tvGender.setText(doc.getString("gender"));
 
                         String profileImageUrl = doc.getString("profileImageUrl");
                         if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                            // Glide를 사용하여 이미지를 로드하고 원형으로 자름
                             Glide.with(this).load(profileImageUrl).circleCrop().into(imgProfile);
                         } else {
-                            // URL이 없을 경우 기본 이미지로 설정
                             imgProfile.setImageResource(R.drawable.ic_default_profile);
                         }
 
@@ -230,10 +220,7 @@ public class AccountInfoActivity extends AppCompatActivity {
                         }
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
-                    Log.e("AccountInfo", "Firestore 오류", e);
-                });
+                .addOnFailureListener(e -> Log.e("AccountInfo", "Firestore 오류", e));
     }
 
     private void uploadImageToFirebase(Uri imageUri) {
@@ -244,7 +231,6 @@ public class AccountInfoActivity extends AppCompatActivity {
         Glide.with(this).load(imageUri).circleCrop().into(imgProfile);
 
         StorageReference storageRef = storage.getReference().child("profileImages/" + user.getUid() + "/profile.jpg");
-
         storageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl()
                         .addOnSuccessListener(uri -> {
@@ -254,58 +240,68 @@ public class AccountInfoActivity extends AppCompatActivity {
                                     .addOnSuccessListener(aVoid -> Toast.makeText(AccountInfoActivity.this, "프로필 사진이 변경되었습니다.", Toast.LENGTH_SHORT).show())
                                     .addOnFailureListener(e -> Toast.makeText(AccountInfoActivity.this, "사진 URL 저장에 실패했습니다.", Toast.LENGTH_SHORT).show());
                         }))
-                .addOnFailureListener(e -> {
-                    Toast.makeText(AccountInfoActivity.this, "이미지 업로드에 실패했습니다: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.e("StorageUpload", "Upload failed", e);
-                });
+                .addOnFailureListener(e -> Log.e("StorageUpload", "Upload failed", e));
     }
 
-    // 기본 이미지로 되돌리는 메서드
     private void setDefaultProfileImage() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) return;
 
-        // Firestore에서 profileImageUrl 필드 삭제
         Map<String, Object> updates = new HashMap<>();
         updates.put("profileImageUrl", FieldValue.delete());
-
         db.collection("users").document(user.getUid()).update(updates)
                 .addOnSuccessListener(aVoid -> {
-                    // 화면의 이미지 뷰를 기본 이미지로 변경
                     imgProfile.setImageResource(R.drawable.ic_default_profile);
                     Toast.makeText(this, "기본 이미지로 변경되었습니다.", Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "기본 이미지 변경에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "기본 이미지 변경에 실패했습니다.", Toast.LENGTH_SHORT).show());
     }
 
-
+    // 수정된 부분: 별도의 XML 레이아웃 파일 없이 동적으로 카드 생성
     private void addCardTo(LinearLayout container, String label, int imageResId) {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(16, 16, 16, 16);
+        card.setGravity(Gravity.CENTER_HORIZONTAL);
+        card.setPadding(8, 8, 8, 8); // 간격 조정
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                dpToPx(100), // 카드 너비 (예: 100dp)
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(dpToPx(8), 0, dpToPx(8), 0); // 카드 간 간격
+        card.setLayoutParams(params);
+
+        // 이미지 뷰 (프로필 이미지와 동일하게 둥근 배경 적용)
+        ImageView imageView = new ImageView(this);
+        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(dpToPx(80), dpToPx(80)); // 이미지 크기
+        imageView.setLayoutParams(imageParams);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setImageResource(imageResId);
+        imageView.setBackgroundResource(R.drawable.circle_background_light); // 새롭게 생성할 둥근 배경
+        imageView.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4)); // 이미지와 배경 테두리 사이 간격
+        card.addView(imageView);
+
+        // 텍스트 뷰
+        TextView textView = new TextView(this);
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
-        params.setMargins(16, 0, 16, 0);
-        card.setLayoutParams(params);
-
-        ImageView imageView = new ImageView(this);
-        imageView.setLayoutParams(new ViewGroup.LayoutParams(200, 200));
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageView.setImageResource(imageResId);
-
-        TextView textView = new TextView(this);
+        textParams.topMargin = dpToPx(8);
+        textView.setLayoutParams(textParams);
         textView.setText(label);
         textView.setTextSize(14);
-        textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-
-        card.addView(imageView);
+        textView.setTextColor(getColor(android.R.color.black));
+        textView.setGravity(Gravity.CENTER_HORIZONTAL);
         card.addView(textView);
+
         container.addView(card);
+    }
+
+    // dp 값을 픽셀 값으로 변환하는 헬퍼 함수
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 
     private int getSeasonImage(String season) {
