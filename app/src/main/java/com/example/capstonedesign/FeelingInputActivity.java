@@ -21,10 +21,8 @@ import java.util.List;
 
 public class FeelingInputActivity extends AppCompatActivity {
 
-    // UI 요소 선언
-    private ImageButton btnBack;
+    private ImageButton btnBack, btnMinus, btnPlus;
     private TextView tvPersonCount;
-    private ImageButton btnMinus, btnPlus;
     private LinearLayout llAgeBarsContainer;
 
     private TextView btnThrillLow, btnThrillMid, btnThrillHigh;
@@ -32,15 +30,12 @@ public class FeelingInputActivity extends AppCompatActivity {
     private TextView btnChild;
     private AppCompatButton btnGetRecommendation;
 
-    // 데이터 저장 변수
     private int personCount = 1;
     private boolean isChildFriendly = false;
 
-    // XML의 기본 선택 상태('중급', '실내')를 코드에 반영하여 초기화
     private final List<String> selectedThrills = new ArrayList<>(Arrays.asList("보통"));
     private final List<String> selectedLocations = new ArrayList<>(Arrays.asList("실내"));
-
-    private final List<View> ageBarViews = new ArrayList<>(); // 동적으로 추가된 나이 SeekBar 뷰를 관리
+    private final List<View> ageBarViews = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +44,7 @@ public class FeelingInputActivity extends AppCompatActivity {
 
         initViews();
         setupListeners();
-        updatePersonCountUI(); // 초기 인원(1명)에 대한 UI 설정
+        updatePersonCountUI(); // 초기 1명 UI 생성
     }
 
     private void initViews() {
@@ -69,102 +64,92 @@ public class FeelingInputActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
+        // 뒤로가기
         btnBack.setOnClickListener(v -> finish());
 
-        // 인원수 조절 버튼
-        btnPlus.setOnClickListener(v -> {
-            if (personCount < 10) { // 최대 10명까지
-                personCount++;
-                updatePersonCountUI();
-            }
-        });
+        // 인원 수 조절
+        btnPlus.setOnClickListener(v -> changePersonCount(1));
+        btnMinus.setOnClickListener(v -> changePersonCount(-1));
 
-        btnMinus.setOnClickListener(v -> {
-            if (personCount > 1) { // 최소 1명
-                personCount--;
-                updatePersonCountUI();
-            }
-        });
+        // 스릴 난이도 다중 선택
+        btnThrillLow.setOnClickListener(v -> toggleSelection((TextView) v, selectedThrills, "낮음"));
+        btnThrillMid.setOnClickListener(v -> toggleSelection((TextView) v, selectedThrills, "보통"));
+        btnThrillHigh.setOnClickListener(v -> toggleSelection((TextView) v, selectedThrills, "높음"));
 
-        // 스릴 난이도 버튼 (다중 선택)
-        btnThrillLow.setOnClickListener(v -> toggleButtonSelection((TextView) v, selectedThrills, "낮음"));
-        btnThrillMid.setOnClickListener(v -> toggleButtonSelection((TextView) v, selectedThrills, "보통"));
-        btnThrillHigh.setOnClickListener(v -> toggleButtonSelection((TextView) v, selectedThrills, "높음"));
+        // 장소 다중 선택
+        btnLocationIn.setOnClickListener(v -> toggleSelection((TextView) v, selectedLocations, "실내"));
+        btnLocationOut.setOnClickListener(v -> toggleSelection((TextView) v, selectedLocations, "실외"));
 
-        // 실내/실외 버튼 (다중 선택)
-        btnLocationIn.setOnClickListener(v -> toggleButtonSelection((TextView) v, selectedLocations, "실내"));
-        btnLocationOut.setOnClickListener(v -> toggleButtonSelection((TextView) v, selectedLocations, "실외"));
-
-        // 어린이 동반 버튼 (단일 토글)
+        // 어린이 동반 단일 토글
         btnChild.setOnClickListener(v -> {
             isChildFriendly = !isChildFriendly;
-            updateSingleToggleStyle((TextView) v, isChildFriendly);
+            updateButtonStyle(btnChild, isChildFriendly);
         });
 
+        // 추천 결과 화면 이동
         btnGetRecommendation.setOnClickListener(v -> navigateToRecommendation());
     }
 
-    // 인원 수 변경에 따라 UI (나이 SeekBar)
+    private void changePersonCount(int delta) {
+        int newCount = personCount + delta;
+        if (newCount < 1 || newCount > 10) return;
+        personCount = newCount;
+        updatePersonCountUI();
+    }
+
     private void updatePersonCountUI() {
         tvPersonCount.setText(String.valueOf(personCount));
 
         int currentSeekBars = llAgeBarsContainer.getChildCount();
-        if (personCount > currentSeekBars) {
-            for (int i = currentSeekBars; i < personCount; i++) {
-                addAgeSeekBar(i + 1);
-            }
-        } else if (personCount < currentSeekBars) {
-            for (int i = currentSeekBars; i > personCount; i--) {
-                removeAgeSeekBar();
-            }
+
+        // 인원 수 증가 → SeekBar 추가
+        for (int i = currentSeekBars; i < personCount; i++) {
+            addAgeSeekBar(i + 1);
+        }
+
+        // 인원 수 감소 → SeekBar 제거
+        for (int i = currentSeekBars; i > personCount; i--) {
+            removeAgeSeekBar();
         }
     }
 
     private void addAgeSeekBar(int personIndex) {
-        LayoutInflater inflater = LayoutInflater.from(this);
+        View ageView = LayoutInflater.from(this)
+                .inflate(R.layout.age_bar_item, llAgeBarsContainer, false);
 
-        View ageSeekBarView = inflater.inflate(R.layout.age_bar_item, llAgeBarsContainer, false);
+        TextView tvLabel = ageView.findViewById(R.id.tv_person_label);
+        TextView tvAge = ageView.findViewById(R.id.tv_age_value_item);
+        SeekBar seekBar = ageView.findViewById(R.id.seekbar_age_item);
 
-        TextView tvPersonLabel = ageSeekBarView.findViewById(R.id.tv_person_label);
-        TextView tvAgeValueItem = ageSeekBarView.findViewById(R.id.tv_age_value_item);
-        SeekBar seekBarItem = ageSeekBarView.findViewById(R.id.seekbar_age_item);
+        tvLabel.setText("인원 " + personIndex);
+        tvAge.setText("20대");
+        seekBar.setProgress(1);
 
-        tvPersonLabel.setText("인원 " + personIndex);
-        tvAgeValueItem.setText("20대");
-        seekBarItem.setProgress(1);
-
-        seekBarItem.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tvAgeValueItem.setText(getAgeString(progress));
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar sb, int progress, boolean fromUser) {
+                tvAge.setText(getAgeString(progress));
             }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStartTrackingTouch(SeekBar sb) {}
+            @Override public void onStopTrackingTouch(SeekBar sb) {}
         });
 
-        llAgeBarsContainer.addView(ageSeekBarView);
-        ageBarViews.add(ageSeekBarView);
+        llAgeBarsContainer.addView(ageView);
+        ageBarViews.add(ageView);
     }
 
     private void removeAgeSeekBar() {
         if (!ageBarViews.isEmpty()) {
-            View lastView = ageBarViews.remove(ageBarViews.size() - 1);
-            llAgeBarsContainer.removeView(lastView);
+            View last = ageBarViews.remove(ageBarViews.size() - 1);
+            llAgeBarsContainer.removeView(last);
         }
     }
 
-    private void toggleButtonSelection(TextView button, List<String> selectionList, String value) {
-        if (selectionList.contains(value)) {
-            selectionList.remove(value);
-            updateButtonStyle(button, false);
-        } else {
-            selectionList.add(value);
-            updateButtonStyle(button, true);
-        }
-    }
+    private void toggleSelection(TextView button, List<String> list, String value) {
+        boolean selected = list.contains(value);
+        if (selected) list.remove(value);
+        else list.add(value);
 
-    private void updateSingleToggleStyle(TextView button, boolean isSelected) {
-        updateButtonStyle(button, isSelected);
+        updateButtonStyle(button, !selected);
     }
 
     private void updateButtonStyle(TextView button, boolean isSelected) {
@@ -183,7 +168,7 @@ public class FeelingInputActivity extends AppCompatActivity {
             return;
         }
 
-        Intent intent = new Intent(FeelingInputActivity.this, RecommendationResultActivity.class);
+        Intent intent = new Intent(this, RecommendationResultActivity.class);
         intent.putExtra("personCount", personCount);
         intent.putExtra("isChildFriendly", isChildFriendly);
         intent.putIntegerArrayListExtra("ageValues", getAgesFromSeekBars());
@@ -195,8 +180,8 @@ public class FeelingInputActivity extends AppCompatActivity {
     private ArrayList<Integer> getAgesFromSeekBars() {
         ArrayList<Integer> ages = new ArrayList<>();
         for (View view : ageBarViews) {
-            SeekBar seekBar = view.findViewById(R.id.seekbar_age_item);
-            ages.add(getAgeValue(seekBar.getProgress()));
+            SeekBar sb = view.findViewById(R.id.seekbar_age_item);
+            ages.add(getAgeValue(sb.getProgress()));
         }
         return ages;
     }
