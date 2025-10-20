@@ -3,6 +3,7 @@ package com.example.capstonedesign.login_signup;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.widget.Button; // 수정: Button import 추가
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -15,14 +16,15 @@ import com.google.firebase.auth.FirebaseAuth;
 public class FindPwActivity extends AppCompatActivity {
 
     private EditText editEmail;
-    private ImageButton btnSendEmail, btnBack; //
+    private Button btnSendEmail;
+    private ImageButton btnBack;
 
     private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.find_pw); // 레이아웃 이름 맞는지 확인
+        setContentView(R.layout.find_pw);
 
         mAuth = FirebaseAuth.getInstance();
 
