@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button; // 수정: Button import 추가
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -21,7 +22,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editTextEmail, editTextPassword;
-    private ImageButton btnLogin, btnBack;
+    private Button btnLogin;
+    private ImageButton btnBack;
     private TextView btnRegister, btnFindPw;
     private CheckBox checkboxAutoLogin;
 
