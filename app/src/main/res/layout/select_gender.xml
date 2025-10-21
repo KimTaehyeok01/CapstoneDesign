@@ -2,89 +2,94 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".login_signup.GenderSelectActivity"> <ImageView
+    android:id="@+id/backgroundImage"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:src="@drawable/sign_up_age"
+    android:scaleType="centerCrop"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 배경 이미지 -->
-    <ImageView
-        android:id="@+id/backgroundImage"
+    <View
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:src="@drawable/sign_up_age"
-        android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
+        android:background="#66000000" app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- 뒤로가기 버튼 -->
     <ImageButton
         android:id="@+id/back_button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:background="@android:color/transparent"
+        android:layout_marginTop="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_left_arrow"
+        android:padding="16dp"
+        app:tint="@android:color/white"
         android:contentDescription="뒤로가기"
-        android:scaleType="fitCenter"
-        android:clickable="true"
-        android:focusable="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- 상단 라인 -->
-    <ImageView
-        android:id="@+id/line5"
-        android:layout_width="200dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="100dp"
-        android:src="@drawable/line7"
-        android:scaleType="fitXY"
-        app:layout_constraintTop_toBottomOf="@id/back_button"
+    <TextView
+        android:id="@+id/textTitleGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="성별 선택"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/back_button"
+        app:layout_constraintBottom_toBottomOf="@id/back_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 제목 텍스트 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3" />
+
     <TextView
         android:id="@+id/labelGender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="성별을 입력해주세요"
-        android:textSize="18sp"
+        android:text="성별을 선택해주세요"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/line5"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@id/gender_button_group"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 성별 선택 버튼 영역 -->
     <LinearLayout
         android:id="@+id/gender_button_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
         android:orientation="horizontal"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/labelGender"
+        app:layout_constraintTop_toTopOf="@id/guideline_top_content"
+        app:layout_constraintBottom_toTopOf="@id/next_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- 남성 버튼 -->
         <FrameLayout
             android:id="@+id/male_button"
-            android:layout_width="120dp"
-            android:layout_height="80dp"
+            android:layout_width="140dp"
+            android:layout_height="100dp"
             android:layout_marginEnd="24dp"
+            android:background="@drawable/bg_input_field_dark"
             android:clickable="true"
             android:focusable="true">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_gender_button"
-                android:scaleType="fitXY" />
 
             <TextView
                 android:id="@+id/text_male"
@@ -92,24 +97,18 @@
                 android:layout_height="match_parent"
                 android:text="남성"
                 android:textColor="@android:color/white"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:gravity="center" />
         </FrameLayout>
 
-        <!-- 여성 버튼 -->
         <FrameLayout
             android:id="@+id/female_button"
-            android:layout_width="120dp"
-            android:layout_height="80dp"
+            android:layout_width="140dp"
+            android:layout_height="100dp"
+            android:background="@drawable/bg_input_field_dark"
             android:clickable="true"
             android:focusable="true">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_gender_button"
-                android:scaleType="fitXY" />
 
             <TextView
                 android:id="@+id/text_female"
@@ -117,43 +116,27 @@
                 android:layout_height="match_parent"
                 android:text="여성"
                 android:textColor="@android:color/white"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:gravity="center" />
         </FrameLayout>
     </LinearLayout>
 
-
-    <!-- 다음 버튼 -->
-    <FrameLayout
-        android:id="@+id/next_button_container"
-        android:layout_width="200dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="32dp"
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="48dp"
+        android:text="다음"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:backgroundTint="@android:color/white"
+        app:cornerRadius="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageButton
-            android:id="@+id/next_button"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:src="@drawable/sign_up_button"
-            android:scaleType="fitXY"
-            android:contentDescription="다음"
-            android:clickable="true"
-            android:focusable="true" />
-
-        <TextView
-            android:id="@+id/next_button_text"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="다음"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center" />
-    </FrameLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
