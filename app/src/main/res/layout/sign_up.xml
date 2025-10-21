@@ -122,7 +122,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="16dp"
-        android:hint="이메일 (예: test@google.com)"
+        android:hint="이메일 (예: abc123@google.com)"
         android:inputType="textEmailAddress"
         android:background="@drawable/bg_input_field_dark"
         android:textColor="@android:color/white"
