@@ -2,6 +2,7 @@ package com.example.capstonedesign.login_signup;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button; // 수정: ImageButton -> Button
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -20,7 +21,8 @@ import java.util.Map;
 public class InputHeightActivity extends AppCompatActivity {
 
     private EditText editHeight;
-    private ImageButton backButton, nextButton;
+    private ImageButton backButton;
+    private Button nextButton;
 
     private String userName;
     private String selectedGender;
@@ -44,6 +46,7 @@ public class InputHeightActivity extends AppCompatActivity {
             Intent intent = new Intent(this, GenderSelectActivity.class);
             intent.putExtra("userName", userName);
             startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             finish();
         });
 
