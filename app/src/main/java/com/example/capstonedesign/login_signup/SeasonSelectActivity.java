@@ -2,6 +2,8 @@ package com.example.capstonedesign.login_signup;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -21,8 +23,9 @@ import java.util.Map;
 
 public class SeasonSelectActivity extends AppCompatActivity {
 
-    private ImageButton backButton, btnSave;
-    private ImageButton[] seasonButtons;
+    private ImageButton backButton;
+    private Button btnSave;
+    private FrameLayout[] seasonButtons;
 
     private final String[] seasonNames = {"봄", "여름", "가을", "겨울"};
     private boolean[] selected = new boolean[4];
@@ -47,11 +50,11 @@ public class SeasonSelectActivity extends AppCompatActivity {
         backButton = findViewById(R.id.back_button);
         btnSave = findViewById(R.id.btn_save);
 
-        seasonButtons = new ImageButton[]{
-                findViewById(R.id.season1),
-                findViewById(R.id.season2),
-                findViewById(R.id.season3),
-                findViewById(R.id.season4)
+        seasonButtons = new FrameLayout[]{
+                findViewById(R.id.season1_container),
+                findViewById(R.id.season2_container),
+                findViewById(R.id.season3_container),
+                findViewById(R.id.season4_container)
         };
 
         // 계절 버튼 클릭 시 선택/해제 처리
@@ -71,6 +74,7 @@ public class SeasonSelectActivity extends AppCompatActivity {
             intent.putExtra("height", height);
             intent.putExtra("userAge", userAge);
             startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             finish();
         });
 
