@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.LinearLayout; // 이 import는 XML의 다른 뷰들 때문에 여전히 필요할 수 있습니다.
+import android.widget.RelativeLayout; // ★★★ 이 import를 추가하세요.
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +22,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.settings);  // settings.xml 사용
+        setContentView(R.layout.settings);
 
         // 뒤로가기 버튼
         ImageButton btnSettingBack = findViewById(R.id.btnSettingBack);
@@ -34,7 +35,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         // 내정보 버튼 클릭 시 InformationActivity로 전환
-        LinearLayout btnMyInfo = findViewById(R.id.btn_my_info);
+        RelativeLayout btnMyInfo = findViewById(R.id.btn_my_info);
         btnMyInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,7 +46,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         // 관심사 변경 버튼 클릭 시 InterestChangeActivity로 전환
-        LinearLayout btnChangeInterest = findViewById(R.id.btn_change_interest);
+        RelativeLayout btnChangeInterest = findViewById(R.id.btn_change_interest);
         btnChangeInterest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,13 +57,13 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         // 공지사항 버튼 클릭 시 NoticeActivity 이동
-        LinearLayout btnNotice = findViewById(R.id.btn_notice);
+        RelativeLayout btnNotice = findViewById(R.id.btn_notice);
         btnNotice.setOnClickListener(v -> {
             startActivity(new Intent(this, NoticeActivity.class));
         });
 
         // 푸시알림설정 버튼 클릭 시 PushSettingActivity로 이동
-        LinearLayout btnPushSetting = findViewById(R.id.btn_push_setting);
+        RelativeLayout btnPushSetting = findViewById(R.id.btn_push_setting);
         btnPushSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
