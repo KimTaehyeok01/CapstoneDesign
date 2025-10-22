@@ -25,7 +25,6 @@ public class FilterActivity extends AppCompatActivity {
 
         btnApply = findViewById(R.id.btnApply);
 
-        // 버튼들을 checkable 로 보장 (XML에 app:checkable="true"가 있으면 이 부분은 생략 가능)
         ensureCheckable(
                 R.id.btn_spring, R.id.btn_summer, R.id.btn_autumn, R.id.btn_winter,
                 R.id.btn_land, R.id.btn_water, R.id.btn_air,
