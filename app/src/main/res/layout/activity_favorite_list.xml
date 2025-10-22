@@ -174,8 +174,8 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:src="@drawable/ic_main_search"
-            android:contentDescription="검색"
+            android:src="@drawable/ic_psychological"
+            android:contentDescription="사용자 추천"
             android:onClick="onNavSearchClicked"/>
 
         <ImageButton

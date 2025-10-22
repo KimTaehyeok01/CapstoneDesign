@@ -24,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-// 필요한 import 문 추가
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowCompat;
@@ -56,7 +55,7 @@ public class FavoriteListActivity extends AppCompatActivity {
     private EditText editSearch;
     private ImageButton btnSearchGlass, btnCancel;
 
-    private ImageButton navSearch, navMarker, navHome, navHeart, navSetting;
+    private ImageButton navRecommend, navMarker, navHome, navHeart, navSetting;
 
     private final List<View> allCards = new ArrayList<>();
 
@@ -78,18 +77,13 @@ public class FavoriteListActivity extends AppCompatActivity {
             int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
             int bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
 
-            // 상단 UI(뒤로가기 버튼)의 마진을 상태 바 높이만큼 추가합니다.
             if (topBarContainer != null && topBarContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
                 ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) topBarContainer.getLayoutParams();
-                // dp to px 변환이 필요할 수 있으나, 간단하게 기존 마진을 더해줍니다.
-                // values/dimens.xml 에 정의된 값을 사용하는 것이 가장 좋습니다.
-                // 여기서는 16dp에 해당하는 px 값을 가정하여 더합니다.
                 float density = getResources().getDisplayMetrics().density;
                 params.topMargin = topInset + (int)(16 * density);
                 topBarContainer.setLayoutParams(params);
             }
 
-            // 하단 네비게이션 바의 아래쪽에 시스템 네비게이션 바 높이만큼 패딩을 줍니다.
             if (bottomNav != null) {
                 bottomNav.setPadding(bottomNav.getPaddingLeft(), bottomNav.getPaddingTop(), bottomNav.getPaddingRight(), bottomInset);
             }
@@ -97,7 +91,6 @@ public class FavoriteListActivity extends AppCompatActivity {
             return WindowInsetsCompat.CONSUMED;
         });
 
-        // --- 기존 onCreate 코드 시작 ---
         itemContainer   = findViewById(R.id.item_container);
         editSearch      = findViewById(R.id.editSearch);
         btnSearchGlass  = findViewById(R.id.btnSearchGlass);
@@ -136,14 +129,16 @@ public class FavoriteListActivity extends AppCompatActivity {
             }
         });
 
-        navSearch  = findViewById(R.id.nav_search);
-        navMarker  = findViewById(R.id.nav_marker);
-        navHome    = findViewById(R.id.nav_home);
-        navHeart   = findViewById(R.id.nav_heart);
-        navSetting = findViewById(R.id.nav_setting);
+        //  변수명 변경 (navSearch -> navRecommend)
+        navRecommend  = findViewById(R.id.nav_search);
+        navMarker     = findViewById(R.id.nav_marker);
+        navHome       = findViewById(R.id.nav_home);
+        navHeart      = findViewById(R.id.nav_heart);
+        navSetting    = findViewById(R.id.nav_setting);
 
-        navSearch.setOnClickListener(v -> startActivity(new Intent(this, SearchActivity.class)));
+        navRecommend.setOnClickListener(v -> startActivity(new Intent(this, FeelingInputActivity.class)));
         navMarker.setOnClickListener(v -> startActivity(new Intent(this, MapActivity.class)));
+
         navHome.setOnClickListener(v -> {
             Intent i = new Intent(this, MainActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
