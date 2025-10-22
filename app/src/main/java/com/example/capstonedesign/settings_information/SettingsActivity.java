@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout; // 이 import는 XML의 다른 뷰들 때문에 여전히 필요할 수 있습니다.
-import android.widget.RelativeLayout; // ★★★ 이 import를 추가하세요.
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
