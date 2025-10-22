@@ -12,11 +12,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FeelingInputActivity extends AppCompatActivity {
@@ -28,13 +27,13 @@ public class FeelingInputActivity extends AppCompatActivity {
     private TextView btnThrillLow, btnThrillMid, btnThrillHigh;
     private TextView btnLocationIn, btnLocationOut;
     private TextView btnChild;
-    private AppCompatButton btnGetRecommendation;
+    private MaterialButton btnGetRecommendation;
 
-    private int personCount = 1;
+    private int personCount = 0;
     private boolean isChildFriendly = false;
 
-    private final List<String> selectedThrills = new ArrayList<>(Arrays.asList("보통"));
-    private final List<String> selectedLocations = new ArrayList<>(Arrays.asList("실내"));
+    private final List<String> selectedThrills = new ArrayList<>();
+    private final List<String> selectedLocations = new ArrayList<>();
     private final List<View> ageBarViews = new ArrayList<>();
 
     @Override
@@ -44,7 +43,15 @@ public class FeelingInputActivity extends AppCompatActivity {
 
         initViews();
         setupListeners();
-        updatePersonCountUI(); // 초기 1명 UI 생성
+
+        // 초기 상태 설정
+        changePersonCount(1);
+
+        updateButtonStyle(btnThrillMid, true);
+        selectedThrills.add("보통");
+
+        updateButtonStyle(btnLocationIn, true);
+        selectedLocations.add("실내");
     }
 
     private void initViews() {
@@ -92,24 +99,22 @@ public class FeelingInputActivity extends AppCompatActivity {
 
     private void changePersonCount(int delta) {
         int newCount = personCount + delta;
-        if (newCount < 1 || newCount > 10) return;
-        personCount = newCount;
-        updatePersonCountUI();
-    }
-
-    private void updatePersonCountUI() {
-        tvPersonCount.setText(String.valueOf(personCount));
-
-        int currentSeekBars = llAgeBarsContainer.getChildCount();
-
-        // 인원 수 증가 → SeekBar 추가
-        for (int i = currentSeekBars; i < personCount; i++) {
-            addAgeSeekBar(i + 1);
+        if (newCount < 1) {
+            Toast.makeText(this, "최소 1명 이상이어야 합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (newCount > 10) {
+            Toast.makeText(this, "최대 10명까지 추가할 수 있습니다.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // 인원 수 감소 → SeekBar 제거
-        for (int i = currentSeekBars; i > personCount; i--) {
-            removeAgeSeekBar();
+        personCount = newCount;
+        tvPersonCount.setText(String.valueOf(personCount));
+
+        if (delta > 0) {
+            addAgeSeekBar(personCount);
+        } else {
+            removeLastAgeBar();
         }
     }
 
@@ -121,7 +126,12 @@ public class FeelingInputActivity extends AppCompatActivity {
         TextView tvAge = ageView.findViewById(R.id.tv_age_value_item);
         SeekBar seekBar = ageView.findViewById(R.id.seekbar_age_item);
 
-        tvLabel.setText("인원 " + personIndex);
+        if (personIndex == 1) {
+            tvLabel.setText("본인");
+        } else {
+            tvLabel.setText("인원 " + personIndex);
+        }
+
         tvAge.setText("20대");
         seekBar.setProgress(1);
 
@@ -137,7 +147,7 @@ public class FeelingInputActivity extends AppCompatActivity {
         ageBarViews.add(ageView);
     }
 
-    private void removeAgeSeekBar() {
+    private void removeLastAgeBar() {
         if (!ageBarViews.isEmpty()) {
             View last = ageBarViews.remove(ageBarViews.size() - 1);
             llAgeBarsContainer.removeView(last);
@@ -146,9 +156,15 @@ public class FeelingInputActivity extends AppCompatActivity {
 
     private void toggleSelection(TextView button, List<String> list, String value) {
         boolean selected = list.contains(value);
-        if (selected) list.remove(value);
-        else list.add(value);
-
+        if (selected) {
+            if (list.size() == 1) {
+                Toast.makeText(this, "최소 1개는 선택해야 합니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            list.remove(value);
+        } else {
+            list.add(value);
+        }
         updateButtonStyle(button, !selected);
     }
 
@@ -172,7 +188,7 @@ public class FeelingInputActivity extends AppCompatActivity {
         intent.putExtra("personCount", personCount);
         intent.putExtra("isChildFriendly", isChildFriendly);
         intent.putIntegerArrayListExtra("ageValues", getAgesFromSeekBars());
-        intent.putStringArrayListExtra("energyLevels", new ArrayList<>(selectedThrills));
+        intent.putStringArrayListExtra("energyLevels", new ArrayList<>(selectedThrills)); // 스릴을 energyLevels로 전달
         intent.putStringArrayListExtra("locations", new ArrayList<>(selectedLocations));
         startActivity(intent);
     }
