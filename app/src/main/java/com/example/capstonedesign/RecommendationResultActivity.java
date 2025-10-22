@@ -66,7 +66,6 @@ public class RecommendationResultActivity extends AppCompatActivity {
     private void initViews() {
         btnBack = findViewById(R.id.btn_back);
         tvRecommendationReason = findViewById(R.id.tv_recommendation_reason);
-        // 'tvNoRecommendation' findViewById 호출 삭제
         recyclerRecommendations = findViewById(R.id.recycler_recommendations);
     }
 
@@ -81,7 +80,7 @@ public class RecommendationResultActivity extends AppCompatActivity {
         if (ages != null && !ages.isEmpty()) {
             List<String> ageStrings = new ArrayList<>();
             for (Integer age : ages) {
-                String ageStr = age + "대";
+                String ageStr = (age == 50) ? age + "대 이상" : age + "대";
                 if (!ageStrings.contains(ageStr)) ageStrings.add(ageStr);
             }
             conditions.add(String.join(", ", ageStrings));
@@ -136,20 +135,59 @@ public class RecommendationResultActivity extends AppCompatActivity {
                     Map<String, Object> data = doc.getData();
 
                     // 어린이 동반 필터
-                    if (isChildFriendly && (!data.containsKey("childFriendly") || !(Boolean) data.get("childFriendly"))) {
-                        continue;
+                    if (isChildFriendly) { // 사용자가 '어린이 동반'을 선택한 경우
+                        Object childFriendlyObj = data.get("childFriendly");
+                        // DB에 childFriendly 필드가 없거나(null) / Boolean 타입이 아니거나 / 값이 false이면
+                        if (childFriendlyObj == null || !(childFriendlyObj instanceof Boolean) || !((Boolean) childFriendlyObj)) {
+                            continue; // 이 장소는 추천 목록에서 제외
+                        }
                     }
 
-                    // 장소 필터
+                    // (수정된 부분) 장소 필터
                     if (locations != null && !locations.isEmpty()) {
-                        String placeLocation = (String) data.get("location");
-                        if (placeLocation == null || !locations.contains(placeLocation)) continue;
+                        Object locationObj = data.get("location");
+                        // DB에 location 필드가 없거나 List(배열) 타입이 아니면 제외
+                        if (locationObj == null || !(locationObj instanceof List)) {
+                            continue;
+                        }
+
+                        // DB의 location 값을 List<String>으로 변환
+                        List<String> placeLocations = new ArrayList<>();
+                        try {
+                            for (Object obj : (List<?>) locationObj) {
+                                if (obj != null) {
+                                    placeLocations.add(obj.toString());
+                                }
+                            }
+                        } catch (Exception e) {
+                            continue; // 타입 변환 오류 시 제외
+                        }
+
+                        if (placeLocations.isEmpty()) {
+                            continue;
+                        }
+
+                        boolean locationMatch = false;
+                        // 사용자가 선택한 locations (예: ["실내", "실외"])
+                        for (String userLocation : locations) {
+                            // DB의 placeLocations (예: ["실외", "경기"]) 에 userLocation이 포함되는지 확인
+                            if (placeLocations.contains(userLocation)) {
+                                locationMatch = true; // 하나라도 일치하면 통과
+                                break;
+                            }
+                        }
+                        if (!locationMatch) { // 하나도 일치하는게 없으면 제외
+                            continue;
+                        }
                     }
 
                     // 나이 필터
                     if (ageValues != null && !ageValues.isEmpty()) {
-                        List<Long> placeAgesLong = (List<Long>) data.get("age");
-                        if (placeAgesLong == null) continue;
+                        Object ageObj = data.get("age");
+                        if (ageObj == null || !(ageObj instanceof List)) {
+                            continue;
+                        }
+                        List<Long> placeAgesLong = (List<Long>) ageObj;
 
                         boolean ageMatch = false;
                         for (Integer userAge : ageValues) {
