@@ -119,8 +119,10 @@
                     android:layout_marginStart="8dp"
                     android:text="강원특별자치도 강릉시 정원로 42 3층 (우)25515"
                     android:textSize="14sp"
-                    android:textColor="#333333" />
-            </LinearLayout>
+                    android:textColor="#333333"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground" /> </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/textViewHours"
@@ -213,8 +215,8 @@
                     android:src="@android:drawable/ic_menu_call"
                     android:contentDescription="전화 아이콘"
                     android:clickable="true"
-                    android:focusable="true" />
-
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
                 <TextView
                     android:id="@+id/textViewPhone"
                     android:layout_width="wrap_content"
@@ -223,7 +225,8 @@
                     android:layout_marginStart="8dp"
                     android:textSize="14sp"
                     android:clickable="true"
-                    android:focusable="true" />
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground" />
             </LinearLayout>
 
         </LinearLayout>

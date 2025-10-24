@@ -51,6 +51,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private boolean isFavorite = false;
     private String placeName = "";
+
+    private Double placeLatitude = null;
+    private Double placeLongitude = null;
+
     private static final int CALL_PERMISSION_REQUEST_CODE = 1001;
 
     @Override
@@ -142,6 +146,20 @@ public class PlaceDetailActivity extends AppCompatActivity {
         textViewPhone.setOnClickListener(callListener);
         imageViewCall.setOnClickListener(callListener);
 
+        textViewAddress.setOnClickListener(v -> {
+            if (placeLatitude != null && placeLongitude != null) {
+                // MapActivity로 위도, 경도, 장소 이름을 전달
+                Intent intent = new Intent(PlaceDetailActivity.this, MapActivity.class);
+                intent.putExtra("latitude", placeLatitude);
+                intent.putExtra("longitude", placeLongitude);
+                intent.putExtra("place_name", placeName);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "위치 정보가 없는 장소입니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         firestore.collection("sports_locations")
                 .whereEqualTo("name", placeName)
                 .get()
@@ -156,6 +174,14 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             String more = documentSnapshot.getString("summary");
                             String imageUrl = documentSnapshot.getString("image");
                             String category = documentSnapshot.getString("category");
+
+                            // 위도(latitude)와 경도(longitude) 가져오기
+                            if (documentSnapshot.contains("latitude") && documentSnapshot.get("latitude") != null) {
+                                placeLatitude = documentSnapshot.getDouble("latitude");
+                            }
+                            if (documentSnapshot.contains("longitude") && documentSnapshot.get("longitude") != null) {
+                                placeLongitude = documentSnapshot.getDouble("longitude");
+                            }
 
                             if (name != null) {
                                 textViewTitle.setText(name);
@@ -279,7 +305,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Toast.makeText(this, "스탬프 저장에 실패했습니다.", Toast.LENGTH_SHORT).show());
     }
 
-    // ✅ 티어 달성 여부를 확인하고 Firestore에 기록하는 새 메소드
+    // 티어 달성 여부를 확인하고 Firestore에 기록하는 새 메소드
     private void checkAndRecordAchievement(DocumentReference userRef, String category) {
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             if (!documentSnapshot.exists()) return;
@@ -329,7 +355,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         });
     }
 
-    // ✅ 횟수로 티어 이름을 반환하는 헬퍼 메소드 (기존에 없다면 추가)
+    // 횟수로 티어 이름을 반환하는 헬퍼 메소드 (기존에 없다면 추가)
     private String getTierForCount(long count) {
         if (count >= 15) return "Master";
         if (count >= 12) return "Platinum";
