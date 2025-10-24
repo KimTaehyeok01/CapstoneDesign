@@ -45,7 +45,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
 
     private ImageView imageViewPlace, imageViewFavorite, imageViewCall;
-    private TextView textViewTitle, textViewAddress, textViewPrice, textViewPhone, textViewMore, toolbarTitle;
+    private TextView textViewTitle, textViewAddress, textViewPrice, textViewPhone, toolbarTitle;
     private LinearLayout textViewHours;
     private ImageButton buttonStamp;
 
@@ -93,7 +93,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
         textViewHours = findViewById(R.id.textViewHours);
         textViewPrice = findViewById(R.id.textViewPrice);
         textViewPhone = findViewById(R.id.textViewPhone);
-        textViewMore = findViewById(R.id.textViewMore);
         imageViewFavorite = findViewById(R.id.imageViewFavorite);
         imageViewCall = findViewById(R.id.imageViewCall);
         buttonStamp = findViewById(R.id.buttonStamp);
@@ -166,7 +165,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                             if (price != null) textViewPrice.setText(price);
                             if (phone != null && !phone.isEmpty()) textViewPhone.setText(phone);
                             else textViewPhone.setText("전화번호 없음");
-                            if (more != null) textViewMore.setText(more);
 
                             if (hours != null) {
                                 textViewHours.removeAllViews();

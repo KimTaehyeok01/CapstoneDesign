@@ -226,14 +226,6 @@
                     android:focusable="true" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textViewMore"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="더보기\nhttps://cafe.naver.com/gangneungcc"
-                android:textSize="14sp"
-                android:layout_marginTop="16dp"
-                android:textColor="#0000EE" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
