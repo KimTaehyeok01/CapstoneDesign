@@ -31,7 +31,7 @@
             android:layout_height="match_parent"
             android:layout_marginEnd="48dp"
             android:background="@android:color/transparent"
-            android:hint="장소, 주소로 입력하세요"
+            android:hint="장소를 입력하세요"
             android:padding="8dp"
             android:textColor="@android:color/black"
             android:imeOptions="actionSearch"
