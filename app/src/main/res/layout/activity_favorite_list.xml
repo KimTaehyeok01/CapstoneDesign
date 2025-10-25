@@ -186,7 +186,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@android:color/white"
+        android:background="#FFFDF7"
         android:elevation="8dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
