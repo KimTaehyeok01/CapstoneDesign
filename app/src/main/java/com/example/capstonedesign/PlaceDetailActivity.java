@@ -3,6 +3,7 @@ package com.example.capstonedesign;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -56,6 +59,9 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private Double placeLongitude = null;
 
     private static final int CALL_PERMISSION_REQUEST_CODE = 1001;
+
+    private FusedLocationProviderClient fusedLocationClient;
+    private static final int STAMP_LOCATION_PERMISSION_CODE = 1002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +109,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         placeName = getIntent().getStringExtra("place_name");
         if (placeName == null) {
@@ -216,9 +223,21 @@ public class PlaceDetailActivity extends AppCompatActivity {
                                 }
                             }
 
-                            // 스탬프 버튼 리스너 설정
                             buttonStamp.setOnClickListener(v -> {
-                                checkAndApplyStamp(placeName, category);
+                                // 장소의 위치 정보가 DB에 있는지 확인
+                                if (placeLatitude == null || placeLongitude == null) {
+                                    Toast.makeText(PlaceDetailActivity.this, "이 장소는 위치 정보가 없어 스탬프를 찍을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+
+                                // 1. 위치 권한 확인
+                                if (ActivityCompat.checkSelfPermission(PlaceDetailActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    // 2. 권한이 없으면 요청
+                                    ActivityCompat.requestPermissions(PlaceDetailActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, STAMP_LOCATION_PERMISSION_CODE);
+                                } else {
+                                    // 3. 권한이 있으면, 위치 확인 및 스탬프 찍기 시도
+                                    verifyLocationAndApplyStamp(placeName, category);
+                                }
                             });
 
                             if (currentUser != null) {
@@ -248,6 +267,44 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     Toast.makeText(this, "장소 정보를 불러오지 못했습니다.", Toast.LENGTH_SHORT).show();
                     finish();
                 });
+    }
+
+    // --- GPS 스탬프 관련 새 메서드 ---
+    private void verifyLocationAndApplyStamp(String placeIdentifier, String category) {
+        // 권한 재확인 (필수)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "스탬프를 찍으려면 위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if (location == null) {
+                Toast.makeText(this, "현재 위치를 가져올 수 없습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 현재 위치와 장소 위치 비교
+            float[] results = new float[1];
+            Location.distanceBetween(
+                    location.getLatitude(), location.getLongitude(),
+                    placeLatitude, placeLongitude,
+                    results
+            );
+
+            float distanceInMeters = results[0];
+            int CHECK_IN_DISTANCE_METERS = 100; // 100미터 반경
+
+            if (distanceInMeters <= CHECK_IN_DISTANCE_METERS) {
+                // 100m 이내인 경우
+                Toast.makeText(this, "장소 100m 반경 내에 있습니다. 스탬프를 확인합니다...", Toast.LENGTH_SHORT).show();
+                checkAndApplyStamp(placeIdentifier, category);
+            } else {
+                // 100m 밖인 경우
+                Toast.makeText(this, "장소가 멀어서 스탬프 찍기가 불가능합니다.(현재 " + (int)distanceInMeters + "m 거리)", Toast.LENGTH_LONG).show();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "위치 확인에 실패했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void checkAndApplyStamp(String placeIdentifier, String category) {
@@ -355,7 +412,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         });
     }
 
-    // 횟수로 티어 이름을 반환하는 헬퍼 메소드 (기존에 없다면 추가)
+    // 횟수로 티어 이름을 반환하는 헬퍼 메소드
     private String getTierForCount(long count) {
         if (count >= 15) return "Master";
         if (count >= 12) return "Platinum";
@@ -380,12 +437,24 @@ public class PlaceDetailActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CALL_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startCall();
             } else {
                 Toast.makeText(this, "전화 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show();
+            }
+        }
+        // --- GPS 스탬프 권한 처리 추가 ---
+        else if (requestCode == STAMP_LOCATION_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 권한이 허용되었을 때
+                Toast.makeText(this, "위치 권한이 허용되었습니다. 스탬프 버튼을 다시 눌러주세요.", Toast.LENGTH_LONG).show();
+                // 사용자가 버튼을 다시 눌러야 verifyLocationAndApplyStamp가 호출됩니다.
+            } else {
+                // 권한이 거부되었을 때
+                Toast.makeText(this, "스탬프를 찍으려면 위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
             }
         }
     }
