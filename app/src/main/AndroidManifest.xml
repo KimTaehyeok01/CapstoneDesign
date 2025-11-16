@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -78,6 +79,9 @@
         <!-- 설정 액티비티 -->
         <activity android:name=".settings_information.SettingsActivity" />
 
+        <!-- 공지사항 액티비티 -->
+        <activity android:name=".settings_information.NoticeActivity" />
+
         <!-- 나이 입력 액티비티 -->
         <activity
             android:name=".login_signup.AgeInputActivity"
@@ -122,12 +126,28 @@
         <activity
             android:name=".StampActivity"
             android:exported="false" />
+
         <activity
             android:name=".TierAnalysisActivity"
             android:exported="false" />
+
         <activity android:name=".VisitedListActivity" />
 
+        <!-- 문의하기 화면 액티비티 -->
+        <activity android:name=".ContactActivity" />
 
+        <!-- 문의 내역 화면 액티비티 -->
+        <activity android:name=".InquiryHistoryActivity" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.capstonedesign.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
 
         <service

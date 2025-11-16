@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.capstonedesign.R;
@@ -37,7 +37,7 @@ public class InformationActivity extends AppCompatActivity {
         });
 
         // 계정 정보 버튼
-        LinearLayout btnAccountInfo = findViewById(R.id.btn_account_info);
+        RelativeLayout btnAccountInfo = findViewById(R.id.btn_account_info);
         btnAccountInfo.setOnClickListener(v -> {
             Intent intent = new Intent(InformationActivity.this, AccountInfoActivity.class);
             startActivity(intent);
@@ -45,7 +45,7 @@ public class InformationActivity extends AppCompatActivity {
         });
 
         // 비밀번호 변경 버튼
-        LinearLayout btnPasswordChange = findViewById(R.id.btn_password_change);
+        RelativeLayout btnPasswordChange = findViewById(R.id.btn_password_change);
         btnPasswordChange.setOnClickListener(v -> {
             Intent intent = new Intent(InformationActivity.this, PasswordChangeActivity.class);
             startActivity(intent);
@@ -53,7 +53,7 @@ public class InformationActivity extends AppCompatActivity {
         });
 
         // 탈퇴하기 버튼
-        LinearLayout btnWithdraw = findViewById(R.id.btn_withdraw);
+        RelativeLayout btnWithdraw = findViewById(R.id.btn_withdraw);
         btnWithdraw.setOnClickListener(v -> showWithdrawLayout());
 
         bottomOverlayContainer = findViewById(R.id.bottomOverlayContainer);

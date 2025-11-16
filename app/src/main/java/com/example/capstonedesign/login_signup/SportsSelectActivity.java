@@ -2,6 +2,7 @@ package com.example.capstonedesign.login_signup;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button; // 수정: ImageButton -> Button
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -20,7 +21,8 @@ import java.util.Map;
 
 public class SportsSelectActivity extends AppCompatActivity {
 
-    private ImageButton backButton, btnSave;
+    private ImageButton backButton;
+    private Button btnSave;
     private ImageButton[] sportButtons;
 
     private final String[] sportCategories = {"육상 스포츠", "해상 스포츠", "항공 스포츠"};
@@ -69,6 +71,7 @@ public class SportsSelectActivity extends AppCompatActivity {
             intent.putExtra("height", height);
             intent.putExtra("userAge", userAge);
             startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             finish();
         });
 

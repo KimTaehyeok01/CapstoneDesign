@@ -8,17 +8,22 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -36,6 +41,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -50,7 +56,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private FrameLayout btnMyLocationContainer;
 
-    private View placeInfoContainer;
+    private RelativeLayout placeInfoContainer;
     private TextView placeNameTextView, placeAddressTextView, placePhoneTextView;
     private ImageButton btnFavorite, btnHidePlaceInfo;
 
@@ -64,7 +70,41 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
         setContentView(R.layout.map);
+
+        final View rootView = findViewById(android.R.id.content);
+        final RelativeLayout searchContainer = findViewById(R.id.searchContainer);
+        placeInfoContainer = findViewById(R.id.placeInfoContainer);
+
+        final float density = getResources().getDisplayMetrics().density;
+        final int originalTopMarginPx = (int) (26 * density);
+        final int originalPaddingPx = (int) (16 * density);
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
+            int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+
+            if (searchContainer != null && searchContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) searchContainer.getLayoutParams();
+                params.topMargin = topInset + originalTopMarginPx;
+                searchContainer.setLayoutParams(params);
+            }
+
+            if (placeInfoContainer != null) {
+                placeInfoContainer.setPadding(
+                        originalPaddingPx,
+                        originalPaddingPx,
+                        originalPaddingPx,
+                        originalPaddingPx + bottomInset
+                );
+            }
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
 
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -72,7 +112,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         MapsInitializer.initialize(getApplicationContext(), MapsInitializer.Renderer.LATEST, renderer -> {});
 
-        // Intent에서 데이터를 먼저 확인하고, 있으면 멤버 변수에 저장합니다.
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("latitude") && intent.hasExtra("longitude")) {
             double lat = intent.getDoubleExtra("latitude", 0);
@@ -141,7 +180,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        placeInfoContainer = findViewById(R.id.placeInfoContainer);
         placeNameTextView = findViewById(R.id.placeNameTextView);
         placeAddressTextView = findViewById(R.id.placeAddressTextView);
         placePhoneTextView = findViewById(R.id.placePhoneTextView);
@@ -245,6 +283,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Toast.makeText(this, "위치 서비스가 꺼져 있어 기본 위치로 이동합니다.", Toast.LENGTH_SHORT).show();
             } else {
                 mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
                 fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
                     if (location != null) {
                         LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());

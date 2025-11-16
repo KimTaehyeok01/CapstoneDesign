@@ -1,25 +1,34 @@
 package com.example.capstonedesign;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView; // <<<<<<<< ScrollView import 추가
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,9 +40,12 @@ public class StampActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private ListenerRegistration userListener;
 
+    private FusedLocationProviderClient fusedLocationClient;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1005;
+
     // UI 요소 변수
-    private ScrollView scrollView; // <<<<<<<< ScrollView 변수 추가
-    private Button btnSportsTab, btnSeasonalTab;
+    private ScrollView scrollView;
+    private Button btnNearbyStamps;
     private TextView tvCurrentTierTitle, tvAthleticsCount, tvAthleticsTier, tvWaterSportsCount, tvWaterSportsTier, tvAirSportsCount, tvAirSportsTier;
     private ImageView tierBadge;
     private TextView btnCategoryAthletics, btnCategoryWater, btnCategoryAir;
@@ -48,14 +60,12 @@ public class StampActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         initializeViews();
 
         ImageButton backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> finish());
-
-        btnSportsTab.setOnClickListener(v -> setActiveTab(btnSportsTab));
-        btnSeasonalTab.setOnClickListener(v -> setActiveTab(btnSeasonalTab));
 
         LinearLayout btnTierAnalysis = findViewById(R.id.btn_tier_analysis);
         btnTierAnalysis.setOnClickListener(v -> {
@@ -78,6 +88,8 @@ public class StampActivity extends AppCompatActivity {
             updateSecondCardUI("air");
             updateCategoryButtonUI(btnCategoryAir);
         });
+
+        btnNearbyStamps.setOnClickListener(v -> requestLocationPermission());
     }
 
     @Override
@@ -95,9 +107,7 @@ public class StampActivity extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        scrollView = findViewById(R.id.scrollView); // <<<<<<<< ScrollView ID 연결
-        btnSportsTab = findViewById(R.id.btn_sports_tab);
-        btnSeasonalTab = findViewById(R.id.btn_seasonal_tab);
+        scrollView = findViewById(R.id.scrollView);
         tvCurrentTierTitle = findViewById(R.id.tv_current_tier_title);
         tierBadge = findViewById(R.id.tier_badge);
         tvAthleticsCount = findViewById(R.id.tv_athletics_count);
@@ -106,6 +116,7 @@ public class StampActivity extends AppCompatActivity {
         tvWaterSportsTier = findViewById(R.id.tv_water_sports_tier);
         tvAirSportsCount = findViewById(R.id.tv_air_sports_count);
         tvAirSportsTier = findViewById(R.id.tv_air_sports_tier);
+        btnNearbyStamps = findViewById(R.id.btn_nearby_stamps);
 
         btnCategoryAthletics = findViewById(R.id.btn_category_athletics);
         btnCategoryWater = findViewById(R.id.btn_category_water);
@@ -129,31 +140,98 @@ public class StampActivity extends AppCompatActivity {
                 return;
             }
 
-            // <<<<<<<< [수정된 핵심 부분] >>>>>>>>
-            // runOnUiThread 대신 scrollView.post()를 사용합니다.
-            // 이렇게 하면 화면 레이아웃이 완전히 준비된 후에 UI 업데이트가 실행됩니다.
-            if (scrollView != null) {
-                scrollView.post(() -> {
-                    if (documentSnapshot != null && documentSnapshot.exists()) {
-                        Map<String, Long> stampCounts = (Map<String, Long>) documentSnapshot.get("stampCounts");
-                        if (stampCounts == null) stampCounts = new HashMap<>();
+            if (scrollView == null) return;
 
-                        this.currentLandCount = stampCounts.getOrDefault("land", 0L);
-                        this.currentSeaCount = stampCounts.getOrDefault("sea", 0L);
-                        this.currentAirCount = stampCounts.getOrDefault("air", 0L);
+            scrollView.post(() -> {
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    Map<String, Long> stampCounts = (Map<String, Long>) documentSnapshot.get("stampCounts");
+                    if (stampCounts == null) stampCounts = new HashMap<>();
 
-                        updateFirstCardUI(currentLandCount, currentSeaCount, currentAirCount);
-                        updateCategoryButtonUI(btnCategoryAthletics);
-                        updateSecondCardUI("land");
+                    this.currentLandCount = stampCounts.getOrDefault("land", 0L);
+                    this.currentSeaCount = stampCounts.getOrDefault("sea", 0L);
+                    this.currentAirCount = stampCounts.getOrDefault("air", 0L);
 
-                    } else {
-                        updateFirstCardUI(0, 0, 0);
-                        updateCategoryButtonUI(btnCategoryAthletics);
-                        updateSecondCardUI("land");
-                    }
-                });
-            }
+                    updateFirstCardUI(currentLandCount, currentSeaCount, currentAirCount);
+                    updateCategoryButtonUI(btnCategoryAthletics);
+                    updateSecondCardUI("land");
+
+                } else {
+                    updateFirstCardUI(0, 0, 0);
+                    updateCategoryButtonUI(btnCategoryAthletics);
+                    updateSecondCardUI("land");
+                }
+            });
         });
+    }
+
+    private void requestLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            findAndShowNearestPlace();
+        }
+    }
+
+    private void findAndShowNearestPlace() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if (location == null) {
+                Toast.makeText(this, "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            db.collection("sports_locations").get().addOnSuccessListener(queryDocumentSnapshots -> {
+                DocumentSnapshot nearestPlace = null;
+                float minDistance = Float.MAX_VALUE;
+
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    Double lat = doc.getDouble("latitude");
+                    Double lon = doc.getDouble("longitude");
+                    if (lat != null && lon != null) {
+                        float[] results = new float[1];
+                        Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat, lon, results);
+                        float distance = results[0];
+
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            nearestPlace = doc;
+                        }
+                    }
+                }
+
+                if (nearestPlace != null) {
+                    Double lat = nearestPlace.getDouble("latitude");
+                    Double lon = nearestPlace.getDouble("longitude");
+                    String name = nearestPlace.getString("name");
+
+                    if(lat != null && lon != null && name != null) {
+                        Intent intent = new Intent(StampActivity.this, MapActivity.class);
+                        intent.putExtra("latitude", lat);
+                        intent.putExtra("longitude", lon);
+                        intent.putExtra("place_name", name);
+                        startActivity(intent);
+                    }
+                } else {
+                    Toast.makeText(this, "주변에 등록된 장소가 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                findAndShowNearestPlace();
+            } else {
+                Toast.makeText(this, "기능을 사용하려면 위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void updateFirstCardUI(long land, long sea, long air) {
@@ -164,7 +242,7 @@ public class StampActivity extends AppCompatActivity {
         tvAirSportsCount.setText(String.valueOf(air));
         tvAirSportsTier.setText(getTierForCount(air).toLowerCase());
 
-        long maxCount = Collections.max(java.util.Arrays.asList(land, sea, air));
+        long maxCount = Math.max(land, Math.max(sea, air));
         String highestTier = getTierForCount(maxCount);
 
         tvCurrentTierTitle.setText("현재 티어: " + highestTier);
@@ -221,6 +299,7 @@ public class StampActivity extends AppCompatActivity {
     }
 
     private int getTierBackgroundResource(String tier) {
+        if(tier == null) return R.drawable.rounded_bronze_background;
         switch (tier) {
             case "Master": return R.drawable.rounded_master_background;
             case "Platinum": return R.drawable.rounded_platinum_background;
@@ -240,6 +319,7 @@ public class StampActivity extends AppCompatActivity {
     }
 
     private int getTierBadgeResource(String tier) {
+        if(tier == null) return R.drawable.bronze_badge;
         switch (tier) {
             case "Master": return R.drawable.master_badge;
             case "Platinum": return R.drawable.platinum_badge;
@@ -247,21 +327,6 @@ public class StampActivity extends AppCompatActivity {
             case "Silver": return R.drawable.silver_badge;
             case "Bronze": return R.drawable.bronze_badge;
             default: return R.drawable.bronze_badge;
-        }
-    }
-
-    private void setActiveTab(Button activeButton) {
-        btnSportsTab.setBackgroundResource(R.drawable.rounded_left_button_inactive);
-        btnSportsTab.setTextColor(ContextCompat.getColor(this, R.color.black));
-        btnSeasonalTab.setBackgroundResource(R.drawable.rounded_right_button_inactive);
-        btnSeasonalTab.setTextColor(ContextCompat.getColor(this, R.color.black));
-
-        if (activeButton.getId() == R.id.btn_sports_tab) {
-            btnSportsTab.setBackgroundResource(R.drawable.rounded_left_button_active);
-            btnSportsTab.setTextColor(ContextCompat.getColor(this, R.color.white));
-        } else if (activeButton.getId() == R.id.btn_seasonal_tab) {
-            btnSeasonalTab.setBackgroundResource(R.drawable.rounded_right_button_active);
-            btnSeasonalTab.setTextColor(ContextCompat.getColor(this, R.color.white));
         }
     }
 }

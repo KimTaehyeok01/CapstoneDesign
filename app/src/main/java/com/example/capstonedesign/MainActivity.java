@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.example.capstonedesign.settings_information.AccountInfoActivity;
 
 import org.json.JSONObject;
 
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ImageView iv_menu;
     private ImageButton btn_close_drawer;
-    // 수정된 부분: navSearch -> navPsychological
+    private ImageView imgProfileIcon;
     private ImageButton navPsychological, navHome, navSetting, navMarker, navHeart;
     private TextView tvWeather, tvTodayRecommend, tvNearbyRecommend;
 
@@ -208,14 +209,25 @@ public class MainActivity extends AppCompatActivity {
         tvProfileInterest = findViewById(R.id.tv_profile_interest);
         tvProfileSeason   = findViewById(R.id.tv_profile_season);
         loadUserProfileFromFirestore();
-        ImageButton btnStamp = findViewById(R.id.btn_stamp); // XML의 스탬프 버튼 ID
+        ImageButton btnStamp = findViewById(R.id.btn_stamp);
+
+        imgProfileIcon = findViewById(R.id.img_profile_icon);
+        imgProfileIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AccountInfoActivity.class);
+            startActivity(intent);
+        });
+
         btnStamp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // StampsActivity로 이동하는 Intent 생성 및 실행
                 Intent intent = new Intent(MainActivity.this, StampActivity.class);
                 startActivity(intent);
             }
+        });
+
+        ImageButton btnContact = findViewById(R.id.btn_contact);
+        btnContact.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, ContactActivity.class));
         });
 
         // 위치 권한 요청 → 날씨, 추천 로드
@@ -448,6 +460,18 @@ public class MainActivity extends AppCompatActivity {
             getLastLocation();
         } else {
             Toast.makeText(this, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        // Drawer가 열려 있을 경우 닫기
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            // Drawer가 닫혀 있을 경우 기본 뒤로가기 동작 수행
+            super.onBackPressed();
         }
     }
 

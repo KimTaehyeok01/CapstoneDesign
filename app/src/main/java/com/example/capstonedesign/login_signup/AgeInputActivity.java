@@ -2,6 +2,7 @@ package com.example.capstonedesign.login_signup;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button; // 수정: ImageButton -> Button
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -20,7 +21,8 @@ import java.util.Map;
 public class AgeInputActivity extends AppCompatActivity {
 
     private EditText editAge;
-    private ImageButton backButton, nextButton;
+    private ImageButton backButton;
+    private Button nextButton; // 수정: ImageButton -> Button
 
     private String userName;
     private String selectedGender;
@@ -48,6 +50,7 @@ public class AgeInputActivity extends AppCompatActivity {
             intent.putExtra("selectedGender", selectedGender);
             intent.putExtra("height", height);
             startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             finish();
         });
 

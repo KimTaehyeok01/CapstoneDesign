@@ -2,6 +2,7 @@ package com.example.capstonedesign.login_signup;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -20,7 +21,8 @@ import java.util.Map;
 public class GenderSelectActivity extends AppCompatActivity {
 
     private FrameLayout maleButton, femaleButton;
-    private ImageButton backButton, nextButton;
+    private ImageButton backButton;
+    private Button nextButton;
 
     private String selectedGender = null;
     private String userName;
@@ -57,6 +59,7 @@ public class GenderSelectActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, SignUpActivity.class);
             startActivity(intent);
+            overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             finish();
         });
 

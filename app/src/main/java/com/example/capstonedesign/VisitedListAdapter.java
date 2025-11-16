@@ -31,12 +31,7 @@ public class VisitedListAdapter extends RecyclerView.Adapter<VisitedListAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         VisitedPlace place = visitedPlaces.get(position);
-        holder.tvPlaceName.setText(place.getName());
-        holder.tvPlaceAddress.setText(place.getAddress()); // 주소에서 도시 이름만 추출하는 로직 추가 가능
-
-        Glide.with(context)
-                .load(place.getImageUrl())
-                .into(holder.ivPlaceImage);
+        holder.bind(place);
     }
 
     @Override
@@ -46,13 +41,25 @@ public class VisitedListAdapter extends RecyclerView.Adapter<VisitedListAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivPlaceImage;
-        TextView tvPlaceName, tvPlaceAddress;
+        TextView tvPlaceName, tvPlaceAddress, tvPlaceRegion;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivPlaceImage = itemView.findViewById(R.id.iv_place_image);
+            ivPlaceImage = itemView.findViewById(R.id.img_place);
             tvPlaceName = itemView.findViewById(R.id.tv_place_name);
             tvPlaceAddress = itemView.findViewById(R.id.tv_place_address);
+            tvPlaceRegion = itemView.findViewById(R.id.tv_place_region);
+        }
+
+        void bind(VisitedPlace place) {
+            tvPlaceName.setText(place.getName());
+            tvPlaceAddress.setText(place.getAddress());
+            tvPlaceRegion.setText(place.getRegion());
+
+            Glide.with(itemView.getContext())
+                    .load(place.getImageUrl())
+                    .placeholder(R.drawable.ic_climb)
+                    .into(ivPlaceImage);
         }
     }
 }
