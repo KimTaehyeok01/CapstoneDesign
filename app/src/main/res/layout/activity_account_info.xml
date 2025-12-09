@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FEFBF3"
     android:fitsSystemWindows="true">
-<!--sasad-->
+
     <LinearLayout
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
